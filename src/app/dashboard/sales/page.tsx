@@ -6,15 +6,15 @@ function DashboardPage() {
   return (
     <div className="p-6 space-y-6 bg-gray-100 min-h-screen dark:bg-gray-900 w-full">
       {/* Stats Overview */}
-      <h1 className="text-center font-bold text-4xl">Analytics DashBoard</h1>
-      <h3 className="text-xl text-left font-semibold">Jobs Activities</h3>
+      <h1 className="text-center font-bold text-4xl">Sales DashBoard</h1>
+      <h3 className="text-xl text-left font-semibold">Product Activities</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard title="Total Jobs" value="10.2K" />
         <StatCard title="Active Jobs" value="320" />
         <StatCard title="Cron Job Status" value="$12.5K" />
         <StatCard title="Applied Jobs" value="150" />
       </div>
-      <h3 className="text-xl text-left font-semibold">User Activites</h3>
+      <h3 className="text-xl text-left font-semibold">Sales Activites</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard title="Total Users" value="10.2K" />
         <StatCard title="New Signups" value="320" />

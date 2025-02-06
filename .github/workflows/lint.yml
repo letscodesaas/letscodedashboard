@@ -1,0 +1,30 @@
+name: Lint Check
+run-name: GitHub Action Lint
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout github repo
+        uses: actions/checkout@v4
+
+      - name: Install NodeJs
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Linter
+        run: npm run lint
+
+      - name: Job Status
+        run: echo "${{job.status}}"
