@@ -8,6 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { trpc } from '@/app/_trpc/client';
 import { toast } from 'sonner';
+import dynamic from 'next/dynamic';
+const QuillEditor = dynamic(() => import('@/components/ui/editor'));
 
 export default function CreateJob() {
   interface JobData {
@@ -105,9 +107,15 @@ export default function CreateJob() {
               <Label>Salary</Label>
               <Input name="salary" onChange={handleChange} required />
             </div>
-            <div>
+            <div className='pb-10'>
               <Label>Description</Label>
-              <Textarea name="description" onChange={handleChange} required />
+              <QuillEditor
+                value={jobData.description}
+                onChange={(content:string) =>
+                  setJobData((prev) => ({ ...prev, description: content }))
+                  
+                }
+              />
             </div>
             <div>
               <Label>Requirements (comma-separated)</Label>

@@ -10,6 +10,8 @@ import { trpc } from '@/app/_trpc/client';
 import { toast } from 'sonner';
 import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
+const QuillEditor = dynamic(() => import('@/components/ui/editor'));
 
 export default function UpdateJob() {
   const { id } = useParams();
@@ -65,10 +67,20 @@ export default function UpdateJob() {
 
   const submitHandler = async () => {
     try {
+      let formattedRequirements = jobData.requirements.trim();
+
+      // Ensure a trailing comma so split() always works
+      if (!formattedRequirements.endsWith(',')) {
+        formattedRequirements += ',';
+      }
+
       const updatedJobs = {
         ...jobData,
         id: id[0],
-        requirements: jobData.requirements.split(',').map((req) => req.trim()),
+        requirements: formattedRequirements
+          .split(',')
+          .map((req) => req.trim()) // Trim spaces
+          .filter((req) => req.length > 0), // Remove empty strings
       };
 
       const data = await trpc.job.updateJobPost.mutate(updatedJobs);
@@ -146,13 +158,13 @@ export default function UpdateJob() {
                 required
               />
             </div>
-            <div>
+            <div className="pb-10">
               <Label>Description</Label>
-              <Textarea
-                name="description"
+              <QuillEditor
                 value={jobData.description}
-                onChange={handleChange}
-                required
+                onChange={(content: string) =>
+                  setJobData((prev) => ({ ...prev, description: content }))
+                }
               />
             </div>
             <div>
