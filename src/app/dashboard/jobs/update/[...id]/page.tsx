@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
-const QuillEditor = dynamic(() => import('@/components/ui/editor'));
+const QuillEditor = dynamic(() => import('@/components/ui/editor'),{ssr:false});
 
 export default function UpdateJob() {
   const { id } = useParams();
