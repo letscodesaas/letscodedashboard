@@ -1,7 +1,7 @@
-import { publicProcedure, router } from "../trpc";
+import { publicProcedure, router } from '../trpc';
 
 export const healthRouter = router({
   checkHealth: publicProcedure.query(() => {
-    return { status: "ok", message: "Health check successful" };
+    return { status: 'ok', message: 'Health check successful' };
   }),
 });

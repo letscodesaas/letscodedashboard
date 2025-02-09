@@ -3,7 +3,6 @@ import { appRouter } from '@/server/server';
 import { Jobs } from '@/models/Job.Model';
 import mongoose from 'mongoose';
 
-
 mongoose.connect(process.env.DB!);
 const handler = (req: Request) => {
   return fetchRequestHandler({

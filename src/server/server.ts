@@ -4,7 +4,7 @@ import { healthRouter } from './router/health.router';
 
 export const appRouter = router({
   job: jobRouter,
-  health:healthRouter
+  health: healthRouter,
 });
 
 export type AppRouter = typeof appRouter;

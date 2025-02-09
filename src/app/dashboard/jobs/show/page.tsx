@@ -75,7 +75,7 @@ function Page() {
     try {
       await trpc.job.deleteJobPost.mutate({ id });
       toast('Deleted');
-      setJobs((prevJobs) => prevJobs.filter((job) => job._id !== id))
+      setJobs((prevJobs) => prevJobs.filter((job) => job._id !== id));
     } catch (error) {
       console.log(error);
       toast('Server Error');

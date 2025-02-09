@@ -68,16 +68,14 @@ export default function UpdateJob() {
       const updatedJobs = {
         ...jobData,
         id: id[0],
-        requirements: jobData.requirements
-          .split(',')
-          .map((req) => req.trim()), 
+        requirements: jobData.requirements.split(',').map((req) => req.trim()),
       };
-  
+
       const data = await trpc.job.updateJobPost.mutate(updatedJobs);
       setDisabled(true);
       if (data.message == 'updated') {
         toast('Job Updated');
-        Router.push('/dashboard/jobs/show')
+        Router.push('/dashboard/jobs/show');
       }
       setDisabled(false);
     } catch (error) {
@@ -161,7 +159,6 @@ export default function UpdateJob() {
               <Label>Requirements (comma-separated)</Label>
               <Textarea
                 name="requirements"
-
                 value={jobData.requirements}
                 onChange={handleChange}
                 required
