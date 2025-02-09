@@ -9,7 +9,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { trpc } from '@/app/_trpc/client';
 import { toast } from 'sonner';
 import dynamic from 'next/dynamic';
-const QuillEditor = dynamic(() => import('@/components/ui/editor'),{ssr:false});
+const QuillEditor = dynamic(() => import('@/components/ui/editor'), {
+  ssr: false,
+});
 
 export default function CreateJob() {
   interface JobData {
