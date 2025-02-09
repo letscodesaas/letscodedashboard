@@ -71,6 +71,9 @@ export default function CreateJob() {
         applyLink: '',
       });
       setDisabled(false);
+      setTimeout(()=>{
+        window.location.reload();
+      },2000)
     } catch (error) {
       toast('Server Error');
       console.log(error);
