@@ -6,7 +6,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { trpc } from '@/app/_trpc/client';
 import { toast } from 'sonner';
 import { useParams, useRouter } from 'next/navigation';
@@ -55,7 +61,9 @@ export default function UpdateJob() {
           ...data.message,
           requirements: Array.isArray(data.message.requirements)
             ? data.message.requirements
-            : data.message.requirements.split(',').map((req: string) => req.trim()), // Ensure array format
+            : data.message.requirements
+                .split(',')
+                .map((req: string) => req.trim()), // Ensure array format
         });
       } catch (error) {
         console.log(error);
@@ -64,7 +72,9 @@ export default function UpdateJob() {
     fetchJob();
   }, [id]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     if (name === 'requirements') {
       setJobData((prev) => ({
@@ -109,21 +119,41 @@ export default function UpdateJob() {
           <div className="space-y-4">
             <div>
               <Label>Job Title</Label>
-              <Input name="title" value={jobData.title} onChange={handleChange} required />
+              <Input
+                name="title"
+                value={jobData.title}
+                onChange={handleChange}
+                required
+              />
             </div>
             <div>
               <Label>Company</Label>
-              <Input name="company" value={jobData.company} onChange={handleChange} required />
+              <Input
+                name="company"
+                value={jobData.company}
+                onChange={handleChange}
+                required
+              />
             </div>
             <div>
               <Label>Location</Label>
-              <Input name="location" value={jobData.location} onChange={handleChange} required />
+              <Input
+                name="location"
+                value={jobData.location}
+                onChange={handleChange}
+                required
+              />
             </div>
 
             {/* Job Type Dropdown */}
             <div>
               <Label>Job Type</Label>
-              <Select value={jobData.type} onValueChange={(value) => setJobData((prev) => ({ ...prev, type: value }))}>
+              <Select
+                value={jobData.type}
+                onValueChange={(value) =>
+                  setJobData((prev) => ({ ...prev, type: value }))
+                }
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select Job Type" />
                 </SelectTrigger>
@@ -142,7 +172,9 @@ export default function UpdateJob() {
               <Label>Experience</Label>
               <Select
                 value={jobData.experience}
-                onValueChange={(value) => setJobData((prev) => ({ ...prev, experience: value }))}
+                onValueChange={(value) =>
+                  setJobData((prev) => ({ ...prev, experience: value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select Experience Level" />
@@ -159,13 +191,20 @@ export default function UpdateJob() {
 
             <div>
               <Label>Salary</Label>
-              <Input name="salary" value={jobData.salary} onChange={handleChange} required />
+              <Input
+                name="salary"
+                value={jobData.salary}
+                onChange={handleChange}
+                required
+              />
             </div>
             <div className="pb-10">
               <Label>Description</Label>
               <QuillEditor
                 value={jobData.description}
-                onChange={(content: string) => setJobData((prev) => ({ ...prev, description: content }))}
+                onChange={(content: string) =>
+                  setJobData((prev) => ({ ...prev, description: content }))
+                }
               />
             </div>
             <div>
@@ -179,9 +218,18 @@ export default function UpdateJob() {
             </div>
             <div>
               <Label>Apply Link</Label>
-              <Input name="applyLink" value={jobData.applyLink} onChange={handleChange} required />
+              <Input
+                name="applyLink"
+                value={jobData.applyLink}
+                onChange={handleChange}
+                required
+              />
             </div>
-            <Button disabled={disabled} onClick={submitHandler} className="w-full">
+            <Button
+              disabled={disabled}
+              onClick={submitHandler}
+              className="w-full"
+            >
               {disabled ? 'Updating...' : 'Update Job'}
             </Button>
           </div>

@@ -24,9 +24,15 @@ export default function CreateJob() {
     requirements: string[];
     applyLink: string;
   }
-  
+
   const jobTypes = ['Full-Time', 'Part-Time', 'Contract', 'Internship'];
-  const experienceLevels = ['0+ years', '1+ years', '2+ years','3+ years','5+ years'];
+  const experienceLevels = [
+    '0+ years',
+    '1+ years',
+    '2+ years',
+    '3+ years',
+    '5+ years',
+  ];
 
   const [disabled, setDisabled] = useState(false);
   const [jobData, setJobData] = useState<JobData>({
@@ -42,7 +48,9 @@ export default function CreateJob() {
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value } = e.target;
     if (name === 'requirements') {
@@ -105,19 +113,31 @@ export default function CreateJob() {
             </div>
             <div>
               <Label>Job Type</Label>
-              <select name="type" onChange={handleChange} className="w-full p-2 border rounded">
+              <select
+                name="type"
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+              >
                 <option value="">Select Job Type</option>
                 {jobTypes.map((type) => (
-                  <option key={type} value={type}>{type}</option>
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
                 ))}
               </select>
             </div>
             <div>
               <Label>Experience</Label>
-              <select name="experience" onChange={handleChange} className="w-full p-2 border rounded">
+              <select
+                name="experience"
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+              >
                 <option value="">Select Experience Level</option>
                 {experienceLevels.map((level) => (
-                  <option key={level} value={level}>{level}</option>
+                  <option key={level} value={level}>
+                    {level}
+                  </option>
                 ))}
               </select>
             </div>
