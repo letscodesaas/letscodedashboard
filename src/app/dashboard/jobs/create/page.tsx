@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,6 +24,10 @@ export default function CreateJob() {
     requirements: string[];
     applyLink: string;
   }
+  
+  const jobTypes = ['Full-Time', 'Part-Time', 'Contract', 'Internship'];
+  const experienceLevels = ['0+ years', '1+ years', '2+ years','3+ years','5+ years'];
+
   const [disabled, setDisabled] = useState(false);
   const [jobData, setJobData] = useState<JobData>({
     title: '',
@@ -39,7 +42,7 @@ export default function CreateJob() {
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     if (name === 'requirements') {
@@ -71,9 +74,9 @@ export default function CreateJob() {
         applyLink: '',
       });
       setDisabled(false);
-      setTimeout(()=>{
+      setTimeout(() => {
         window.location.reload();
-      },2000)
+      }, 2000);
     } catch (error) {
       toast('Server Error');
       console.log(error);
@@ -102,11 +105,21 @@ export default function CreateJob() {
             </div>
             <div>
               <Label>Job Type</Label>
-              <Input name="type" onChange={handleChange} required />
+              <select name="type" onChange={handleChange} className="w-full p-2 border rounded">
+                <option value="">Select Job Type</option>
+                {jobTypes.map((type) => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
             </div>
             <div>
               <Label>Experience</Label>
-              <Input name="experience" onChange={handleChange} required />
+              <select name="experience" onChange={handleChange} className="w-full p-2 border rounded">
+                <option value="">Select Experience Level</option>
+                {experienceLevels.map((level) => (
+                  <option key={level} value={level}>{level}</option>
+                ))}
+              </select>
             </div>
             <div>
               <Label>Salary</Label>
@@ -120,10 +133,6 @@ export default function CreateJob() {
                   setJobData((prev) => ({ ...prev, description: content }))
                 }
               />
-            </div>
-            <div>
-              <Label>Requirements (comma-separated)</Label>
-              <Textarea name="requirements" onChange={handleChange} required />
             </div>
             <div>
               <Label>Apply Link</Label>

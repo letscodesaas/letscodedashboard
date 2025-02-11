@@ -1,0 +1,22 @@
+name: Deploy Vercel
+run-name: Github Vercel Deploy
+
+on:
+  workflow_run:
+    workflows: ['Build Check']
+    types:
+      - completed
+
+jobs:
+  deploy-to-vercel:
+    name: Deploy to Vercel
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Deploy to Vercel
+        run: vercel --prod --yes --token=${{ secrets.VERCEL_TOKEN }}

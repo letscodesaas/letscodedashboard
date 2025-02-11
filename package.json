@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.2",
+    "@radix-ui/react-select": "^2.1.6",
     "@radix-ui/react-slot": "^1.1.2",
     "@trpc/client": "^11.0.0-rc.746",
     "@trpc/server": "^11.0.0-rc.746",
