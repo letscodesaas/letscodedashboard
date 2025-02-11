@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -205,15 +204,6 @@ export default function UpdateJob() {
                 onChange={(content: string) =>
                   setJobData((prev) => ({ ...prev, description: content }))
                 }
-              />
-            </div>
-            <div>
-              <Label>Requirements (comma-separated)</Label>
-              <Textarea
-                name="requirements"
-                value={jobData.requirements.join(', ')}
-                onChange={handleChange}
-                required
               />
             </div>
             <div>
