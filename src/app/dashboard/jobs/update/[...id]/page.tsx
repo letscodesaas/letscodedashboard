@@ -180,11 +180,11 @@ export default function UpdateJob() {
                   <SelectValue placeholder="Select Experience Level" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="0+ year">0+ years</SelectItem>
-                  <SelectItem value="1+ year">1+ years</SelectItem>
-                  <SelectItem value="2+ year">2+ years</SelectItem>
-                  <SelectItem value="3+ year">3+ years</SelectItem>
-                  <SelectItem value="5+ year">5+ years</SelectItem>
+                  <SelectItem value="0+ years">0+ years</SelectItem>
+                  <SelectItem value="1+ years">1+ years</SelectItem>
+                  <SelectItem value="2+ years">2+ years</SelectItem>
+                  <SelectItem value="3+ years">3+ years</SelectItem>
+                  <SelectItem value="5+ years">5+ years</SelectItem>
                 </SelectContent>
               </Select>
             </div>
