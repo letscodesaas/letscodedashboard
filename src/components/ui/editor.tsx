@@ -22,7 +22,7 @@ const QuillEditor = ({
         toolbar: [
           [{ header: '1' }, { header: '2' }, { font: [] }],
           [{ list: 'ordered' }, { list: 'bullet' }],
-          ['bold', 'italic', 'underline', 'strike'],
+          ['bold', 'italic', 'underline', 'strike','link'],
           [{ align: [] }],
           ['clean'],
         ],
@@ -36,6 +36,7 @@ const QuillEditor = ({
         'underline',
         'strike',
         'align',
+        'link'
       ]}
       theme="snow"
     />
