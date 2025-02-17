@@ -9,6 +9,10 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  productLink:{
+    type:String,
+    requried:true
+  },
   imageLink: {
     type: String,
     required: true,
@@ -17,7 +21,7 @@ const productSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-});
+},{strict:true,timestamps:true});
 
 export const Product =
   mongoose.models.Product || mongoose.model('Product', productSchema);

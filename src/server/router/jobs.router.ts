@@ -92,7 +92,7 @@ export const jobRouter = router({
         id: z.string(),
       })
     )
-    .query(async (opts) => {
+    .mutation(async (opts) => {
       const { input } = await opts;
       if (!input) {
         return new TRPCError({ code: 'NOT_FOUND' });

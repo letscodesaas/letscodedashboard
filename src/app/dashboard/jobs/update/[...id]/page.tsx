@@ -55,7 +55,7 @@ export default function UpdateJob() {
   useEffect(() => {
     async function fetchJob() {
       try {
-        const data = await trpc.job.getJob.query({ id: id[0] });
+        const data = await trpc.job.getJob.mutate({ id: id[0] });
         setJobData({
           ...data.message,
           requirements: Array.isArray(data.message.requirements)

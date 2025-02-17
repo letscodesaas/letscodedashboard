@@ -15,22 +15,17 @@ import { trpc } from '@/app/_trpc/client';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
-interface Job {
+interface ProductData {
   _id: string;
   title: string;
-  company: string;
-  location: string;
-  type: string;
-  experience: string;
-  salary: string;
+  price: number;
+  productLink: string;
+  imageLink: string;
   description: string;
-  requirements: string[];
-  applyLink: string;
-  createdAt: Date;
 }
 
 function Page() {
-  const [jobs, setJobs] = useState<Job[]>([]);
+  const [products, setProducts] = useState<ProductData[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [jobsPerPage] = useState(5);
   const Router = useRouter();
@@ -38,8 +33,11 @@ function Page() {
   useEffect(() => {
     async function fetchJobs() {
       try {
-        const data = await trpc.job.getAllJobs.query();
-        setJobs(data.data);
+        const data = await trpc.product.getAllProduct.query();
+        console.log(data.message)
+        if (data && Array.isArray(data.message)) {
+          setProducts(data.message);
+        }
       } catch (error) {
         console.error('Error fetching jobs:', error);
       }
@@ -47,36 +45,15 @@ function Page() {
     fetchJobs();
   }, []);
 
-  const shareLink = () => {
-    const links: string[] = [];
-
-    for (let i = 0; i < jobs.length; i++) {
-      const createdAt = new Date(jobs[i]?.createdAt).getTime();
-      const today = new Date().setHours(0, 0, 0, 0);
-      if (createdAt >= today && jobs[i]?.applyLink) {
-        links.push(`https://www.lets-code.co.in/job/${jobs[i]._id}`);
-      }
-    }
-
-    let linkInfo = JSON.stringify(links);
-    linkInfo = linkInfo.replace(/\[|\]/g, '').replace(/,/g, '\n');
-    window.navigator.clipboard.writeText(linkInfo);
-    if (links.length > 0) {
-      toast('Copied');
-      return;
-    }
-    toast('No latest Jobs Posted');
-  };
-
   const handleUpdate = (id: string) => {
-    Router.push(`/dashboard/jobs/update/${id}`);
+    Router.push(`/dashboard/product/update/${id}`);
   };
 
   const handleDelete = async (id: string) => {
     try {
-      await trpc.job.deleteJobPost.mutate({ id });
+      await trpc.product.deleteProduct.mutate({ id });
       toast('Deleted');
-      setJobs((prevJobs) => prevJobs.filter((job) => job._id !== id));
+      setProducts((prevJobs) => prevJobs.filter((job) => job._id !== id));
     } catch (error) {
       console.log(error);
       toast('Server Error');
@@ -85,14 +62,11 @@ function Page() {
 
   const indexOfLastJob = currentPage * jobsPerPage;
   const indexOfFirstJob = indexOfLastJob - jobsPerPage;
-  const currentJobs = jobs.slice(indexOfFirstJob, indexOfLastJob);
-  const totalPages = Math.ceil(jobs.length / jobsPerPage);
+  const currentJobs = products.slice(indexOfFirstJob, indexOfLastJob);
+  const totalPages = Math.ceil(products.length / jobsPerPage);
 
   return (
     <div className="p-6 w-full">
-      <Button onClick={shareLink} className="mb-10">
-        Get Share Link
-      </Button>
       <div className="overflow-x-auto bg-white shadow-md rounded-lg">
         <Table className="w-full border border-gray-200">
           <TableCaption className="text-lg font-semibold py-2">
@@ -101,40 +75,49 @@ function Page() {
           <TableHeader className="bg-gray-100">
             <TableRow>
               <TableHead className="w-[200px] p-3">Title</TableHead>
-              <TableHead className="p-3">Company</TableHead>
-              <TableHead className="p-3">Location</TableHead>
-              <TableHead className="p-3 text-center">Experience</TableHead>
-              <TableHead className="p-3 text-center">Salary</TableHead>
-              <TableHead className="p-3 text-center">Type</TableHead>
+              <TableHead className="p-3">Image</TableHead>
+              <TableHead className="p-3 text-center">Product Link</TableHead>
+              <TableHead className="p-3 text-center">Price</TableHead>
               <TableHead className="p-3 text-center">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {currentJobs.map((job, index) => (
+            {currentJobs.map((product, index) => (
               <TableRow
-                key={job._id}
+                key={product._id}
                 className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}
               >
-                <TableCell className="p-3 font-medium">{job.title}</TableCell>
-                <TableCell className="p-3">{job.company}</TableCell>
-                <TableCell className="p-3">{job.location}</TableCell>
-                <TableCell className="p-3 text-center">
-                  {job.experience}
+                <TableCell className="p-3 font-medium">
+                  {product.title}
                 </TableCell>
-                <TableCell className="p-3 text-center">{job.salary}</TableCell>
-                <TableCell className="p-3 text-center">{job.type}</TableCell>
+                <TableCell className="p-3">
+                  <div className="relative w-24 h-24 overflow-hidden rounded-lg group">
+                    <img
+                      className="w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-150 group-hover:shadow-lg"
+                      src={product.imageLink}
+                      alt="product image"
+                    />
+                  </div>
+                </TableCell>
+
+                <TableCell className="p-3 text-center">
+                  {product.productLink}
+                </TableCell>
+                <TableCell className="p-3 text-center">
+                  {product.price}
+                </TableCell>
                 <TableCell className="p-3 flex justify-center gap-3">
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => handleUpdate(job._id)}
+                    onClick={() => handleUpdate(product._id)}
                   >
                     Update
                   </Button>
                   <Button
                     size="sm"
                     variant="destructive"
-                    onClick={() => handleDelete(job._id)}
+                    onClick={() => handleDelete(product._id)}
                   >
                     Delete
                   </Button>
