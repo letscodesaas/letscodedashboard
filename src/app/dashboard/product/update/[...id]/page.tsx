@@ -65,7 +65,7 @@ export default function UpdateProduct() {
       if (data.message == 'UPDATED') {
         toast('Product Updated');
       }
-      router.push('/dashboard/product/show')
+      router.push('/dashboard/product/show');
       setProductData({
         id: '',
         title: '',
@@ -130,7 +130,11 @@ export default function UpdateProduct() {
             </div>
             <div className="space-y-4 flex flex-col">
               <Label>Product Image</Label>
-              <img className='w-20 h-20' src={productData.imageLink} alt="product image" />
+              <img
+                className="w-20 h-20"
+                src={productData.imageLink}
+                alt="product image"
+              />
               <CldUploadButton
                 className="bg-blue-500 p-1 rounded-md text-white"
                 options={{ sources: ['local'] }}
@@ -146,7 +150,9 @@ export default function UpdateProduct() {
                   }
                 }}
                 onError={(error) => console.error('Upload Error:', error)}
-                onClick={(e:React.MouseEvent<HTMLButtonElement>) => e.preventDefault()} // Prevent default page refresh
+                onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
+                  e.preventDefault()
+                } // Prevent default page refresh
               />
 
               {/* <CldUploadButton

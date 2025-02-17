@@ -34,7 +34,7 @@ function Page() {
     async function fetchJobs() {
       try {
         const data = await trpc.product.getAllProduct.query();
-        console.log(data.message)
+        console.log(data.message);
         if (data && Array.isArray(data.message)) {
           setProducts(data.message);
         }

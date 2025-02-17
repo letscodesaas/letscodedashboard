@@ -32,8 +32,7 @@ export const productRouter = router({
     };
   }),
   getAllProduct: publicProcedure.query(async (opts) => {
-    const data = await opts.ctx.db.Product.find({})
-      .sort({ createdAt: -1 })
+    const data = await opts.ctx.db.Product.find({}).sort({ createdAt: -1 });
     if (!data) {
       return new TRPCError({ code: 'NOT_FOUND' });
     }

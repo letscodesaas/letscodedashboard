@@ -14,7 +14,7 @@ const handler = (req: Request) => {
       return {
         db: {
           Jobs,
-          Product
+          Product,
         },
       };
     },
