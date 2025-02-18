@@ -21,8 +21,8 @@ export default function CreateJob() {
     experience: string;
     salary: string;
     description: string;
-    requirements: string[];
     applyLink: string;
+    status: boolean;
   }
 
   const jobTypes = ['Full-Time', 'Part-Time', 'Contract', 'Internship'];
@@ -43,8 +43,8 @@ export default function CreateJob() {
     experience: '',
     salary: '',
     description: '',
-    requirements: [],
     applyLink: '',
+    status: true,
   });
 
   const handleChange = (
@@ -53,14 +53,11 @@ export default function CreateJob() {
     >
   ) => {
     const { name, value } = e.target;
-    if (name === 'requirements') {
-      setJobData((prev) => ({
-        ...prev,
-        [name]: value.split(',').map((req) => req.trim()),
-      }));
-    } else {
-      setJobData((prev) => ({ ...prev, [name]: value }));
-    }
+
+    setJobData((prev) => ({
+      ...prev,
+      [name]: name === 'status' ? value === 'true' : value, // Convert status to boolean
+    }));
   };
 
   const submitHandler = async () => {
@@ -78,8 +75,8 @@ export default function CreateJob() {
         experience: '',
         salary: '',
         description: '',
-        requirements: [],
         applyLink: '',
+        status: true,
       });
       setDisabled(false);
       setTimeout(() => {
@@ -126,6 +123,19 @@ export default function CreateJob() {
                 ))}
               </select>
             </div>
+            <div>
+              <Label>Job Status</Label>
+              <select
+                name="status"
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+              >
+                <option value="">Select Job Type</option>
+                <option value="true">Active</option>
+                <option value="false">UnActive</option>
+              </select>
+            </div>
+
             <div>
               <Label>Experience</Label>
               <select

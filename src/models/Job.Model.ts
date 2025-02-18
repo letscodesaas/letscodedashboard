@@ -10,6 +10,7 @@ const JobSchema = new mongoose.Schema(
     salary: { type: String, required: true },
     description: { type: String, required: true },
     applyLink: { type: String, required: true },
+    status:{type:Boolean,requried:true,default:true}
   },
   { timestamps: true }
 );

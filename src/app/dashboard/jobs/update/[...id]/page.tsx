@@ -34,8 +34,8 @@ export default function UpdateJob() {
     experience: string;
     salary: string;
     description: string;
-    requirements: string[];
     applyLink: string;
+    status: boolean;
   }
 
   const [disabled, setDisabled] = useState(false);
@@ -48,22 +48,19 @@ export default function UpdateJob() {
     experience: '',
     salary: '',
     description: '',
-    requirements: [],
     applyLink: '',
+    status: true,
   });
 
   useEffect(() => {
     async function fetchJob() {
       try {
         const data = await trpc.job.getJob.mutate({ id: id[0] });
-        setJobData({
-          ...data.message,
-          requirements: Array.isArray(data.message.requirements)
-            ? data.message.requirements
-            : data.message.requirements
-                .split(',')
-                .map((req: string) => req.trim()), // Ensure array format
-        });
+        if (data) {
+          setJobData({
+            ...data.message,
+          });
+        }
       } catch (error) {
         console.log(error);
       }
@@ -75,14 +72,8 @@ export default function UpdateJob() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    if (name === 'requirements') {
-      setJobData((prev) => ({
-        ...prev,
-        requirements: value.split(',').map((req) => req.trim()),
-      }));
-    } else {
-      setJobData((prev) => ({ ...prev, [name]: value }));
-    }
+
+    setJobData((prev) => ({ ...prev, [name]: value }));
   };
 
   const submitHandler = async () => {
@@ -92,7 +83,6 @@ export default function UpdateJob() {
       const updatedJobs = {
         ...jobData,
         id: id[0],
-        requirements: jobData.requirements.filter((req) => req.length > 0), // Remove empty entries
       };
 
       const data = await trpc.job.updateJobPost.mutate(updatedJobs);
@@ -162,6 +152,30 @@ export default function UpdateJob() {
                   <SelectItem value="Contract">Contract</SelectItem>
                   <SelectItem value="Internship">Internship</SelectItem>
                   <SelectItem value="Remote">Remote</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Status of job */}
+
+            <div>
+              <Label>Job Status</Label>
+              <Select
+                value={jobData.status.toString()} // Convert boolean to string
+                onValueChange={
+                  (value) =>
+                    setJobData((prev) => ({
+                      ...prev,
+                      status: value === 'true',
+                    })) // Convert string back to boolean
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Job Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="true">Active</SelectItem>
+                  <SelectItem value="false">UnActive</SelectItem>
                 </SelectContent>
               </Select>
             </div>

@@ -10,8 +10,8 @@ const jobInfo = z.object({
   experience: z.string(),
   salary: z.string(),
   description: z.string(),
-  requirements: z.array(z.string()),
   applyLink: z.string(),
+  status:z.boolean()
 });
 
 const updateJobInfo = z.object({
@@ -23,8 +23,9 @@ const updateJobInfo = z.object({
   experience: z.string(),
   salary: z.string(),
   description: z.string(),
-  requirements: z.array(z.string()),
   applyLink: z.string(),
+  status:z.boolean()
+  
 });
 
 export const jobRouter = router({
@@ -53,8 +54,8 @@ export const jobRouter = router({
         experience: input.experience,
         salary: input.salary,
         description: input.description,
-        requirements: input.requirements,
         applyLink: input.applyLink,
+        status:input.status
       }
     );
 
@@ -81,7 +82,7 @@ export const jobRouter = router({
     }),
 
   getAllJobs: publicProcedure.query(async (opts) => {
-    const data = await opts.ctx.db.Jobs.find({});
+    const data = await opts.ctx.db.Jobs.find({}).sort({createdAt:-1});
     return {
       data,
     };
