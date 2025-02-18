@@ -10,6 +10,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      NODE_ENV: production
+      DB: ${{ secrets.DB }}
+      NEXT_PUBLIC_CLOUDINARY_API_KEY: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_API_KEY }}
+      CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+      NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
 
     steps:
       - name: Checkout the Repo
@@ -17,6 +23,8 @@ jobs:
 
       - name: Install Node Runtime
         uses: actions/setup-node@v4
+        with:
+          node-version: 18  # Specify Node.js version if needed
 
       - name: Install Dependencies
         run: npm install
@@ -24,5 +32,12 @@ jobs:
       - name: Build Project
         run: npm run build
 
-      - name: Checkout the job
-        run: echo "${{job.status}}"
+      - name: Create .env File
+        run: |
+          echo "DB=${{ secrets.DB }}" >> .env
+          echo "NEXT_PUBLIC_CLOUDINARY_API_KEY=${{ secrets.NEXT_PUBLIC_CLOUDINARY_API_KEY }}" >> .env
+          echo "CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}" >> .env
+          echo "NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}" >> .env
+
+      - name: Print Job Status
+        run: echo "Job Status ${{ job.status }}"
