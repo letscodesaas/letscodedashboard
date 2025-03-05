@@ -38,14 +38,13 @@ function Page() {
 
   useEffect(() => {
     const savedPage = window.sessionStorage.getItem('page');
-    if(savedPage) {
+    if (savedPage) {
       setCurrentPage(parseInt(savedPage));
     }
     async function fetchJobs() {
       try {
         const data = await trpc.job.getAllJobs.query();
         setJobs(data.data);
-        
       } catch (error) {
         console.error('Error fetching jobs:', error);
       }
@@ -53,12 +52,10 @@ function Page() {
     fetchJobs();
   }, []);
 
- 
-
   useEffect(() => {
     window.sessionStorage.setItem('page', currentPage.toString());
-  }, [currentPage]); 
-  
+  }, [currentPage]);
+
   const shareLink = () => {
     const links: string[] = [];
 

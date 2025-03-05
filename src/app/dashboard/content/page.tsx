@@ -22,7 +22,6 @@ function Page() {
     img: 'w-full h-auto my-6 rounded-lg shadow-md',
   };
 
-
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Create Content</h1>
@@ -42,10 +41,13 @@ function Page() {
             <input type="text" placeholder="Enter file name sample.mdx" />
           </div>
         </div>
-        <div className='flex flex-row gap-4'>
-            <button onClick={()=>setPreview(!preview)} className="bg-blue-600 text-white rounded-md px-10 py-1">
-                Preview
-            </button>
+        <div className="flex flex-row gap-4">
+          <button
+            onClick={() => setPreview(!preview)}
+            className="bg-blue-600 text-white rounded-md px-10 py-1"
+          >
+            Preview
+          </button>
           <button className="bg-blue-500 text-white rounded-md px-10 py-1">
             Post
           </button>
@@ -58,28 +60,42 @@ function Page() {
             markdown={markdownContent}
             onChange={(value) => setMarkdownContent(value || '')}
           />
-        ) :  <Markdown
-        options={{
-          overrides: {
-            h1: { component: 'h1', props: { className: markdownStyles.h1 } },
-            h2: { component: 'h2', props: { className: markdownStyles.h2 } },
-            h3: { component: 'h3', props: { className: markdownStyles.h3 } },
-            p: { component: 'p', props: { className: markdownStyles.p } },
-            strong: {
-              component: 'strong',
-              props: { className: markdownStyles.strong },
-            },
-            li: { component: 'li', props: { className: markdownStyles.li } },
-            a: { component: 'a', props: { className: markdownStyles.a } },
-            img: {
-              component: 'img',
-              props: { className: markdownStyles.img },
-            },
-          },
-        }}
-      >
-        {markdownContent}
-      </Markdown>}
+        ) : (
+          <Markdown
+            options={{
+              overrides: {
+                h1: {
+                  component: 'h1',
+                  props: { className: markdownStyles.h1 },
+                },
+                h2: {
+                  component: 'h2',
+                  props: { className: markdownStyles.h2 },
+                },
+                h3: {
+                  component: 'h3',
+                  props: { className: markdownStyles.h3 },
+                },
+                p: { component: 'p', props: { className: markdownStyles.p } },
+                strong: {
+                  component: 'strong',
+                  props: { className: markdownStyles.strong },
+                },
+                li: {
+                  component: 'li',
+                  props: { className: markdownStyles.li },
+                },
+                a: { component: 'a', props: { className: markdownStyles.a } },
+                img: {
+                  component: 'img',
+                  props: { className: markdownStyles.img },
+                },
+              },
+            }}
+          >
+            {markdownContent}
+          </Markdown>
+        )}
       </div>
     </div>
   );
