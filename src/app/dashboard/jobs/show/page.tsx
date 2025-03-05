@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { trpc } from '@/app/_trpc/client';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import Link from 'next/link';
 
 interface Job {
   _id: string;
@@ -36,10 +37,15 @@ function Page() {
   const Router = useRouter();
 
   useEffect(() => {
+    const savedPage = window.sessionStorage.getItem('page');
+    if(savedPage) {
+      setCurrentPage(parseInt(savedPage));
+    }
     async function fetchJobs() {
       try {
         const data = await trpc.job.getAllJobs.query();
         setJobs(data.data);
+        
       } catch (error) {
         console.error('Error fetching jobs:', error);
       }
@@ -47,6 +53,12 @@ function Page() {
     fetchJobs();
   }, []);
 
+ 
+
+  useEffect(() => {
+    window.sessionStorage.setItem('page', currentPage.toString());
+  }, [currentPage]); 
+  
   const shareLink = () => {
     const links: string[] = [];
 
@@ -70,6 +82,17 @@ function Page() {
 
   const handleUpdate = (id: string) => {
     Router.push(`/dashboard/jobs/update/${id}`);
+  };
+
+  const handleDeactivate = async (id: string) => {
+    try {
+      const result = await trpc.job.deactivateJob.mutate({ id });
+      console.log(result);
+      toast('Deactivated');
+      setJobs((prevJobs) => prevJobs.filter((job) => job._id !== id));
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleDelete = async (id: string) => {
@@ -115,7 +138,9 @@ function Page() {
                 key={job._id}
                 className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}
               >
-                <TableCell className="p-3 font-medium">{job.title}</TableCell>
+                <TableCell className="p-3 font-medium">
+                  <Link href={job.applyLink}>{job.title}</Link>
+                </TableCell>
                 <TableCell className="p-3">{job.company}</TableCell>
                 <TableCell className="p-3">{job.location}</TableCell>
                 <TableCell className="p-3 text-center">
@@ -137,6 +162,13 @@ function Page() {
                     onClick={() => handleDelete(job._id)}
                   >
                     Delete
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleDeactivate(job._id)}
+                  >
+                    Deactivate
                   </Button>
                 </TableCell>
               </TableRow>

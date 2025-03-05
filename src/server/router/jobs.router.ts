@@ -80,8 +80,31 @@ export const jobRouter = router({
       };
     }),
 
+  deactivateJob: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .mutation(async (opts) => {
+      try {
+        const { input } = opts;
+        await opts.ctx.db.Jobs.findByIdAndUpdate(input.id, {
+          status: false,
+        });
+        return {
+          status: 200,
+          message: 'Done',
+        };
+      } catch (error) {
+        console.log(error);
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
+      }
+    }),
   getAllJobs: publicProcedure.query(async (opts) => {
-    const data = await opts.ctx.db.Jobs.find({}).sort({ createdAt: -1 });
+    const data = await opts.ctx.db.Jobs.find({
+      status: true,
+    }).sort({ createdAt: -1 });
     return {
       data,
     };

@@ -159,6 +159,15 @@ function Sidebar() {
 
             <li>
               <a
+                href="/dashboard/content"
+                className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+              >
+                Manage Content
+              </a>
+            </li>
+
+            <li>
+              <a
                 href="#"
                 className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
               >

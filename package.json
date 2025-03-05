@@ -13,14 +13,17 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@mdxeditor/editor": "^3.25.0",
     "@radix-ui/react-label": "^2.1.2",
     "@radix-ui/react-select": "^2.1.6",
     "@radix-ui/react-slot": "^1.1.2",
     "@trpc/client": "^11.0.0-rc.746",
     "@trpc/server": "^11.0.0-rc.746",
+    "axios": "^1.8.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.474.0",
+    "markdown-to-jsx": "^7.7.4",
     "mongoose": "^8.10.0",
     "next": "14.2.23",
     "next-cloudinary": "^6.16.0",

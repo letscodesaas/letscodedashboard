@@ -24,7 +24,7 @@ jobs:
       - name: Install Node Runtime
         uses: actions/setup-node@v4
         with:
-          node-version: 18  # Specify Node.js version if needed
+          node-version: 18 # Specify Node.js version if needed
 
       - name: Install Dependencies
         run: npm install
