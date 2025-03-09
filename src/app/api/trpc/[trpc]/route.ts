@@ -16,7 +16,7 @@ const handler = (req: Request) => {
         db: {
           Jobs,
           Product,
-          Auth
+          Auth,
         },
       };
     },

@@ -4,7 +4,9 @@ import { Product } from '@/models/Product.Model';
 import { Auth } from '@/models/Auth.Model';
 
 const t = initTRPC
-  .context<{ db: { Jobs: typeof Jobs; Product: typeof Product; Auth:typeof Auth } }>()
+  .context<{
+    db: { Jobs: typeof Jobs; Product: typeof Product; Auth: typeof Auth };
+  }>()
   .create();
 
 export const router = t.router;

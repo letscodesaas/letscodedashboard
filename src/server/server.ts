@@ -8,7 +8,7 @@ export const appRouter = router({
   job: jobRouter,
   health: healthRouter,
   product: productRouter,
-  auth:authRouter
+  auth: authRouter,
 });
 
 export type AppRouter = typeof appRouter;

@@ -51,9 +51,7 @@ export default function LoginForm() {
   }
 
   return (
-    <div
-      className={cn('flex flex-col gap-6 w-full p-10')}
-    >
+    <div className={cn('flex flex-col gap-6 w-full p-10')}>
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Add New Member</CardTitle>

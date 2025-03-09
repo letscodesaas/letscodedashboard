@@ -8,7 +8,7 @@ function AuthContext({ children }: { children: React.ReactNode }) {
   const [isAuthChecked, setIsAuthChecked] = useState(false);
 
   useEffect(() => {
-    const token = window.sessionStorage.getItem('token');    
+    const token = window.sessionStorage.getItem('token');
     const publicRoutes = ['/', '/register', '/forgot-password'];
     const isPublicRoute = publicRoutes.includes(pathname);
     if (!token && !isPublicRoute) {
@@ -19,7 +19,7 @@ function AuthContext({ children }: { children: React.ReactNode }) {
     setIsAuthChecked(true);
   }, [pathname, router]);
   if (!isAuthChecked) {
-    return null; 
+    return null;
   }
 
   return <>{children}</>;
