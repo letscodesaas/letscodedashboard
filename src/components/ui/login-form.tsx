@@ -1,14 +1,39 @@
+'use client';
+
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useState } from 'react';
+import { trpc } from '@/app/_trpc/client';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 export function LoginForm({
   className,
   ...props
-}: React.ComponentPropsWithoutRef<'form'>) {
+}: React.ComponentPropsWithoutRef<'div'>) {
+  const router = useRouter();
+  const [userInfo, setUserInfo] = useState({
+    email: '',
+    password: '',
+  });
+
+  async function userLogin() {
+    try {
+      const info = await trpc.auth.signin.mutate(userInfo);
+      window.sessionStorage.setItem('token', info.message);
+      toast('Login Successful');
+      router.push('/dashboard');
+    } catch (error) {
+      console.log(error);
+
+      toast('Something went wrong. Please try again later.');
+    }
+  }
+
   return (
-    <form className={cn('flex flex-col gap-6', className)} {...props}>
+    <div className={cn('flex flex-col gap-6', className)} {...props}>
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Login to your account</h1>
         <p className="text-balance text-sm text-muted-foreground">
@@ -18,7 +43,16 @@ export function LoginForm({
       <div className="grid gap-6">
         <div className="grid gap-2">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="m@example.com" required />
+          <Input
+            onChange={(e) =>
+              setUserInfo({ ...userInfo, email: e.target.value })
+            }
+            value={userInfo.email}
+            id="email"
+            type="email"
+            placeholder="m@example.com"
+            required
+          />
         </div>
         <div className="grid gap-2">
           <div className="flex items-center">
@@ -30,12 +64,20 @@ export function LoginForm({
               Forgot your password?
             </a>
           </div>
-          <Input id="password" type="password" required />
+          <Input
+            id="password"
+            type="password"
+            required
+            value={userInfo.password}
+            onChange={(e) =>
+              setUserInfo({ ...userInfo, password: e.target.value })
+            }
+          />
         </div>
-        <Button type="submit" className="w-full">
+        <Button onClick={userLogin} className="w-full">
           Login
         </Button>
       </div>
-    </form>
+    </div>
   );
 }

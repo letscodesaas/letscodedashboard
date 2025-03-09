@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 function Sidebar() {
   return (
@@ -51,21 +52,21 @@ function Sidebar() {
 
                 <ul className="mt-2 space-y-1 px-4">
                   <li>
-                    <a
-                      href="#"
+                    <Link
+                      href="/dashboard/team/manage"
                       className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
                     >
                       Manage Members
-                    </a>
+                    </Link>
                   </li>
 
                   <li>
-                    <a
-                      href="#"
+                    <Link
+                      href="/dashboard/team/create"
                       className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
                     >
                       Add New Member
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </details>
@@ -163,6 +164,15 @@ function Sidebar() {
                 className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
               >
                 Manage Content
+              </a>
+            </li>
+
+            <li>
+              <a
+                href="/dashboard/newsletter"
+                className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+              >
+                Manage NewLetter&apos;s
               </a>
             </li>
 
