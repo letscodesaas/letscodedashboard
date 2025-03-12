@@ -16,11 +16,24 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Mail, Users, Send } from 'lucide-react';
 import axios from 'axios';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 const SendSingleMail = () => {
   const [email, setEmail] = useState('');
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
+  const [template, setTemplate] = useState('');
+  const [loading, setLoading] = useState(false);
   async function sendMail() {
     try {
       const data = await axios.post('/api/newsletter/singlemail', {
@@ -29,6 +42,19 @@ const SendSingleMail = () => {
         subject,
       });
       console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function generateTemplate() {
+    try {
+      setLoading(true);
+      const data = await axios.post('/api/contentgeneration', {
+        topic: template,
+      });
+      setMessage(data.data.message);
+      setLoading(false);
     } catch (error) {
       console.log(error);
     }
@@ -73,6 +99,31 @@ const SendSingleMail = () => {
             onChange={(e) => setMessage(e.target.value)}
           />
         </div>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button disabled={loading}>
+              {loading ? 'Generating...' : 'Generate Using AI'}
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>AI Powered Template Generator</AlertDialogTitle>
+              <AlertDialogDescription>
+                <Input
+                  type="text"
+                  placeholder="Enter Which template to generate"
+                  onChange={(e) => setTemplate(e.target.value)}
+                />
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={generateTemplate}>
+                Generate...
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </CardContent>
       <CardFooter>
         <Button className="w-full gap-2" onClick={sendMail}>
@@ -86,6 +137,20 @@ const SendSingleMail = () => {
 const SendBulkMail = () => {
   const [subject, setSubject] = useState('');
   const [template, setTemplate] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  async function generateTemplate() {
+    try {
+      setLoading(true);
+      const data = await axios.post('/api/contentgeneration', {
+        topic: template,
+      });
+      setTemplate(data.data.message);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <Card className="w-full">
@@ -121,6 +186,31 @@ const SendBulkMail = () => {
             onChange={(e) => setTemplate(e.target.value)}
           />
         </div>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button disabled={loading}>
+              {loading ? 'Generating...' : 'Generate Using AI'}
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>AI Powered Template Generator</AlertDialogTitle>
+              <AlertDialogDescription>
+                <Input
+                  type="text"
+                  placeholder="Enter Which template to generate"
+                  onChange={(e) => setTemplate(e.target.value)}
+                />
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={generateTemplate}>
+                Generate...
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </CardContent>
       <CardFooter>
         <Button className="w-full gap-2">
