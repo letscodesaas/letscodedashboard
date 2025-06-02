@@ -2,8 +2,8 @@ import mongoose from 'mongoose';
 
 const PublishNewsLetterSchema = new mongoose.Schema(
   {
-    to:{
-        type:String
+    to: {
+      type: String,
     },
     title: {
       type: String,

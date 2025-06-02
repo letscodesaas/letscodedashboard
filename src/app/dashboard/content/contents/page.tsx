@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { Pencil, Trash2, Plus} from 'lucide-react';
+import { Pencil, Trash2, Plus } from 'lucide-react';
 import axios from 'axios';
 
 interface ContentData {
@@ -33,7 +33,6 @@ function Page() {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  
   useEffect(() => {
     async function fetchContents() {
       try {
@@ -49,8 +48,6 @@ function Page() {
     }
     fetchContents();
   }, []);
-
- 
 
   const handleCreate = () => {
     router.push('/dashboard/content/create');
@@ -83,8 +80,6 @@ function Page() {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = contents.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(contents.length / itemsPerPage);
-
-
 
   return (
     <div className="p-6 w-full">
@@ -143,7 +138,7 @@ function Page() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-gray-600">
-                    {content.content.slice(0,20)}...
+                    {content.content.slice(0, 20)}...
                   </TableCell>
                   <TableCell>
                     <Badge

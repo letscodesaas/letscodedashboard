@@ -2,11 +2,16 @@ import { initTRPC } from '@trpc/server';
 import { Jobs } from '@/models/Job.Model';
 import { Product } from '@/models/Product.Model';
 import { Auth } from '@/models/Auth.Model';
-import {Task} from "@/models/Task.model"
+import { Task } from '@/models/Task.model';
 
 const t = initTRPC
   .context<{
-    db: { Jobs: typeof Jobs; Product: typeof Product; Auth: typeof Auth;Task: typeof Task };
+    db: {
+      Jobs: typeof Jobs;
+      Product: typeof Product;
+      Auth: typeof Auth;
+      Task: typeof Task;
+    };
   }>()
   .create();
 

@@ -18,7 +18,7 @@ const handler = (req: Request) => {
           Jobs,
           Product,
           Auth,
-          Task
+          Task,
         },
       };
     },

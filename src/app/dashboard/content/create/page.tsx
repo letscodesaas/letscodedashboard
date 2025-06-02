@@ -3,7 +3,7 @@
 import React, { useRef, useState } from 'react';
 import MDXEditors from '@/components/ui/mdxeditor';
 import Markdown from 'markdown-to-jsx';
-import { ChevronDown,Eye, EyeOff, Send } from 'lucide-react';
+import { ChevronDown, Eye, EyeOff, Send } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'sonner';
 
@@ -42,10 +42,9 @@ function Page() {
         setMarkdownContent('');
         toast('Created');
       }
-
     } catch (error) {
       console.log(error);
-      toast.error('Some went wrong')
+      toast.error('Some went wrong');
     }
   }
 

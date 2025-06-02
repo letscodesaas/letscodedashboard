@@ -55,6 +55,3 @@ function AuthContext({ children }: { children: React.ReactNode }) {
 }
 
 export default AuthContext;
-
-
-

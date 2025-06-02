@@ -123,4 +123,3 @@ export const POST = async (request: NextRequest) => {
     return NextResponse.json({ message: 'Server Error' }, { status: 500 });
   }
 };
-

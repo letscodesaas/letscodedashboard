@@ -1,11 +1,11 @@
-import { NextResponse,NextRequest } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { connectNewsletterDB } from '@/utils/newsletter-db';
 import { PublishNewsLetter } from '@/models/PublishNewsLetter.Model';
 connectNewsletterDB(process.env.NEWLETTERDB!);
-export const POST = async (request:NextRequest) => {
+export const POST = async (request: NextRequest) => {
   try {
     const data = await request.json();
-    const info = await PublishNewsLetter.findById(data.id)
+    const info = await PublishNewsLetter.findById(data.id);
     return NextResponse.json({ message: info }, { status: 200 });
   } catch (error) {
     console.log(error);

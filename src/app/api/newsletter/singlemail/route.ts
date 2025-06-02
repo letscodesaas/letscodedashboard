@@ -19,31 +19,35 @@ export const POST = async (request: NextRequest) => {
     }
     const queue = QueueInstance('singlemail');
     await queue.add('data', { data }, { removeOnComplete: true });
-    WorkerInstance('singlemail', async (jobs) => {
-      const params = {
-        Destination: {
-          ToAddresses: [jobs.data.data.destination],
-        },
-        ReplyToAddresses: [],
-        Message: {
-          Body: {
-            Html: {
+    WorkerInstance(
+      'singlemail',
+      async (jobs) => {
+        const params = {
+          Destination: {
+            ToAddresses: [jobs.data.data.destination],
+          },
+          ReplyToAddresses: [],
+          Message: {
+            Body: {
+              Html: {
+                Charset: 'UTF-8',
+                Data: jobs.data.data.body,
+              },
+            },
+            Subject: {
               Charset: 'UTF-8',
-              Data: jobs.data.data.body,
+              Data: jobs.data.data.subject,
             },
           },
-          Subject: {
-            Charset: 'UTF-8',
-            Data: jobs.data.data.subject,
-          },
-        },
-        Source: 'letscode@lets-code.co.in',
-      };
-      await ses.sendEmail(params).promise();
-      return () => {};
-    },{
-      concurrency:3
-    });
+          Source: 'letscode@lets-code.co.in',
+        };
+        await ses.sendEmail(params).promise();
+        return () => {};
+      },
+      {
+        concurrency: 3,
+      }
+    );
     return NextResponse.json({ message: 'sended' }, { status: 200 });
   } catch (error) {
     console.log(error);

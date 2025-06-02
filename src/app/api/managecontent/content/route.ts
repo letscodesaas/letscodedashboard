@@ -16,9 +16,7 @@ export const POST = async (request: NextRequest) => {
     if (!content) {
       return NextResponse.json({ message: 'NOT FOUND' }, { status: 404 });
     }
-    return NextResponse.json({ message: content
-
-     }, { status: 200 });
+    return NextResponse.json({ message: content }, { status: 200 });
   } catch (error) {
     console.log(error);
     return NextResponse.json({ message: error }, { status: 500 });

@@ -4,7 +4,7 @@ import { Button } from './button';
 interface Newsletter {
   _id: string;
   title: string;
-  createdAt?: string; 
+  createdAt?: string;
   to?: string;
   content?: string;
   typeofPublish?: string;
@@ -45,7 +45,7 @@ async function NewsLetterSidebar() {
           year: 'numeric',
         });
       } catch (error) {
-        console.log(error)
+        console.log(error);
         return dateString; // Return original string if parsing fails
       }
     };

@@ -206,8 +206,7 @@ const SendBulkMail = () => {
         </div>
         <div className="space-y-2">
           <Label htmlFor="template">Email Template</Label>
-          <div className="text-sm text-gray-500 mb-1">
-          </div>
+          <div className="text-sm text-gray-500 mb-1"></div>
           <Textarea
             id="template"
             placeholder="Hello {{name}},&#10;&#10;Your message here..."

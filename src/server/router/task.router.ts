@@ -121,16 +121,13 @@ export const taskRouter = router({
       }
 
       // find the task and update
-      const res = await opts.ctx.db.Task.findByIdAndUpdate(
-        input.id,
-        {
-          title: input.title,
-          description: input.description,
-          dueDate: input.dueDate,
-          status: input.status,
-        }
-      );
-      console.log(res)
+      const res = await opts.ctx.db.Task.findByIdAndUpdate(input.id, {
+        title: input.title,
+        description: input.description,
+        dueDate: input.dueDate,
+        status: input.status,
+      });
+      console.log(res);
 
       return {
         code: 200,

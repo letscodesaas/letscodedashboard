@@ -270,12 +270,14 @@ const TaskManager: React.FC = () => {
       <div className="mb-8">
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Task Manager</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Task Manager
+            </h1>
             <p className="text-gray-600">
               Organize and track your tasks efficiently
             </p>
           </div>
-          
+
           {/* Add Task Button */}
           {auth.role === 'admin' && (
             <button
@@ -296,7 +298,7 @@ const TaskManager: React.FC = () => {
             {statusOptions.map((status) => {
               const count = getTaskCount(status);
               const isActive = activeTab === status;
-              
+
               return (
                 <button
                   key={status}
@@ -440,7 +442,8 @@ const TaskManager: React.FC = () => {
                 {activeTab}
               </div>
               <span className="text-gray-600">
-                {activeTasks.length} {activeTasks.length === 1 ? 'task' : 'tasks'}
+                {activeTasks.length}{' '}
+                {activeTasks.length === 1 ? 'task' : 'tasks'}
               </span>
             </div>
           </div>
@@ -530,12 +533,11 @@ const TaskManager: React.FC = () => {
                 No {activeTab.toLowerCase()} tasks
               </h3>
               <p className="text-gray-600 mb-4">
-                {activeTab === 'To Do' 
+                {activeTab === 'To Do'
                   ? 'Create your first task to get started'
-                  : `No tasks are currently ${activeTab.toLowerCase()}`
-                }
+                  : `No tasks are currently ${activeTab.toLowerCase()}`}
               </p>
-              
+
               {auth.role === 'admin' && activeTab === 'To Do' && (
                 <button
                   onClick={() => setShowForm(true)}
