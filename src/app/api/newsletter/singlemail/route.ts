@@ -41,6 +41,8 @@ export const POST = async (request: NextRequest) => {
       };
       await ses.sendEmail(params).promise();
       return () => {};
+    },{
+      concurrency:3
     });
     return NextResponse.json({ message: 'sended' }, { status: 200 });
   } catch (error) {

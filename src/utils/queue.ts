@@ -2,7 +2,7 @@ import { Job, Queue, Worker } from 'bullmq';
 import IORedis from 'ioredis';
 
 const connection = new IORedis(
-  'rediss://default:ATmxAAIjcDE1MWUwY2Q3YTdhYzA0ZTBmODUzY2QyNGUwMTU3NTI3YnAxMA@touched-corgi-14769.upstash.io:6379',
+ process.env.REDIS_DB!,
   { maxRetriesPerRequest: null }
 );
 
@@ -13,9 +13,7 @@ export const QueueInstance = (name: string) => {
 };
 
 export const WorkerInstance = (
-  name: string,
-  jobs: (job: Job) => Promise<() => void>
-) => {
+name: string, jobs: (job: Job) => Promise<() => void>, { }: { concurrency: number }) => {
   return new Worker(name, jobs, {
     connection,
   });

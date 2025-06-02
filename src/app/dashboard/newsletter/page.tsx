@@ -27,6 +27,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { toast } from 'sonner';
 
 const SendSingleMail = () => {
   const [email, setEmail] = useState('');
@@ -36,14 +37,25 @@ const SendSingleMail = () => {
   const [loading, setLoading] = useState(false);
   async function sendMail() {
     try {
-      const data = await axios.post('/api/newsletter/singlemail', {
+      await axios.post('/api/newsletter/singlemail', {
         destination: email,
         body: message,
         subject,
       });
-      console.log(data);
+      await axios.post('/api/mangepublishnewsletter/createnewsletters', {
+        to: email,
+        title: subject,
+        content: message,
+        typeofPublish: 'single',
+      });
+      toast('Send');
+      setEmail('');
+      setSubject('');
+      setMessage('');
+      setTemplate('');
     } catch (error) {
       console.log(error);
+      toast.error('Something went wrong');
     }
   }
 
@@ -145,6 +157,7 @@ const SendBulkMail = () => {
       const data = await axios.post('/api/contentgeneration', {
         topic: template,
       });
+
       setTemplate(data.data.message);
       setLoading(false);
     } catch (error) {
@@ -152,6 +165,24 @@ const SendBulkMail = () => {
     }
   }
 
+  async function sendBulkMails() {
+    try {
+      await axios.post('/api/newsletter/bulkmail', {
+        subject: subject,
+        template: template,
+      });
+      await axios.post('/api/mangepublishnewsletter/createnewsletters', {
+        to: 'Bulk',
+        title: subject,
+        content: template,
+        typeofPublish: 'Bulk',
+      });
+      toast('Send');
+    } catch (error) {
+      console.log(error);
+      toast.error('Something went wrong');
+    }
+  }
   return (
     <Card className="w-full">
       <CardHeader>
@@ -176,7 +207,6 @@ const SendBulkMail = () => {
         <div className="space-y-2">
           <Label htmlFor="template">Email Template</Label>
           <div className="text-sm text-gray-500 mb-1">
-            {/* Use {{name}} to personalize the email */}
           </div>
           <Textarea
             id="template"
@@ -213,7 +243,7 @@ const SendBulkMail = () => {
         </AlertDialog>
       </CardContent>
       <CardFooter>
-        <Button className="w-full gap-2">
+        <Button className="w-full gap-2" onClick={sendBulkMails}>
           <Send className="h-4 w-4" /> Send Bulk Emails
         </Button>
       </CardFooter>

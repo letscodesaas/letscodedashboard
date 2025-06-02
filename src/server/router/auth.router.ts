@@ -72,6 +72,7 @@ export const authRouter = router({
       const userInfo = {
         id: findUser._id,
         role: findUser.role,
+        email:findUser.email
       };
       const authToken = await jwt.sign(userInfo, 'secret');
       return {
