@@ -7,7 +7,6 @@ interface UserInfo {
   id?: string;
   email?: string;
   role?: string;
-
 }
 
 export const AuthContexts = createContext<UserInfo | null>(null);
@@ -31,7 +30,11 @@ function AuthContext({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const token = window.sessionStorage.getItem('token');
     const publicRoutes = ['/', '/register', '/forgot-password'];
-    const adminRoutes = ['/dashboard/team', '/dashboard/team/create', '/dashboard/team/manage'];
+    const adminRoutes = [
+      '/dashboard/team',
+      '/dashboard/team/create',
+      '/dashboard/team/manage',
+    ];
 
     const isPublicRoute = publicRoutes.includes(pathname);
     const isAdminRoute = adminRoutes.includes(pathname);
@@ -69,9 +72,7 @@ function AuthContext({ children }: { children: React.ReactNode }) {
   if (!isAuthChecked) return null; // Optional: loading spinner here
 
   return (
-    <AuthContexts.Provider value={userInfo}>
-      {children}
-    </AuthContexts.Provider>
+    <AuthContexts.Provider value={userInfo}>{children}</AuthContexts.Provider>
   );
 }
 
