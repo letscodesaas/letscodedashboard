@@ -7,6 +7,7 @@ interface UserInfo {
   id?: string;
   email?: string;
   role?: string;
+  policy?:[]
 }
 
 export const AuthContexts = createContext<UserInfo | null>(null);
@@ -30,14 +31,9 @@ function AuthContext({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const token = window.sessionStorage.getItem('token');
     const publicRoutes = ['/', '/register', '/forgot-password'];
-    const adminRoutes = [
-      '/dashboard/team',
-      '/dashboard/team/create',
-      '/dashboard/team/manage',
-    ];
+    
 
     const isPublicRoute = publicRoutes.includes(pathname);
-    const isAdminRoute = adminRoutes.includes(pathname);
 
     if (!token) {
       if (!isPublicRoute) {
@@ -51,10 +47,7 @@ function AuthContext({ children }: { children: React.ReactNode }) {
     if (decoded) {
       setUserInfo(decoded);
 
-      // Redirect non-admin users away from admin routes
-      if (isAdminRoute && decoded.role !== 'admin') {
-        router.push('/dashboard'); // or some unauthorized page
-      }
+     
 
       // Redirect logged-in users away from auth pages
       if (isPublicRoute && pathname !== '/') {

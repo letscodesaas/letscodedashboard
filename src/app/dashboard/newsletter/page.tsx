@@ -28,6 +28,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
+import {EmailsUploaderActions} from "@/actions/actions"
 
 const SendSingleMail = () => {
   const [email, setEmail] = useState('');
@@ -258,7 +259,38 @@ function Page() {
           <h1 className="text-3xl font-bold tracking-tight">Email Sender</h1>
           <p className="text-gray-500">Easily send single or bulk emails</p>
         </div>
-
+        <div className="flex flex-row items-end justify-end w-full">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button>Import Email List</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                 Add the Email&apos;s in excel form
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  <form
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      const formData = new FormData(e.target as HTMLFormElement);
+                      await EmailsUploaderActions(formData);
+                    }}
+                  >
+                    <Input
+                      type="file"
+                      name="emailfile"
+                    />
+                    <Button type='submit' className='mt-2'>Upload</Button>
+                  </form>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  </AlertDialogFooter>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
         <Tabs defaultValue="single" className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-6">
             <TabsTrigger value="single" className="flex items-center gap-2">

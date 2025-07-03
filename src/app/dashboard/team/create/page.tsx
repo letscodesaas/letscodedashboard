@@ -23,6 +23,12 @@ import {
 import { trpc } from '@/app/_trpc/client';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import {
+  jobsPolicy,
+  newslettersPolicy,
+  productsPolicy,
+  teamsPolicy,
+} from '@/utils/policy';
 
 export default function LoginForm() {
   const [userInfo, setUserInfo] = useState({
@@ -30,10 +36,12 @@ export default function LoginForm() {
     password: '',
     role: '',
     verified: false,
+    policy: [],
   });
 
   async function createUser() {
     try {
+      console.log(userInfo)
       const info = await trpc.auth.signup.mutate(userInfo);
       if (info?.statusCode == 201) {
         toast('User created');
@@ -43,6 +51,7 @@ export default function LoginForm() {
         password: '',
         role: '',
         verified: false,
+        policy: [],
       });
     } catch (error) {
       console.log(error);
@@ -111,6 +120,226 @@ export default function LoginForm() {
                   </SelectContent>
                 </Select>
               </div>
+              <div className="space-y-3">
+                <Label className="text-sm font-medium">Job Policy</Label>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      onChange={() => {
+                        setUserInfo({
+                          ...userInfo,
+                          policy: [...userInfo.policy, jobsPolicy('0')],
+                        });
+                      }}
+                      type="radio"
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                    />
+                    <Label className="text-sm font-normal cursor-pointer">
+                      No Job
+                    </Label>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      onChange={() =>
+                        setUserInfo({
+                          ...userInfo,
+                          policy: [...userInfo.policy, jobsPolicy('1')],
+                        })
+                      }
+                      type="radio"
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                    />
+                    <Label className="text-sm font-normal cursor-pointer">
+                      Manage Jobs
+                    </Label>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      onChange={() =>
+                        setUserInfo({
+                          ...userInfo,
+                          policy: [...userInfo.policy, jobsPolicy('2')],
+                        })
+                      }
+                      type="radio"
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                    />
+                    <Label className="text-sm font-normal cursor-pointer">
+                      Manage and Create Jobs
+                    </Label>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <Label className="text-sm font-medium">Product Policy</Label>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      onChange={() => {
+                        setUserInfo({
+                          ...userInfo,
+                          policy: [...userInfo.policy, productsPolicy('0')],
+                        });
+                      }}
+                      type="radio"
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                    />
+                    <Label className="text-sm font-normal cursor-pointer">
+                      No Product
+                    </Label>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      onChange={() =>
+                        setUserInfo({
+                          ...userInfo,
+                          policy: [...userInfo.policy, productsPolicy('1')],
+                        })
+                      }
+                      type="radio"
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                    />
+                    <Label className="text-sm font-normal cursor-pointer">
+                      Manage Products
+                    </Label>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      onChange={() =>
+                        setUserInfo({
+                          ...userInfo,
+                          policy: [...userInfo.policy, productsPolicy('2')],
+                        })
+                      }
+                      type="radio"
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                    />
+                    <Label className="text-sm font-normal cursor-pointer">
+                      Manage and Create Products
+                    </Label>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <Label className="text-sm font-medium">Team Policy</Label>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      onChange={() => {
+                        setUserInfo({
+                          ...userInfo,
+                          policy: [...userInfo.policy, teamsPolicy('0')],
+                        });
+                      }}
+                      type="radio"
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                    />
+                    <Label className="text-sm font-normal cursor-pointer">
+                      No Teams
+                    </Label>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      onChange={() =>
+                        setUserInfo({
+                          ...userInfo,
+                          policy: [...userInfo.policy, teamsPolicy('1')],
+                        })
+                      }
+                      type="radio"
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                    />
+                    <Label className="text-sm font-normal cursor-pointer">
+                      Manage Teams
+                    </Label>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      onChange={() =>
+                        setUserInfo({
+                          ...userInfo,
+                          policy: [...userInfo.policy, teamsPolicy('2')],
+                        })
+                      }
+                      type="radio"
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                    />
+                    <Label className="text-sm font-normal cursor-pointer">
+                      Manage and Create Teams
+                    </Label>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <Label className="text-sm font-medium">Newsletter Policy</Label>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      onChange={() => {
+                        setUserInfo({
+                          ...userInfo,
+                          policy: [...userInfo.policy, newslettersPolicy('0')],
+                        });
+                      }}
+                      type="radio"
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                    />
+                    <Label className="text-sm font-normal cursor-pointer">
+                      No Newsletters
+                    </Label>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      onChange={() =>
+                        setUserInfo({
+                          ...userInfo,
+                          policy: [...userInfo.policy, newslettersPolicy('1')],
+                        })
+                      }
+                      type="radio"
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                    />
+                    <Label className="text-sm font-normal cursor-pointer">
+                      Manage Newsletters
+                    </Label>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      onChange={() =>
+                        setUserInfo({
+                          ...userInfo,
+                          policy: [...userInfo.policy, newslettersPolicy('2')],
+                        })
+                      }
+                      type="radio"
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                    />
+                    <Label className="text-sm font-normal cursor-pointer">
+                      Manage and Create Newsletters
+                    </Label>
+                  </div>
+                </div>
+              </div>
+
               <Button onClick={createUser} className="w-full">
                 Create
               </Button>

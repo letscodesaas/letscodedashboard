@@ -10,6 +10,7 @@ import {
   Clock,
   AlertCircle,
   Pause,
+  View
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { trpc } from '@/app/_trpc/client';
@@ -44,7 +45,9 @@ const TaskManager: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const auth = useAuth() as AuthUser;
   const [showForm, setShowForm] = useState<boolean>(false);
+  const [viewForm, setViewForm] = useState<boolean>(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [viewingTask, setViewingTask] = useState<Task | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<TaskStatus>('To Do');
   const [formData, setFormData] = useState<FormData>({
@@ -91,14 +94,14 @@ const TaskManager: React.FC = () => {
       try {
         if (auth.role === 'admin') {
           const info = await trpc.task.getTasks.query();
-          //   @ts-ignore
+          // @ts-ignore
           setTasks(info.message || []);
         } else {
           const info = await trpc.task.getTask.mutate({
             assignTo: auth.email,
           });
-          //   @ts-ignore
-          setTasks(info.message || {});
+          // @ts-ignore
+          setTasks(info.message || []);
         }
       } catch (error) {
         console.error('Error fetching tasks:', error);
@@ -192,6 +195,11 @@ const TaskManager: React.FC = () => {
     setShowForm(true);
   };
 
+  const handleView = (task: Task) => {
+    setViewingTask(task);
+    setViewForm(true);
+  };
+
   const handleDelete = async (taskId: string) => {
     try {
       const res = await trpc.task.deleteTasks.mutate({
@@ -217,6 +225,11 @@ const TaskManager: React.FC = () => {
       dueDate: '',
       status: 'To Do',
     });
+  };
+
+  const handleCloseView = () => {
+    setViewForm(false);
+    setViewingTask(null);
   };
 
   const formatDate = (dateString: string): string => {
@@ -345,6 +358,7 @@ const TaskManager: React.FC = () => {
                 <input
                   type="text"
                   name="title"
+                  disabled={auth.role !== 'admin'}
                   value={formData.title}
                   onChange={handleInputChange}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -357,6 +371,7 @@ const TaskManager: React.FC = () => {
                   Description
                 </label>
                 <textarea
+                  disabled={auth.role !== 'admin'}
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
@@ -388,6 +403,7 @@ const TaskManager: React.FC = () => {
                   name="dueDate"
                   value={formData.dueDate}
                   onChange={handleInputChange}
+                  disabled={auth.role !== 'admin'}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -422,6 +438,84 @@ const TaskManager: React.FC = () => {
                   className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 rounded-lg transition-colors"
                 >
                   Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* View Task Modal */}
+      {viewForm && viewingTask && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <h2 className="text-xl font-semibold mb-4">Task Details</h2>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Title
+                </label>
+                <input
+                  type="text"
+                  value={viewingTask.title}
+                  readOnly
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Description
+                </label>
+                <textarea
+                  value={viewingTask.description}
+                  readOnly
+                  rows={3}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Assigned To
+                </label>
+                <input
+                  type="text"
+                  value={viewingTask.assignTo}
+                  readOnly
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Due Date
+                </label>
+                <input
+                  type="text"
+                  value={formatDate(viewingTask.dueDate)}
+                  readOnly
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Status
+                </label>
+                <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg ${statusColors[viewingTask.status]}`}>
+                  {statusIcons[viewingTask.status]}
+                  {viewingTask.status}
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  onClick={handleCloseView}
+                  className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 rounded-lg transition-colors"
+                >
+                  Close
                 </button>
               </div>
             </div>
@@ -464,6 +558,13 @@ const TaskManager: React.FC = () => {
                       {task.title}
                     </h3>
                     <div className="flex gap-1">
+                      <button
+                        onClick={() => handleView(task)}
+                        className="p-1 text-gray-500 hover:text-blue-600 transition-colors"
+                      >
+                        <View className="w-4 h-4" />
+                      </button>
+
                       <button
                         onClick={() => handleEdit(task)}
                         className="p-1 text-gray-500 hover:text-blue-600 transition-colors"

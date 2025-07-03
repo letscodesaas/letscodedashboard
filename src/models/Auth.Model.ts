@@ -17,6 +17,14 @@ const AuthSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  policy: [
+    {
+      title: String,
+      access: Boolean,
+      resources: [String],
+      link: [String],
+    },
+  ],
 });
 
 export const Auth = mongoose.models.Auth || mongoose.model('Auth', AuthSchema);

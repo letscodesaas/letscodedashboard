@@ -4,11 +4,20 @@ import { z } from 'zod';
 import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
+const policySchema = z.object({
+  title: z.string(),
+  access: z.boolean(),
+  resources: z.array(z.string()),
+  link: z.array(z.string()),
+});
+
+// Main user schema
 const userType = z.object({
-  email: z.string(),
+  email: z.string().email(), 
   password: z.string(),
   role: z.string(),
   verified: z.boolean(),
+  policy: z.array(policySchema), 
 });
 
 const userLoginType = z.object({
@@ -38,6 +47,7 @@ export const authRouter = router({
         email: input.email,
         password: hashedPassword,
         role: input.role,
+        policy:input.policy
       });
       return {
         statusCode: 201,
@@ -73,6 +83,7 @@ export const authRouter = router({
         id: findUser._id,
         role: findUser.role,
         email: findUser.email,
+        policy:findUser.policy
       };
       const authToken = await jwt.sign(userInfo, 'secret');
       return {
