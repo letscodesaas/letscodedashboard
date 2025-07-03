@@ -13,11 +13,11 @@ const policySchema = z.object({
 
 // Main user schema
 const userType = z.object({
-  email: z.string().email(), 
+  email: z.string().email(),
   password: z.string(),
   role: z.string(),
   verified: z.boolean(),
-  policy: z.array(policySchema), 
+  policy: z.array(policySchema),
 });
 
 const userLoginType = z.object({
@@ -47,7 +47,7 @@ export const authRouter = router({
         email: input.email,
         password: hashedPassword,
         role: input.role,
-        policy:input.policy
+        policy: input.policy,
       });
       return {
         statusCode: 201,
@@ -83,7 +83,7 @@ export const authRouter = router({
         id: findUser._id,
         role: findUser.role,
         email: findUser.email,
-        policy:findUser.policy
+        policy: findUser.policy,
       };
       const authToken = await jwt.sign(userInfo, 'secret');
       return {

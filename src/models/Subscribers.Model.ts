@@ -15,7 +15,5 @@ const SubscriberSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-
-
 export const Subscriber =
   mongoose.models.Subscriber || mongoose.model('Subscriber', SubscriberSchema);

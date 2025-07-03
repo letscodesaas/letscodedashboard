@@ -36,13 +36,13 @@ function Sidebar() {
               </a>
             </li>
             {/* @ts-ignore */}
-            <TeamsLink data={auth.policy[2]} role={auth.role} />
+            <TeamsLink data={auth?.policy[2]} role={auth?.role} />
             {/* @ts-ignore */}
-            <JobLink data={auth.policy[0]} role={auth.role}/>
+            <JobLink data={auth?.policy[0]} role={auth?.role} />
             {/* @ts-ignore */}
-            <ProductLink data={auth.policy[1]} role={auth.role}/>
+            <ProductLink data={auth?.policy[1]} role={auth?.role} />
             {/* @ts-ignore */}
-            <NewsletterLink data={auth.policy[3]} role={auth.role} />
+            <NewsletterLink data={auth?.policy[3]} role={auth?.role} />
 
             <li>
               <details className="group [&_summary::-webkit-details-marker]:hidden">

@@ -28,7 +28,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
-import {EmailsUploaderActions} from "@/actions/actions"
+import { EmailsUploaderActions } from '@/actions/actions';
 
 const SendSingleMail = () => {
   const [email, setEmail] = useState('');
@@ -267,21 +267,22 @@ function Page() {
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>
-                 Add the Email&apos;s in excel form
+                  Add the Email&apos;s in excel form
                 </AlertDialogTitle>
                 <AlertDialogDescription>
                   <form
                     onSubmit={async (e) => {
                       e.preventDefault();
-                      const formData = new FormData(e.target as HTMLFormElement);
+                      const formData = new FormData(
+                        e.target as HTMLFormElement
+                      );
                       await EmailsUploaderActions(formData);
                     }}
                   >
-                    <Input
-                      type="file"
-                      name="emailfile"
-                    />
-                    <Button type='submit' className='mt-2'>Upload</Button>
+                    <Input type="file" name="emailfile" />
+                    <Button type="submit" className="mt-2">
+                      Upload
+                    </Button>
                   </form>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>

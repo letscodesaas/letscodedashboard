@@ -7,7 +7,7 @@ interface UserInfo {
   id?: string;
   email?: string;
   role?: string;
-  policy?:[]
+  policy?: [];
 }
 
 export const AuthContexts = createContext<UserInfo | null>(null);
@@ -31,7 +31,6 @@ function AuthContext({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const token = window.sessionStorage.getItem('token');
     const publicRoutes = ['/', '/register', '/forgot-password'];
-    
 
     const isPublicRoute = publicRoutes.includes(pathname);
 
@@ -46,8 +45,6 @@ function AuthContext({ children }: { children: React.ReactNode }) {
     const decoded = decodeToken(token);
     if (decoded) {
       setUserInfo(decoded);
-
-     
 
       // Redirect logged-in users away from auth pages
       if (isPublicRoute && pathname !== '/') {

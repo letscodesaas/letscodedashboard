@@ -10,7 +10,7 @@ import {
   Clock,
   AlertCircle,
   Pause,
-  View
+  View,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { trpc } from '@/app/_trpc/client';
@@ -504,7 +504,9 @@ const TaskManager: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Status
                 </label>
-                <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg ${statusColors[viewingTask.status]}`}>
+                <div
+                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg ${statusColors[viewingTask.status]}`}
+                >
                   {statusIcons[viewingTask.status]}
                   {viewingTask.status}
                 </div>

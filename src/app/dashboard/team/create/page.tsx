@@ -41,7 +41,7 @@ export default function LoginForm() {
 
   async function createUser() {
     try {
-      console.log(userInfo)
+      console.log(userInfo);
       const info = await trpc.auth.signup.mutate(userInfo);
       if (info?.statusCode == 201) {
         toast('User created');

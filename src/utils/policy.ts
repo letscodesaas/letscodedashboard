@@ -4,7 +4,7 @@ export const teamsPolicy = (policy: string) => {
       title: 'teams',
       access: false,
       resources: [],
-      link:[]
+      link: [],
     };
   }
   if (policy == '1') {
@@ -32,7 +32,7 @@ export const jobsPolicy = (policy: string) => {
       title: 'jobs',
       access: false,
       resources: [],
-      link:[]
+      link: [],
     };
   }
   if (policy == '1') {
@@ -60,7 +60,7 @@ export const productsPolicy = (policy: string) => {
       title: 'products',
       access: false,
       resources: [],
-      link:[]
+      link: [],
     };
   }
   if (policy == '1') {
@@ -88,7 +88,7 @@ export const newslettersPolicy = (policy: string) => {
       title: 'newsletters',
       access: false,
       resources: [],
-      link:[]
+      link: [],
     };
   }
   if (policy == '1') {
