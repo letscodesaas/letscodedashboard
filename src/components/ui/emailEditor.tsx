@@ -10,17 +10,20 @@ function EmailEdit() {
     const unlayer = emailEditorRef.current?.editor;
     unlayer?.exportHtml((data) => {
       const { html } = data;
-      navigator.clipboard.writeText(html).then(() => {
-        alert('HTML copied to clipboard!');
-      }).catch((err) => {
-        console.error('Clipboard copy failed', err);
-      });
+      navigator.clipboard
+        .writeText(html)
+        .then(() => {
+          alert('HTML copied to clipboard!');
+        })
+        .catch((err) => {
+          console.error('Clipboard copy failed', err);
+        });
     });
   };
 
   const onReady: EmailEditorProps['onReady'] = (unlayer) => {
     const templateJson = {
-      body: { rows: [] } // optional default empty template
+      body: { rows: [] }, // optional default empty template
     };
     // @ts-ignore
     unlayer.loadDesign(templateJson);

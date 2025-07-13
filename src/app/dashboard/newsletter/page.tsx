@@ -323,7 +323,7 @@ function Page() {
         </div>
 
         {editor ? (
-          <div className='relative  w-full min-h-full'>
+          <div className="relative  w-full min-h-full">
             <EmailEdit />
           </div>
         ) : (
