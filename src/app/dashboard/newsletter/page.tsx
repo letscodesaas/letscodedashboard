@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
 import { EmailsUploaderActions } from '@/actions/actions';
+import EmailEdit from '@/components/ui/emailEditor';
 
 const SendSingleMail = () => {
   const [email, setEmail] = useState('');
@@ -151,6 +152,7 @@ const SendBulkMail = () => {
   const [subject, setSubject] = useState('');
   const [template, setTemplate] = useState('');
   const [loading, setLoading] = useState(false);
+  const [show, setShow] = useState(false);
 
   async function generateTemplate() {
     try {
@@ -206,15 +208,33 @@ const SendBulkMail = () => {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="template">Email Template</Label>
-          <div className="text-sm text-gray-500 mb-1"></div>
-          <Textarea
-            id="template"
-            placeholder="Hello {{name}},&#10;&#10;Your message here..."
-            className="min-h-32"
-            value={template}
-            onChange={(e) => setTemplate(e.target.value)}
-          />
+          <div className="flex flex-row items-center justify-between">
+            <Label htmlFor="template">Email Template</Label>
+            <div>
+              <button
+                className="bg-black rounded-md text-white p-1"
+                onClick={() => {
+                  if (template.length == 0) return;
+                  setShow(!show);
+                }}
+              >
+                {show ? 'Stop preview' : 'Show preview'}
+              </button>
+            </div>
+          </div>
+          {show ? (
+            <div>
+              <div dangerouslySetInnerHTML={{ __html: template }}></div>
+            </div>
+          ) : (
+            <Textarea
+              id="template"
+              placeholder="Hello {{name}},&#10;&#10;Your message here..."
+              className="min-h-32"
+              value={template}
+              onChange={(e) => setTemplate(e.target.value)}
+            />
+          )}
         </div>
         <AlertDialog>
           <AlertDialogTrigger asChild>
@@ -252,6 +272,7 @@ const SendBulkMail = () => {
 };
 
 function Page() {
+  const [editor, setEditor] = useState(false);
   return (
     <div className="container mx-auto py-10 px-4 max-w-3xl">
       <div className="flex flex-col items-center space-y-6">
@@ -259,7 +280,15 @@ function Page() {
           <h1 className="text-3xl font-bold tracking-tight">Email Sender</h1>
           <p className="text-gray-500">Easily send single or bulk emails</p>
         </div>
-        <div className="flex flex-row items-end justify-end w-full">
+
+        <div className="flex flex-row items-end justify-end w-full gap-10">
+          <Button
+            onClick={() => {
+              setEditor(!editor);
+            }}
+          >
+            {editor ? 'Close editor' : 'Open editor'}
+          </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button>Import Email List</Button>
@@ -292,22 +321,31 @@ function Page() {
             </AlertDialogContent>
           </AlertDialog>
         </div>
-        <Tabs defaultValue="single" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
-            <TabsTrigger value="single" className="flex items-center gap-2">
-              <Mail className="h-4 w-4" /> Single Email
-            </TabsTrigger>
-            <TabsTrigger value="bulk" className="flex items-center gap-2">
-              <Users className="h-4 w-4" /> Bulk Emails
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="single">
-            <SendSingleMail />
-          </TabsContent>
-          <TabsContent value="bulk">
-            <SendBulkMail />
-          </TabsContent>
-        </Tabs>
+
+        {editor ? (
+          <div className='relative  w-full min-h-full'>
+            <EmailEdit />
+          </div>
+        ) : (
+          <>
+            <Tabs defaultValue="single" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-6">
+                <TabsTrigger value="single" className="flex items-center gap-2">
+                  <Mail className="h-4 w-4" /> Single Email
+                </TabsTrigger>
+                <TabsTrigger value="bulk" className="flex items-center gap-2">
+                  <Users className="h-4 w-4" /> Bulk Emails
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="single">
+                <SendSingleMail />
+              </TabsContent>
+              <TabsContent value="bulk">
+                <SendBulkMail />
+              </TabsContent>
+            </Tabs>
+          </>
+        )}
       </div>
     </div>
   );

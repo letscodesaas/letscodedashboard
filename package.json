@@ -38,6 +38,7 @@
     "quill": "^2.0.3",
     "react": "^18",
     "react-dom": "^18",
+    "react-email-editor": "^1.7.11",
     "react-hot-toast": "^2.5.1",
     "react-icons": "^5.4.0",
     "react-quill": "^2.0.0",
