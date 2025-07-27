@@ -27,11 +27,8 @@ export function LoginForm({
       window.sessionStorage.setItem('token', info.message);
       toast.success('Login successful, redirecting...');
       router.push('/dashboard');
-    } catch (error) {
-      toast('Something went wrong. Please try again later.');
-      toast.error(
-        error instanceof Error ? error.message : 'An unexpected error occurred'
-      );
+    } catch {
+      toast.error('Login failed. Please check your email and password and try again.');
     } finally {
       setLoading(false);
     }
