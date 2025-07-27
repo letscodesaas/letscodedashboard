@@ -78,7 +78,7 @@ export function LoginForm({
             }
           />
         </div>
-        <Button onClick={userLogin} className="w-full" disabled={loading}>
+        <Button onClick={userLogin} className="w-full" disabled={loading || !userInfo.email || !userInfo.password}>
           {loading ? 'Logging in...' : 'Login'}
         </Button>
       </div>

@@ -39,6 +39,15 @@ function Sidebar() {
             <TeamsLink data={auth?.policy[2]} role={auth?.role} />
             {/* @ts-ignore */}
             <JobLink data={auth?.policy[0]} role={auth?.role} />
+            {/* // interviewExperiences link */}
+            <li>
+              <a
+                href="/dashboard/interview-experience"
+                className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+              >
+                Interview Experiences
+              </a>
+            </li>
             {/* @ts-ignore */}
             <ProductLink data={auth?.policy[1]} role={auth?.role} />
             {/* @ts-ignore */}
