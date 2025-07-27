@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { trpc } from '@/app/_trpc/client';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
@@ -20,9 +20,22 @@ export function LoginForm({
   });
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    const token = window.sessionStorage.getItem('token');
+    if (token) {
+      toast.success('You are already logged in, redirecting...');
+      router.push('/dashboard');
+    }
+  }, []);
+
+
   async function userLogin() {
     try {
       setLoading(true);
+      if (!userInfo.email || !userInfo.password) {
+        toast.error('Please fill in all fields.');
+        return;
+      }
       const info = await trpc.auth.signin.mutate(userInfo);
       window.sessionStorage.setItem('token', info.message);
       toast.success('Login successful, redirecting...');
@@ -81,7 +94,8 @@ export function LoginForm({
         <Button
           onClick={userLogin}
           className="w-full"
-          disabled={loading || !userInfo.email || !userInfo.password}
+          disabled={loading}
+          variant='outline'
         >
           {loading ? 'Logging in...' : 'Login'}
         </Button>
