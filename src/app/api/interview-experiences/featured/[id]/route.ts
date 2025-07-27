@@ -11,6 +11,7 @@ export const PATCH = async (
     return NextResponse.json({ message: 'ID is required' }, { status: 400 });
   }
   try {
+    // 
     const experience = await InterviewExperience.findById(id);
     if (!experience) {
       return NextResponse.json(
@@ -19,6 +20,18 @@ export const PATCH = async (
       );
     }
     const isFeatured = experience.isFeatured;
+    // if the experience is already featured, unfeature it, otherwise feature it if total count of featured experiences is less than 4
+    if (!isFeatured) {
+      const featuredCount = await InterviewExperience.countDocuments({
+        isFeatured: true,
+      });
+      if (featuredCount >= 4) {
+        return NextResponse.json(
+          { message: 'Cannot feature more than 4 experiences' },
+          { status: 400 }
+        );
+      }
+    }
     const updated = await InterviewExperience.findByIdAndUpdate(
       id,
       { isFeatured: !isFeatured },
