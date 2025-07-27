@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
 const page = () => {
   return (
@@ -6,7 +6,7 @@ const page = () => {
       <h1>Interview Experience</h1>
       <p>Share your interview experiences and tips.</p>
     </div>
-  )
-}
+  );
+};
 
-export default page
+export default page;
