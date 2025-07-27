@@ -28,7 +28,6 @@ export function LoginForm({
     }
   }, []);
 
-
   async function userLogin() {
     try {
       setLoading(true);
@@ -95,7 +94,7 @@ export function LoginForm({
           onClick={userLogin}
           className="w-full"
           disabled={loading}
-          variant='outline'
+          variant="outline"
         >
           {loading ? 'Logging in...' : 'Login'}
         </Button>
