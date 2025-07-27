@@ -28,7 +28,9 @@ export function LoginForm({
       toast.success('Login successful, redirecting...');
       router.push('/dashboard');
     } catch {
-      toast.error('Login failed. Please check your email and password and try again.');
+      toast.error(
+        'Login failed. Please check your email and password and try again.'
+      );
     } finally {
       setLoading(false);
     }
