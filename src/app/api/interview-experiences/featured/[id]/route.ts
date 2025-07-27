@@ -11,7 +11,7 @@ export const PATCH = async (
     return NextResponse.json({ message: 'ID is required' }, { status: 400 });
   }
   try {
-    // 
+    //
     const experience = await InterviewExperience.findById(id);
     if (!experience) {
       return NextResponse.json(
