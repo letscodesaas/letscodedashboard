@@ -5,7 +5,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { DB } from '@/utils/db';
 DB();
 // NO authentication currently, but should be added later
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   const { id } = params;
   if (!id) {
     return NextResponse.json({ message: 'ID is required' }, { status: 400 });
