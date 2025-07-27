@@ -18,17 +18,22 @@ export function LoginForm({
     email: '',
     password: '',
   });
+  const [loading, setLoading] = useState(false);
 
   async function userLogin() {
     try {
+      setLoading(true);
       const info = await trpc.auth.signin.mutate(userInfo);
       window.sessionStorage.setItem('token', info.message);
-      toast('Login Successful');
+      toast.success('Login successful, redirecting...');
       router.push('/dashboard');
     } catch (error) {
-      console.log(error);
-
       toast('Something went wrong. Please try again later.');
+      toast.error(
+        error instanceof Error ? error.message : 'An unexpected error occurred'
+      );
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -74,8 +79,8 @@ export function LoginForm({
             }
           />
         </div>
-        <Button onClick={userLogin} className="w-full">
-          Login
+        <Button onClick={userLogin} className="w-full" disabled={loading}>
+          {loading ? 'Logging in...' : 'Login'}
         </Button>
       </div>
     </div>
