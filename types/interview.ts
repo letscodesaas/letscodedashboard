@@ -1,4 +1,5 @@
 export interface Round {
+  roundDate?: string;
   roundTitle: string;
   roundDescription: string;
 }

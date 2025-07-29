@@ -1,26 +1,12 @@
 'use client';
 import React, { useEffect, useState, createContext } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import jwt from 'jsonwebtoken';
+import { decodeToken, UserInfo } from '@/lib/decodeToken';
 
-interface UserInfo {
-  id?: string;
-  email?: string;
-  role?: string;
-  policy?: [];
-}
 
 export const AuthContexts = createContext<UserInfo | null>(null);
 
-const decodeToken = (token: string): UserInfo | null => {
-  try {
-    const decoded = jwt.decode(token) as UserInfo;
-    return decoded;
-  } catch (err) {
-    console.error('Failed to decode token:', err);
-    return null;
-  }
-};
+
 
 function AuthContext({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -44,7 +30,7 @@ function AuthContext({ children }: { children: React.ReactNode }) {
 
     const decoded = decodeToken(token);
     if (decoded) {
-      setUserInfo(decoded);
+      setUserInfo({ ...decoded, token });
 
       // Redirect logged-in users away from auth pages
       if (isPublicRoute && pathname !== '/') {

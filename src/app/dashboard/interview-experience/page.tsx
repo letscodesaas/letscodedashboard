@@ -17,6 +17,7 @@ import {
 import { InterviewExperience } from '../../../../types/interview';
 import { toast, Toaster } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/hooks/useAuth';
 
 const AdminDashboard = () => {
   const [interviewExperiences, setInterviewExperiences] = useState<
@@ -33,6 +34,7 @@ const AdminDashboard = () => {
     string | null
   >(null);
   const errorRef = React.useRef<HTMLDivElement>(null);
+  const { token } = useAuth();
 
   // UI State
   const [activeTab, setActiveTab] = useState<
@@ -215,6 +217,10 @@ const AdminDashboard = () => {
     try {
       const response = await fetch(`/api/interview-experiences/${id}`, {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id, token }),
       });
       const data = await response.json();
       if (data.success) {
@@ -224,11 +230,11 @@ const AdminDashboard = () => {
         setShowDeleteConfirm(false);
         toast.success('Experience deleted successfully');
       } else {
-        toast.error(data.message);
-        setError(data.message);
+        throw new Error(data.error || data.message);
       }
-    } catch {
-      setError('Failed to delete experience');
+    } catch (error) {
+      toast.error(`Failed to delete experience: ${error}`);
+      setError(`Failed to delete experience: ${error}`);
     } finally {
       setLoading(false);
     }

@@ -2,6 +2,7 @@ import InterviewExperience from '@/models/InterviewExperience.Model';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { DB } from '@/utils/db';
+import { isAllowed } from '@/lib/isAllowed';
 DB();
 // PATCH /api/interview-experiences/reject/:id
 export async function PATCH(
@@ -20,7 +21,10 @@ export async function PATCH(
       { status: 400 }
     );
   }
+  const body = await req.json();
+  const token = body.token;
   try {
+    await isAllowed(token, 'admin');
     const experience = await InterviewExperience.findById(id);
     if (!experience) {
       console.error(`Experience with ID ${id} not found`);

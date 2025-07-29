@@ -3,6 +3,7 @@ import InterviewExperience from '@/models/InterviewExperience.Model';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { DB } from '@/utils/db';
+import { isAllowed } from '@/lib/isAllowed';
 DB();
 // NO authentication currently, but should be added later
 export async function PATCH(
@@ -13,7 +14,10 @@ export async function PATCH(
   if (!id) {
     return NextResponse.json({ message: 'ID is required' }, { status: 400 });
   }
+const body = await req.json();
+  const token = body.token;
   try {
+    await isAllowed(token, 'admin');
     const experience = await InterviewExperience.findById(id);
     if (!experience) {
       return NextResponse.json(
