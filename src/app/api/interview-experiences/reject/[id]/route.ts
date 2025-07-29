@@ -10,7 +10,8 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
-  const { feedback } = await req.json();
+  const body = await req.json();
+  const { feedback, token } = await body;
 
   if (!id) {
     return NextResponse.json({ message: 'ID is required' }, { status: 400 });
@@ -21,8 +22,7 @@ export async function PATCH(
       { status: 400 }
     );
   }
-  const body = await req.json();
-  const token = body.token;
+  
   try {
     await isAllowed(token, 'admin');
     const experience = await InterviewExperience.findById(id);

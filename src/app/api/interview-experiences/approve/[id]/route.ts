@@ -15,6 +15,9 @@ export async function PATCH(
     return NextResponse.json({ message: 'ID is required' }, { status: 400 });
   }
   const body = await req.json();
+  if(!body || Object.keys(body).length === 0) {
+    return NextResponse.json({ message: 'Request body is required' }, { status: 400 });
+  }
   const token = body.token;
   try {
     await isAllowed(token, 'admin');
