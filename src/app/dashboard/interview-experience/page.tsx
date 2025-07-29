@@ -227,8 +227,8 @@ const AdminDashboard = () => {
         throw new Error(data.error || data.message);
       }
     } catch (error) {
-      toast.error(`Failed to toggle featured status: ${error}`);
-      setError(`Failed to toggle featured status: ${error}`);
+      toast.error(`Failed to toggle featured status: ${error.message}`);
+      setError(`Failed to toggle featured status: ${error.message}`);
     } finally {
       setLoading(false);
     }
