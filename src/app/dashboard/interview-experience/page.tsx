@@ -223,11 +223,12 @@ const AdminDashboard = () => {
         setSuccessMessage('Featured status updated successfully');
         fetchInterviewExperiences();
       } else {
-        toast.error(data.message);
-        setError(data.message);
+        setError(data.error || data.message);
+        throw new Error(data.error || data.message);
       }
-    } catch {
-      setError('Failed to update featured status');
+    } catch (error) {
+      toast.error(`Failed to toggle featured status: ${error}`);
+      setError(`Failed to toggle featured status: ${error}`);
     } finally {
       setLoading(false);
     }
