@@ -45,11 +45,13 @@ export async function PATCH(
       );
     }
 
-    await sendEmail({
-      destinationMail: updated.userEmail,
-      subject: 'Your Interview Experience Approved',
-      htmlBody: InterviewExperienceAcceptedEmailTemplate(updated.name),
-    });
+    if (updated.userEmail) {
+      sendEmail({
+        destinationMail: updated.userEmail,
+        subject: 'Your Interview Experience Approved',
+        htmlBody: InterviewExperienceAcceptedEmailTemplate(updated.name),
+      });
+    }
 
     return NextResponse.json(
       {

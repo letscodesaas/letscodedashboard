@@ -49,11 +49,10 @@ export const PATCH = async (
       );
     }
     // if the experience is featured, send an email to the user
-    if (!isFeatured) {
-      await sendEmail({
+    if (!isFeatured && updated.userEmail) {
+      sendEmail({
         destinationMail: updated.userEmail,
-        subject:
-          "Congratulations! Your Interview Experience is Featured on Let's Code",
+        subject: "Congratulations! Your Interview Experience is Featured on Let's Code",
         htmlBody: InterviewExperienceFeaturedEmailTemplate(updated.name),
       });
     }

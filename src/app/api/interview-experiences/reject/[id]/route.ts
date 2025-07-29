@@ -49,15 +49,16 @@ export async function PATCH(
         { status: 500 }
       );
     }
-    // await sendRejectionEmail(updated.userEmail, feedback);
-    await sendEmail({
-      destinationMail: updated.userEmail,
-      subject: 'Your Interview Experience Rejected',
-      htmlBody: InterviewExperienceRejectedEmailTemplate(
-        updated.name,
-        feedback
-      ),
-    });
+    if (updated.userEmail) {
+      sendEmail({
+        destinationMail: updated.userEmail,
+        subject: 'Your Interview Experience Rejected',
+        htmlBody: InterviewExperienceRejectedEmailTemplate(
+          updated.name,
+          feedback
+        ),
+      });
+    }
 
     return NextResponse.json(
       {
