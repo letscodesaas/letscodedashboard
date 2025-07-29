@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { DB } from '@/utils/db';
 import { isAllowed } from '@/lib/isAllowed';
+import { sendEmail } from '@/utils/sendEmail';
+import { InterviewExperienceRejectedEmailTemplate } from '@/template/interview';
 DB();
 // PATCH /api/interview-experiences/reject/:id
 export async function PATCH(
@@ -48,6 +50,12 @@ export async function PATCH(
       );
     }
     // await sendRejectionEmail(updated.userEmail, feedback);
+    await sendEmail({
+      destinationMail: updated.userEmail,
+      subject: 'Your Interview Experience Rejected',
+      htmlBody: InterviewExperienceRejectedEmailTemplate(updated.name, feedback)
+    });
+
     return NextResponse.json(
       {
         success: true,

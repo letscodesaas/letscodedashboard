@@ -2,6 +2,8 @@ import InterviewExperience from '@/models/InterviewExperience.Model';
 import { NextRequest, NextResponse } from 'next/server';
 import { DB } from '@/utils/db';
 import { isAllowed } from '@/lib/isAllowed';
+import { sendEmail } from '@/utils/sendEmail';
+import { InterviewExperienceFeaturedEmailTemplate } from '@/template/interview';
 DB();
 export const PATCH = async (
   req: NextRequest,
@@ -46,7 +48,14 @@ export const PATCH = async (
         { status: 500 }
       );
     }
-    // sendApprovalEmail(updated.userEmail);
+    // if the experience is featured, send an email to the user
+    if (!isFeatured) {
+      await sendEmail({
+        destinationMail: updated.userEmail,
+        subject: "Congratulations! Your Interview Experience is Featured on Let's Code",
+        htmlBody: InterviewExperienceFeaturedEmailTemplate(updated.name)
+      });
+    }
     return NextResponse.json(
       {
         success: true,

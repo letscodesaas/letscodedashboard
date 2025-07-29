@@ -4,8 +4,9 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { DB } from '@/utils/db';
 import { isAllowed } from '@/lib/isAllowed';
+
 DB();
-// NO authentication currently, but should be added later
+
 export async function DELETE(
   req: NextRequest,
   { params }: { params: { id: string } }

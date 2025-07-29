@@ -4,6 +4,8 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { DB } from '@/utils/db';
 import { isAllowed } from '@/lib/isAllowed';
+import { sendEmail } from '@/utils/sendEmail';
+import { InterviewExperienceAcceptedEmailTemplate } from '@/template/interview';
 DB();
 // NO authentication currently, but should be added later
 export async function PATCH(
@@ -42,7 +44,13 @@ export async function PATCH(
         { status: 500 }
       );
     }
-    // sendApprovalEmail(updated.userEmail);
+
+    await sendEmail({
+      destinationMail: updated.userEmail,
+      subject: 'Your Interview Experience Approved',
+      htmlBody: InterviewExperienceAcceptedEmailTemplate(updated.name),
+    });
+    
     return NextResponse.json(
       {
         success: true,
