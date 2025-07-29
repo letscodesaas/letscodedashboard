@@ -16,9 +16,6 @@ export const sendEmail = async ({
   subject,
   htmlBody,
 }: SendEmailParams) => {
-  console.log(
-    `\n\nEmail: ${destinationMail}, Subject: ${subject}, HTML: ${htmlBody}`
-  );
   if (!destinationMail || !subject || !htmlBody) {
     throw new Error('Destination email, subject, and HTML body are required');
   }
