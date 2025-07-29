@@ -53,7 +53,10 @@ export async function PATCH(
     await sendEmail({
       destinationMail: updated.userEmail,
       subject: 'Your Interview Experience Rejected',
-      htmlBody: InterviewExperienceRejectedEmailTemplate(updated.name, feedback)
+      htmlBody: InterviewExperienceRejectedEmailTemplate(
+        updated.name,
+        feedback
+      ),
     });
 
     return NextResponse.json(

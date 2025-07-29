@@ -50,7 +50,7 @@ export async function PATCH(
       subject: 'Your Interview Experience Approved',
       htmlBody: InterviewExperienceAcceptedEmailTemplate(updated.name),
     });
-    
+
     return NextResponse.json(
       {
         success: true,
