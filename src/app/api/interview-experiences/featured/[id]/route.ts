@@ -49,14 +49,18 @@ export const PATCH = async (
       );
     }
     // if the experience is featured, send an email to the user
-    if (!isFeatured && updated.userEmail) {
+    if (!isFeatured && updated.email) {
       sendEmail({
-        destinationMail: updated.userEmail,
+        destinationMail: updated.email,
         subject:
           "Congratulations! Your Interview Experience is Featured on Let's Code",
         htmlBody: InterviewExperienceFeaturedEmailTemplate(updated.name),
       });
-    }
+      console.log(
+        `\n\nEmail sent to ${updated.email} for featured experience: ${updated.name}`
+      );
+    } else console.log('\n\nNo email sent as experience is not featured or email is not provided');
+
     return NextResponse.json(
       {
         success: true,

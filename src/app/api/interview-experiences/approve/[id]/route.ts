@@ -45,9 +45,9 @@ export async function PATCH(
       );
     }
 
-    if (updated.userEmail) {
+    if (updated.email) {
       sendEmail({
-        destinationMail: updated.userEmail,
+        destinationMail: updated.email,
         subject: 'Your Interview Experience Approved',
         htmlBody: InterviewExperienceAcceptedEmailTemplate(updated.name),
       });

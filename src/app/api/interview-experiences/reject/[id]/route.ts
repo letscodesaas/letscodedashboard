@@ -49,9 +49,9 @@ export async function PATCH(
         { status: 500 }
       );
     }
-    if (updated.userEmail) {
+    if (updated.email) {
       sendEmail({
-        destinationMail: updated.userEmail,
+        destinationMail: updated.email,
         subject: 'Your Interview Experience Rejected',
         htmlBody: InterviewExperienceRejectedEmailTemplate(
           updated.name,
