@@ -52,7 +52,8 @@ export const PATCH = async (
     if (!isFeatured && updated.userEmail) {
       sendEmail({
         destinationMail: updated.userEmail,
-        subject: "Congratulations! Your Interview Experience is Featured on Let's Code",
+        subject:
+          "Congratulations! Your Interview Experience is Featured on Let's Code",
         htmlBody: InterviewExperienceFeaturedEmailTemplate(updated.name),
       });
     }
