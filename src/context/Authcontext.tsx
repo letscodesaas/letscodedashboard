@@ -3,10 +3,7 @@ import React, { useEffect, useState, createContext } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { decodeToken, UserInfo } from '@/lib/decodeToken';
 
-
 export const AuthContexts = createContext<UserInfo | null>(null);
-
-
 
 function AuthContext({ children }: { children: React.ReactNode }) {
   const router = useRouter();
