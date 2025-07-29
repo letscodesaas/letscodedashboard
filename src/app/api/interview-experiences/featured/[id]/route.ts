@@ -59,7 +59,10 @@ export const PATCH = async (
       console.log(
         `\n\nEmail sent to ${updated.email} for featured experience: ${updated.name}`
       );
-    } else console.log('\n\nNo email sent as experience is not featured or email is not provided');
+    } else
+      console.log(
+        '\n\nNo email sent as experience is not featured or email is not provided'
+      );
 
     return NextResponse.json(
       {
