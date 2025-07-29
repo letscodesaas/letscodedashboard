@@ -171,7 +171,7 @@ const AdminDashboard = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ feedback, token })
+        body: JSON.stringify({ feedback, token }),
       });
       const data = await response.json();
       if (data.success) {
@@ -195,13 +195,16 @@ const AdminDashboard = () => {
   const toggleFeatured = async (id: string) => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/interview-experiences/featured/${id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ token }),
-      });
+      const response = await fetch(
+        `/api/interview-experiences/featured/${id}`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ token }),
+        }
+      );
       const data = await response.json();
       if (data.success) {
         setInterviewExperiences((prev) =>
@@ -480,10 +483,11 @@ const AdminDashboard = () => {
                           tab.key as 'all' | 'pending' | 'approved' | 'rejected'
                         )
                       }
-                      className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === tab.key
-                        ? 'bg-white text-blue-600 shadow-sm'
-                        : 'text-gray-600 hover:text-gray-900'
-                        }`}
+                      className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                        activeTab === tab.key
+                          ? 'bg-white text-blue-600 shadow-sm'
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
                     >
                       {tab.label} ({tab.count})
                     </button>
@@ -645,10 +649,11 @@ const AdminDashboard = () => {
                           {getStatus(exp) === 'approved' && (
                             <button
                               onClick={() => toggleFeatured(exp._id)}
-                              className={`p-2 rounded-lg transition-colors ${exp.isFeatured
-                                ? 'text-amber-600 hover:text-gray-600 hover:bg-gray-50'
-                                : 'text-gray-600 hover:text-amber-600 hover:bg-amber-50'
-                                }`}
+                              className={`p-2 rounded-lg transition-colors ${
+                                exp.isFeatured
+                                  ? 'text-amber-600 hover:text-gray-600 hover:bg-gray-50'
+                                  : 'text-gray-600 hover:text-amber-600 hover:bg-amber-50'
+                              }`}
                               title={exp.isFeatured ? 'Unfeature' : 'Feature'}
                             >
                               {exp.isFeatured ? (

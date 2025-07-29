@@ -22,7 +22,7 @@ export async function PATCH(
       { status: 400 }
     );
   }
-  
+
   try {
     await isAllowed(token, 'admin');
     const experience = await InterviewExperience.findById(id);
