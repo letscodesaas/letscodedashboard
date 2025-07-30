@@ -7,7 +7,14 @@ import { NextResponse } from 'next/server';
 DB();
 export async function GET() {
   try {
-    const pending = await InterviewExperience.find({ isApproved: false });
+    const pending = await InterviewExperience.find({
+      isApproved: false,
+      $or: [
+        { feedback: { $exists: false } },
+        { feedback: "" }
+      ]
+    });
+
     return NextResponse.json(
       {
         success: true,

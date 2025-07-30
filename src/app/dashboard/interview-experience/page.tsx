@@ -10,14 +10,14 @@ import {
   Building2,
   Clock,
   Download,
-  AlertTriangle,
   CheckCircle,
   StarOff,
 } from 'lucide-react';
 import { InterviewExperience } from '../../../../types/interview';
 import { toast, Toaster } from 'sonner';
-import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
+import { formatDate, getDifficultyColor, getStatus, getStatusColor } from './helper';
+import { DeleteConfirmationModal, DetailModal, RejectionModal } from './DetailModel';
 
 const AdminDashboard = () => {
   const [interviewExperiences, setInterviewExperiences] = useState<
@@ -152,11 +152,7 @@ const AdminDashboard = () => {
     }
   };
 
-  const getStatus = (experience: InterviewExperience) => {
-    if (experience.isApproved) return 'approved';
-    if (experience.feedback) return 'rejected';
-    return 'pending';
-  };
+
 
   const rejectExperience = async (id: string) => {
     setLoading(true);
@@ -285,42 +281,6 @@ const AdminDashboard = () => {
     }
 
     return experiences;
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'approved':
-        return 'bg-green-50 text-green-700 border-green-200';
-      case 'rejected':
-        return 'bg-red-50 text-red-700 border-red-200';
-      case 'pending':
-        return 'bg-yellow-50 text-yellow-700 border-yellow-200';
-      default:
-        return 'bg-gray-50 text-gray-700 border-gray-200';
-    }
-  };
-
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'Easy':
-        return 'bg-emerald-50 text-emerald-700 border-emerald-200';
-      case 'Medium':
-        return 'bg-amber-50 text-amber-700 border-amber-200';
-      case 'Hard':
-        return 'bg-red-50 text-red-700 border-red-200';
-      default:
-        return 'bg-gray-50 text-gray-700 border-gray-200';
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
   };
 
   const clearMessages = () => {
@@ -484,11 +444,10 @@ const AdminDashboard = () => {
                           tab.key as 'all' | 'pending' | 'approved' | 'rejected'
                         )
                       }
-                      className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                        activeTab === tab.key
-                          ? 'bg-white text-blue-600 shadow-sm'
-                          : 'text-gray-600 hover:text-gray-900'
-                      }`}
+                      className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === tab.key
+                        ? 'bg-white text-blue-600 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900'
+                        }`}
                     >
                       {tab.label} ({tab.count})
                     </button>
@@ -650,11 +609,10 @@ const AdminDashboard = () => {
                           {getStatus(exp) === 'approved' && (
                             <button
                               onClick={() => toggleFeatured(exp._id)}
-                              className={`p-2 rounded-lg transition-colors ${
-                                exp.isFeatured
-                                  ? 'text-amber-600 hover:text-gray-600 hover:bg-gray-50'
-                                  : 'text-gray-600 hover:text-amber-600 hover:bg-amber-50'
-                              }`}
+                              className={`p-2 rounded-lg transition-colors ${exp.isFeatured
+                                ? 'text-amber-600 hover:text-gray-600 hover:bg-gray-50'
+                                : 'text-gray-600 hover:text-amber-600 hover:bg-amber-50'
+                                }`}
                               title={exp.isFeatured ? 'Unfeature' : 'Feature'}
                             >
                               {exp.isFeatured ? (
@@ -688,317 +646,37 @@ const AdminDashboard = () => {
 
       {/* Detail Modal */}
       {showDetailModal && selectedExperience && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900">
-                    {selectedExperience.company} - {selectedExperience.role}
-                  </h3>
-                  <p className="text-gray-600 mt-1">
-                    Detailed interview experience
-                  </p>
-                </div>
-                <button
-                  onClick={() => setShowDetailModal(false)}
-                  className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
-
-            <div className="p-6 space-y-6">
-              {/* Basic Info */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-3">
-                    Basic Information
-                  </h4>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Company:</span>
-                      <span className="font-medium">
-                        {selectedExperience.company}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Role:</span>
-                      <span className="font-medium">
-                        {selectedExperience.role}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Job Type:</span>
-                      <span className="font-medium">
-                        {selectedExperience.jobType}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Location:</span>
-                      <span className="font-medium">
-                        {selectedExperience.location || 'Not specified'}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Difficulty:</span>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium border ${getDifficultyColor(selectedExperience.difficultyLevel)}`}
-                      >
-                        {selectedExperience.difficultyLevel}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Offer Status:</span>
-                      <span className="font-medium">
-                        {selectedExperience.offerStatus}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-3">
-                    Submission Details
-                  </h4>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Author:</span>
-                      <span className="font-medium">
-                        {selectedExperience.name}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Email:</span>
-                      <span className="font-medium">
-                        {selectedExperience.email}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Status:</span>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(getStatus(selectedExperience))}`}
-                      >
-                        {getStatus(selectedExperience)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Featured:</span>
-                      <span className="font-medium">
-                        {selectedExperience.isFeatured ? 'Yes' : 'No'}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Submitted:</span>
-                      <span className="font-medium">
-                        {formatDate(selectedExperience.createdAt)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Rounds:</span>
-                      <span className="font-medium">
-                        {selectedExperience.rounds?.length || 0}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Tags */}
-              {selectedExperience.tags &&
-                selectedExperience.tags.length > 0 && (
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-3">Tags</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedExperience.tags.map((tag, index) => (
-                        <span
-                          key={index}
-                          className="px-3 py-1 bg-blue-50 text-blue-700 text-sm rounded-full border border-blue-200"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-              {/* Experience Content */}
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-3">
-                  Detailed Experience
-                </h4>
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <p className="text-gray-700 whitespace-pre-wrap">
-                    {selectedExperience.detailedExperience}
-                  </p>
-                </div>
-              </div>
-
-              {/* Rejection Feedback */}
-              {getStatus(selectedExperience) === 'rejected' &&
-                selectedExperience.feedback && (
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-3">
-                      Rejection Feedback
-                    </h4>
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                      <p className="text-red-700">
-                        {selectedExperience.feedback}
-                      </p>
-                    </div>
-                  </div>
-                )}
-              {/* Actions */}
-              <div className="flex gap-2">
-                <Button
-                  onClick={() => {
-                    setSelectedExperienceId(selectedExperience._id);
-                    approveExperience(selectedExperience._id);
-                    setShowDetailModal(false);
-                  }}
-                  variant="outline"
-                  disabled={loading || selectedExperience.isApproved}
-                  color="green"
-                  className="flex-1"
-                >
-                  Approve
-                </Button>
-                <Button
-                  onClick={() => {
-                    setSelectedExperienceId(selectedExperience._id);
-                    setShowRejectModal(true);
-                  }}
-                  variant="outline"
-                  color="red"
-                  className="flex-1"
-                  disabled={
-                    loading || getStatus(selectedExperience) !== 'rejected'
-                  }
-                >
-                  Reject
-                </Button>
-                <Button
-                  onClick={() => {
-                    setSelectedExperienceId(selectedExperience._id);
-                    setShowDeleteConfirm(true);
-                  }}
-                  variant="destructive"
-                  color="red"
-                >
-                  Delete
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <DetailModal
+          selectedExperience={selectedExperience}
+          setShowDetailModal={setShowDetailModal}
+          setSelectedExperienceId={setSelectedExperienceId}
+          approveExperience={approveExperience}
+          loading={loading}
+          setShowDeleteConfirm={setShowDeleteConfirm}
+          setShowRejectModal={setShowRejectModal}
+        />
       )}
 
       {/* Reject Modal */}
       {showRejectModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl max-w-md w-full">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                  <AlertTriangle className="w-5 h-5 text-red-600" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Reject Experience
-                  </h3>
-                  <p className="text-gray-600">
-                    Provide feedback for rejection
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-6">
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Rejection Feedback *
-                </label>
-                <textarea
-                  value={feedback}
-                  onChange={(e) => setFeedback(e.target.value)}
-                  rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                  placeholder="Please provide specific feedback about why this experience is being rejected..."
-                />
-              </div>
-
-              <div className="flex gap-3">
-                <button
-                  onClick={() => {
-                    setShowRejectModal(false);
-                    setFeedback('');
-                  }}
-                  className="flex-1 px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() =>
-                    selectedExperienceId &&
-                    rejectExperience(selectedExperienceId)
-                  }
-                  disabled={!feedback.trim() || loading}
-                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {loading ? 'Rejecting...' : 'Reject'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <RejectionModal
+          selectedExperienceId={selectedExperienceId}
+          setShowRejectModal={setShowRejectModal}
+          rejectExperience={rejectExperience}
+          loading={loading}
+          feedback={feedback}
+          setFeedback={setFeedback}
+        />
       )}
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl max-w-md w-full">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                  <Trash2 className="w-5 h-5 text-red-600" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Delete Experience
-                  </h3>
-                  <p className="text-gray-600">This action cannot be undone</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-6">
-              <p className="text-gray-700 mb-6">
-                Are you sure you want to permanently delete this interview
-                experience? This action cannot be undone.
-              </p>
-
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setShowDeleteConfirm(false)}
-                  className="flex-1 px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() =>
-                    selectedExperienceId &&
-                    deleteExperience(selectedExperienceId)
-                  }
-                  disabled={loading}
-                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {loading ? 'Deleting...' : 'Delete'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <DeleteConfirmationModal
+          selectedExperienceId={selectedExperienceId}
+          setShowDeleteConfirm={setShowDeleteConfirm}
+          deleteExperience={deleteExperience}
+          loading={loading}
+        />
       )}
     </div>
   );
