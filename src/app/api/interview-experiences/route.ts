@@ -6,7 +6,7 @@ import { NextResponse } from 'next/server';
 DB();
 export const GET = async () => {
   try {
-    const experiences = await InterviewExperience.find();
+    const experiences = await InterviewExperience.find().sort({ createdAt: -1 });
     return NextResponse.json(
       {
         success: true,
