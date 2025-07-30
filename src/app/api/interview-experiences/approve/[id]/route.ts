@@ -44,12 +44,14 @@ export async function PATCH(
         { status: 500 }
       );
     }
+    const slug = `${updated.company.toLowerCase().replace(/\s+/g, '-')}-${updated.role.toLowerCase().replace(/\s+/g, '-')}/${updated._id}`;
+    const publishedUrl = `https://lets-code.co.in/interview-experience/${slug}`;
 
     if (updated.email) {
       sendEmail({
         destinationMail: updated.email,
         subject: 'Your Interview Experience Approved',
-        htmlBody: InterviewExperienceAcceptedEmailTemplate(updated.name),
+        htmlBody: InterviewExperienceAcceptedEmailTemplate(updated.name, publishedUrl, updated.company, updated.role),
       });
     }
 

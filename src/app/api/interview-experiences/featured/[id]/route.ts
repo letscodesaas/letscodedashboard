@@ -48,13 +48,17 @@ export const PATCH = async (
         { status: 500 }
       );
     }
+
+    const slug = `${updated.company.toLowerCase().replace(/\s+/g, '-')}-${updated.role.toLowerCase().replace(/\s+/g, '-')}/${updated._id}`;
+    const publishedUrl = `https://lets-code.co.in/interview-experience/${slug}`;
+
     // if the experience is featured, send an email to the user
     if (!isFeatured && updated.email) {
       sendEmail({
         destinationMail: updated.email,
         subject:
           "Congratulations! Your Interview Experience is Featured on Let's Code",
-        htmlBody: InterviewExperienceFeaturedEmailTemplate(updated.name),
+        htmlBody: InterviewExperienceFeaturedEmailTemplate(updated.name, updated.company, updated.role, publishedUrl),
       });
       console.log(
         `\n\nEmail sent to ${updated.email} for featured experience: ${updated.name}`

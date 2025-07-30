@@ -55,7 +55,10 @@ export async function PATCH(
         subject: 'Your Interview Experience Rejected',
         htmlBody: InterviewExperienceRejectedEmailTemplate(
           updated.name,
-          feedback
+          feedback,
+          updated.company,
+          updated.role,
+          "https://lets-code.co.in/interview-experience/new"
         ),
       });
     }
