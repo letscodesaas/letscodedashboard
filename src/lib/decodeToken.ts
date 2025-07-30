@@ -1,10 +1,16 @@
 import jwt from 'jsonwebtoken';
 
+export type ResourcePermission = 'Manage' | 'Create';
+
+export interface Policy {
+  access: boolean;
+  resources?: ResourcePermission[];
+}
 export interface UserInfo {
   id?: string;
   email?: string;
   role?: string;
-  policy?: [];
+  policy?: Policy[];
   token?: string;
 }
 
