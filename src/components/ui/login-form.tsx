@@ -74,6 +74,19 @@ export function LoginForm({
             type="email"
             placeholder="m@example.com"
             required
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                // move to password
+                const passwordInput = document.getElementById('password');
+                if (passwordInput) {
+                  (passwordInput as HTMLInputElement).focus();
+                }
+              }
+            }}
+            className="text-sm"
+            autoComplete="email"
+            autoFocus
+            aria-label="Email"
           />
         </div>
         <div className="grid gap-2">
@@ -95,6 +108,15 @@ export function LoginForm({
               onChange={(e) =>
                 setUserInfo({ ...userInfo, password: e.target.value })
               }
+              placeholder="••••••••"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  userLogin();
+                }
+              }}
+              className="pr-10"
+              autoComplete="current-password"
+              aria-label="Password"
             />
             <button
               type="button"
