@@ -1,11 +1,12 @@
 // src/template/interview.ts
-const LetsCodeLogo = 'https://d3l4smlx4vuygm.cloudfront.net/IMG_20250123_135429_806.webp';
+const LetsCodeLogo =
+  'https://d3l4smlx4vuygm.cloudfront.net/IMG_20250123_135429_806.webp';
 const LetsCodeWebsite = 'https://lets-code.co.in';
 const LetsCodeEmail = 'letscode@lets-code.co.in';
 
 // Simplified email styles - minimal and professional
 const emailStyles = {
-    container: `
+  container: `
     max-width: 600px;
     margin: 0 auto;
     font-family: Arial, sans-serif;
@@ -13,38 +14,38 @@ const emailStyles = {
     color: #333333;
     background-color: #ffffff;
   `,
-    header: `
+  header: `
     background-color: #2563eb;
     padding: 20px;
     text-align: center;
   `,
-    logo: `
+  logo: `
     max-width: 100px;
     height: auto;
     margin-bottom: 10px;
   `,
-    headerTitle: `
+  headerTitle: `
     color: #ffffff;
     font-size: 20px;
     font-weight: bold;
     margin: 0;
   `,
-    content: `
+  content: `
     background-color: #ffffff;
     padding: 20px;
   `,
-    greeting: `
+  greeting: `
     font-size: 18px;
     font-weight: 600;
     color: #1f2937;
     margin-bottom: 15px;
   `,
-    paragraph: `
+  paragraph: `
     margin-bottom: 15px;
     color: #4b5563;
     font-size: 14px;
   `,
-    button: `
+  button: `
     display: inline-block;
     background-color: #2563eb;
     color: #ffffff;
@@ -54,28 +55,28 @@ const emailStyles = {
     font-weight: 600;
     margin: 15px 0;
   `,
-    successBox: `
+  successBox: `
     background-color: #f0fdf4;
     border: 1px solid #22c55e;
     border-radius: 4px;
     padding: 15px;
     margin: 15px 0;
   `,
-    errorBox: `
+  errorBox: `
     background-color: #fef2f2;
     border: 1px solid #ef4444;
     border-radius: 4px;
     padding: 15px;
     margin: 15px 0;
   `,
-    infoBox: `
+  infoBox: `
     background-color: #f8fafc;
     border: 1px solid #e2e8f0;
     border-radius: 4px;
     padding: 15px;
     margin: 15px 0;
   `,
-    footer: `
+  footer: `
     background-color: #f8fafc;
     color: #6b7280;
     padding: 20px;
@@ -131,12 +132,12 @@ const getEmailFooter = () => `
 
 // Interview Experience Accepted Email Template
 export const InterviewExperienceAcceptedEmailTemplate = (
-    name: string,
-    publishedUrl: string,
-    company: string,
-    role: string
+  name: string,
+  publishedUrl: string,
+  company: string,
+  role: string
 ) => {
-    const content = `
+  const content = `
     <div style="${emailStyles.greeting}">Hi ${name},</div>
     
     <div style="${emailStyles.successBox}">
@@ -166,18 +167,18 @@ export const InterviewExperienceAcceptedEmailTemplate = (
     </p>
   `;
 
-    return createEmailWrapper(content, 'Experience Published');
+  return createEmailWrapper(content, 'Experience Published');
 };
 
 // Interview Experience Rejected Email Template
 export const InterviewExperienceRejectedEmailTemplate = (
-    name: string,
-    reason: string,
-    company: string,
-    role: string,
-    resubmitUrl?: string
+  name: string,
+  reason: string,
+  company: string,
+  role: string,
+  resubmitUrl?: string
 ) => {
-    const content = `
+  const content = `
     <div style="${emailStyles.greeting}">Hi ${name},</div>
     
     <div style="${emailStyles.errorBox}">
@@ -204,11 +205,15 @@ export const InterviewExperienceRejectedEmailTemplate = (
         • Proofread for clarity and grammar
     </div>
     
-    ${resubmitUrl ? `
+    ${
+      resubmitUrl
+        ? `
     <div style="text-align: center;">
         <a href="${resubmitUrl}" style="${emailStyles.button}">Edit & Resubmit</a>
     </div>
-    ` : ''}
+    `
+        : ''
+    }
     
     <p style="${emailStyles.paragraph}">
         We encourage you to revise and resubmit your experience. If you have questions, 
@@ -221,18 +226,18 @@ export const InterviewExperienceRejectedEmailTemplate = (
     </p>
   `;
 
-    return createEmailWrapper(content, 'Experience Revision Required');
+  return createEmailWrapper(content, 'Experience Revision Required');
 };
 
 // Interview Experience Featured Email Template
 export const InterviewExperienceFeaturedEmailTemplate = (
-    name: string,
-    company: string,
-    role: string,
-    featuredUrl: string,
-    duration = 'the next few days'
+  name: string,
+  company: string,
+  role: string,
+  featuredUrl: string,
+  duration = 'the next few days'
 ) => {
-    const content = `
+  const content = `
     <div style="${emailStyles.greeting}">Hi ${name},</div>
     
     <div style="background-color: #fef3c7; border: 1px solid #f59e0b; border-radius: 4px; padding: 15px; margin: 15px 0; text-align: center;">
@@ -268,15 +273,15 @@ export const InterviewExperienceFeaturedEmailTemplate = (
     </p>
   `;
 
-    return createEmailWrapper(content, 'Experience Featured');
+  return createEmailWrapper(content, 'Experience Featured');
 };
 
 // Welcome Email Template
 export const WelcomeEmailTemplate = (
-    name: string,
-    verificationUrl?: string
+  name: string,
+  verificationUrl?: string
 ) => {
-    const content = `
+  const content = `
     <div style="${emailStyles.greeting}">Welcome to LetsCode, ${name}!</div>
     
     <p style="${emailStyles.paragraph}">
@@ -284,11 +289,15 @@ export const WelcomeEmailTemplate = (
         We're excited to have you on board!
     </p>
     
-    ${verificationUrl ? `
+    ${
+      verificationUrl
+        ? `
     <div style="text-align: center;">
         <a href="${verificationUrl}" style="${emailStyles.button}">Verify Email Address</a>
     </div>
-    ` : ''}
+    `
+        : ''
+    }
     
     <div style="${emailStyles.infoBox}">
         <strong>What you can do on LetsCode:</strong><br>
@@ -309,17 +318,17 @@ export const WelcomeEmailTemplate = (
     </p>
   `;
 
-    return createEmailWrapper(content, 'Welcome to LetsCode');
+  return createEmailWrapper(content, 'Welcome to LetsCode');
 };
 
 // Experience Submission Confirmation Template
 export const ExperienceSubmissionConfirmationTemplate = (
-    name: string,
-    company: string,
-    role: string,
-    estimatedReviewTime = '2-3 business days'
+  name: string,
+  company: string,
+  role: string,
+  estimatedReviewTime = '2-3 business days'
 ) => {
-    const content = `
+  const content = `
     <div style="${emailStyles.greeting}">Hi ${name},</div>
     
     <div style="${emailStyles.successBox}">
@@ -350,14 +359,14 @@ export const ExperienceSubmissionConfirmationTemplate = (
     </p>
   `;
 
-    return createEmailWrapper(content, 'Submission Received');
+  return createEmailWrapper(content, 'Submission Received');
 };
 
 export {
-    LetsCodeLogo,
-    LetsCodeWebsite,
-    LetsCodeEmail,
-    emailStyles,
-    createEmailWrapper,
-    getEmailFooter,
+  LetsCodeLogo,
+  LetsCodeWebsite,
+  LetsCodeEmail,
+  emailStyles,
+  createEmailWrapper,
+  getEmailFooter,
 };
