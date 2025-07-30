@@ -17,7 +17,6 @@ export type DifficultyLevel = 'Easy' | 'Medium' | 'Hard';
 
 export type OfferStatus = 'Selected' | 'Rejected' | 'Waiting for Results';
 
-
 export interface InterviewExperience {
   _id: string;
   name: string;
