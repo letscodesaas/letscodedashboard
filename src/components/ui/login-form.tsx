@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { trpc } from '@/app/_trpc/client';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { Eye, Shield, EyeOff, Loader2 } from 'lucide-react';
 
 export function LoginForm({
   className,
@@ -19,6 +20,11 @@ export function LoginForm({
     password: '',
   });
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   useEffect(() => {
     const token = window.sessionStorage.getItem('token');
@@ -80,23 +86,41 @@ export function LoginForm({
               Forgot your password?
             </a>
           </div>
-          <Input
-            id="password"
-            type="password"
-            required
-            value={userInfo.password}
-            onChange={(e) =>
-              setUserInfo({ ...userInfo, password: e.target.value })
-            }
-          />
+          <div className="relative">
+            <Input
+              id="password"
+              type={showPassword ? 'text' : 'password'}
+              required
+              value={userInfo.password}
+              onChange={(e) =>
+                setUserInfo({ ...userInfo, password: e.target.value })
+              }
+            />
+            <button
+              type="button"
+              onClick={() => togglePasswordVisibility()}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
         </div>
         <Button
           onClick={userLogin}
-          className="w-full"
+          className="w-full h-12 bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-slate-200 dark:text-slate-900 text-white font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
           disabled={loading}
-          variant="outline"
         >
-          {loading ? 'Logging in...' : 'Login'}
+          {loading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Authenticating...
+            </>
+          ) : (
+            <>
+              <Shield className="mr-2 h-4 w-4" />
+              Access Dashboard
+            </>
+          )}
         </Button>
       </div>
     </div>
