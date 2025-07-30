@@ -205,9 +205,10 @@ const InterviewExperience = () => {
       if (data.success) {
         toast.success('Experience rejected successfully');
         setSuccessMessage('Experience rejected successfully');
-        await fetchData();
         setShowRejectModal(false);
         setFeedback('');
+        setSelectedExperienceId(null);
+        await fetchData();
       } else {
         throw new Error(data.message);
       }
