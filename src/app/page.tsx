@@ -1,8 +1,9 @@
 /* eslint-disable react/no-unescaped-entities */
-import { LoginForm } from "@/components/ui/login-form"
-import { Shield, Users, BarChart3, Settings } from "lucide-react"
+import { LoginForm } from '@/components/ui/login-form';
+import { Shield, Users, BarChart3, Settings } from 'lucide-react';
 
-const LetsCodeLogo = "https://d3l4smlx4vuygm.cloudfront.net/IMG_20250123_135429_806.webp"
+const LetsCodeLogo =
+  'https://d3l4smlx4vuygm.cloudfront.net/IMG_20250123_135429_806.webp';
 
 export default function AdminLoginPage() {
   return (
@@ -13,14 +14,18 @@ export default function AdminLoginPage() {
         <div className="flex items-center gap-3 md:justify-start justify-center">
           <div className="relative h-12 w-12 overflow-hidden rounded-xl shadow-lg ring-1 ring-slate-200 dark:ring-slate-800">
             <img
-              src={LetsCodeLogo || "/placeholder.svg"}
+              src={LetsCodeLogo || '/placeholder.svg'}
               alt="Let's Code Logo"
               className="h-full w-full object-cover"
             />
           </div>
           <div className="flex flex-col">
-            <span className="text-xl font-bold text-slate-900 dark:text-slate-100">Let's Code</span>
-            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">ADMIN PORTAL</span>
+            <span className="text-xl font-bold text-slate-900 dark:text-slate-100">
+              Let's Code
+            </span>
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+              ADMIN PORTAL
+            </span>
           </div>
         </div>
 
@@ -35,7 +40,9 @@ export default function AdminLoginPage() {
 
         {/* Footer */}
         <div className="text-center space-y-2">
-          <p className="text-xs text-slate-500 dark:text-slate-400">© 2024 Let's Code. Admin Portal v2.1.0</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            © 2024 Let's Code. Admin Portal v2.1.0
+          </p>
           <p className="text-xs text-slate-400 dark:text-slate-500">
             For technical support, contact IT at support@letscode.com
           </p>
@@ -62,9 +69,12 @@ export default function AdminLoginPage() {
                 <Shield className="h-4 w-4" />
                 <span className="text-sm font-medium">Secure Admin Access</span>
               </div>
-              <h2 className="text-4xl font-bold leading-tight">Manage your platform with confidence</h2>
+              <h2 className="text-4xl font-bold leading-tight">
+                Manage your platform with confidence
+              </h2>
               <p className="text-lg text-slate-300 max-w-md leading-relaxed">
-                Access comprehensive analytics, user management, and system controls from your secure admin dashboard.
+                Access comprehensive analytics, user management, and system
+                controls from your secure admin dashboard.
               </p>
             </div>
 
@@ -76,7 +86,9 @@ export default function AdminLoginPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-sm">User Management</h3>
-                  <p className="text-xs text-slate-400">Manage user accounts and permissions</p>
+                  <p className="text-xs text-slate-400">
+                    Manage user accounts and permissions
+                  </p>
                 </div>
               </div>
 
@@ -86,7 +98,9 @@ export default function AdminLoginPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-sm">Analytics Dashboard</h3>
-                  <p className="text-xs text-slate-400">Monitor platform performance</p>
+                  <p className="text-xs text-slate-400">
+                    Monitor platform performance
+                  </p>
                 </div>
               </div>
 
@@ -95,8 +109,12 @@ export default function AdminLoginPage() {
                   <Settings className="h-5 w-5 text-purple-400" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-sm">System Configuration</h3>
-                  <p className="text-xs text-slate-400">Configure platform settings</p>
+                  <h3 className="font-semibold text-sm">
+                    System Configuration
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Configure platform settings
+                  </p>
                 </div>
               </div>
             </div>
@@ -106,10 +124,12 @@ export default function AdminLoginPage() {
               <div className="flex items-start gap-3">
                 <Shield className="h-5 w-5 text-amber-400 mt-0.5" />
                 <div>
-                  <h3 className="font-semibold text-sm text-amber-400">Security Notice</h3>
+                  <h3 className="font-semibold text-sm text-amber-400">
+                    Security Notice
+                  </h3>
                   <p className="text-xs text-amber-200/80 mt-1">
-                    All admin activities are monitored and logged for security purposes. Ensure you're accessing from a
-                    secure network.
+                    All admin activities are monitored and logged for security
+                    purposes. Ensure you're accessing from a secure network.
                   </p>
                 </div>
               </div>
@@ -123,5 +143,5 @@ export default function AdminLoginPage() {
         <div className="absolute top-1/2 right-10 h-16 w-16 rounded-full bg-green-500/10 blur-xl" />
       </div>
     </div>
-  )
+  );
 }
