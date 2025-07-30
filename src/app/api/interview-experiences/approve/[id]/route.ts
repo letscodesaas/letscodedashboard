@@ -51,7 +51,12 @@ export async function PATCH(
       sendEmail({
         destinationMail: updated.email,
         subject: 'Your Interview Experience Approved',
-        htmlBody: InterviewExperienceAcceptedEmailTemplate(updated.name, publishedUrl, updated.company, updated.role),
+        htmlBody: InterviewExperienceAcceptedEmailTemplate(
+          updated.name,
+          publishedUrl,
+          updated.company,
+          updated.role
+        ),
       });
     }
 

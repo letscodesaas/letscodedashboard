@@ -58,7 +58,7 @@ export async function PATCH(
           feedback,
           updated.company,
           updated.role,
-          "https://lets-code.co.in/interview-experience/new"
+          'https://lets-code.co.in/interview-experience/new'
         ),
       });
     }

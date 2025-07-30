@@ -1,8 +1,9 @@
 // src/template/interview.ts
 
-const LetsCodeLogo = "https://d3l4smlx4vuygm.cloudfront.net/IMG_20250123_135429_806.webp"
-const LetsCodeWebsite = "https://lets-code.co.in"
-const LetsCodeEmail = "letscode@lets-code.co.in"
+const LetsCodeLogo =
+  'https://d3l4smlx4vuygm.cloudfront.net/IMG_20250123_135429_806.webp';
+const LetsCodeWebsite = 'https://lets-code.co.in';
+const LetsCodeEmail = 'letscode@lets-code.co.in';
 
 // Base email styles for consistent design
 const emailStyles = {
@@ -90,7 +91,7 @@ const emailStyles = {
     margin: 20px 0;
     border-radius: 0 8px 8px 0;
   `,
-}
+};
 
 // Helper function to create email wrapper
 const createEmailWrapper = (content: string, title: string) => `
@@ -114,7 +115,7 @@ const createEmailWrapper = (content: string, title: string) => `
     </div>
 </body>
 </html>
-`
+`;
 
 // Email footer component
 const getEmailFooter = () => `
@@ -144,14 +145,14 @@ const getEmailFooter = () => `
         <a href="${LetsCodeWebsite}/terms" style="color: #9ca3af; text-decoration: none;">Terms of Service</a>
     </p>
 </div>
-`
+`;
 
 // Interview Experience Accepted Email Template
 export const InterviewExperienceAcceptedEmailTemplate = (
   name: string,
   publishedUrl: string,
   company: string,
-  role: string,
+  role: string
 ) => {
   const content = `
     <div style="${emailStyles.greeting}">🎉 Congratulations, ${name}!</div>
@@ -203,10 +204,10 @@ export const InterviewExperienceAcceptedEmailTemplate = (
             <strong style="color: #1f2937;">The LetsCode Team</strong>
         </p>
     </div>
-  `
+  `;
 
-  return createEmailWrapper(content, "Experience Published Successfully!")
-}
+  return createEmailWrapper(content, 'Experience Published Successfully!');
+};
 
 // Interview Experience Rejected Email Template
 export const InterviewExperienceRejectedEmailTemplate = (
@@ -214,7 +215,7 @@ export const InterviewExperienceRejectedEmailTemplate = (
   reason: string,
   company: string,
   role: string,
-  resubmitUrl?: string,
+  resubmitUrl?: string
 ) => {
   const content = `
     <div style="${emailStyles.greeting}">Hello ${name},</div>
@@ -257,16 +258,17 @@ export const InterviewExperienceRejectedEmailTemplate = (
         <p style="margin: 0 0 15px 0; color: #1e40af;">
             We encourage you to revise your experience based on the feedback above and resubmit it.
         </p>
-        ${resubmitUrl
-      ? `
+        ${
+          resubmitUrl
+            ? `
         <div style="text-align: center;">
             <a href="${resubmitUrl}" style="${emailStyles.button}">
                 ✏️ Edit & Resubmit Experience
             </a>
         </div>
         `
-      : ""
-    }
+            : ''
+        }
     </div>
     
     <p style="${emailStyles.paragraph}">
@@ -285,10 +287,10 @@ export const InterviewExperienceRejectedEmailTemplate = (
             <strong style="color: #1f2937;">The LetsCode Review Team</strong>
         </p>
     </div>
-  `
+  `;
 
-  return createEmailWrapper(content, "Experience Revision Required")
-}
+  return createEmailWrapper(content, 'Experience Revision Required');
+};
 
 // Interview Experience Featured Email Template
 export const InterviewExperienceFeaturedEmailTemplate = (
@@ -296,7 +298,7 @@ export const InterviewExperienceFeaturedEmailTemplate = (
   company: string,
   role: string,
   featuredUrl: string,
-  duration = "the next few days",
+  duration = 'the next few days'
 ) => {
   const content = `
     <div style="${emailStyles.greeting}">🌟 Amazing news, ${name}!</div>
@@ -362,13 +364,16 @@ export const InterviewExperienceFeaturedEmailTemplate = (
             <strong style="color: #1f2937;">The LetsCode Team</strong>
         </p>
     </div>
-  `
+  `;
 
-  return createEmailWrapper(content, "🌟 Your Experience is Now Featured!")
-}
+  return createEmailWrapper(content, '🌟 Your Experience is Now Featured!');
+};
 
 // Welcome Email Template for New Users
-export const WelcomeEmailTemplate = (name: string, verificationUrl?: string) => {
+export const WelcomeEmailTemplate = (
+  name: string,
+  verificationUrl?: string
+) => {
   const content = `
     <div style="${emailStyles.greeting}">Welcome to LetsCode, ${name}! 🎉</div>
     
@@ -381,15 +386,16 @@ export const WelcomeEmailTemplate = (name: string, verificationUrl?: string) => 
         <p style="margin: 0; opacity: 0.9;">Join thousands of developers sharing their interview experiences</p>
     </div>
     
-    ${verificationUrl
-      ? `
+    ${
+      verificationUrl
+        ? `
     <div style="text-align: center; margin: 30px 0;">
         <a href="${verificationUrl}" style="${emailStyles.button}">
             ✅ Verify Your Email Address
         </a>
     </div>
     `
-      : ""
+        : ''
     }
     
     <div style="${emailStyles.tipsList}">
@@ -409,17 +415,17 @@ export const WelcomeEmailTemplate = (name: string, verificationUrl?: string) => 
             <strong style="color: #1f2937;">The LetsCode Team</strong>
         </p>
     </div>
-  `
+  `;
 
-  return createEmailWrapper(content, "Welcome to LetsCode Community!")
-}
+  return createEmailWrapper(content, 'Welcome to LetsCode Community!');
+};
 
 // Experience Submission Confirmation Email
 export const ExperienceSubmissionConfirmationTemplate = (
   name: string,
   company: string,
   role: string,
-  estimatedReviewTime = "2-3 business days",
+  estimatedReviewTime = '2-3 business days'
 ) => {
   const content = `
     <div style="${emailStyles.greeting}">Thank you, ${name}! 📝</div>
@@ -459,9 +465,16 @@ export const ExperienceSubmissionConfirmationTemplate = (
             <strong style="color: #1f2937;">The LetsCode Team</strong>
         </p>
     </div>
-  `
+  `;
 
-  return createEmailWrapper(content, "Experience Submission Received")
-}
+  return createEmailWrapper(content, 'Experience Submission Received');
+};
 
-export { LetsCodeLogo, LetsCodeWebsite, LetsCodeEmail, emailStyles, createEmailWrapper, getEmailFooter }
+export {
+  LetsCodeLogo,
+  LetsCodeWebsite,
+  LetsCodeEmail,
+  emailStyles,
+  createEmailWrapper,
+  getEmailFooter,
+};

@@ -58,7 +58,12 @@ export const PATCH = async (
         destinationMail: updated.email,
         subject:
           "Congratulations! Your Interview Experience is Featured on Let's Code",
-        htmlBody: InterviewExperienceFeaturedEmailTemplate(updated.name, updated.company, updated.role, publishedUrl),
+        htmlBody: InterviewExperienceFeaturedEmailTemplate(
+          updated.name,
+          updated.company,
+          updated.role,
+          publishedUrl
+        ),
       });
       console.log(
         `\n\nEmail sent to ${updated.email} for featured experience: ${updated.name}`
