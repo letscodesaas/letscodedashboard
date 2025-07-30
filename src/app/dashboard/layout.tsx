@@ -1,11 +1,11 @@
 // src/app/dashboard/layout.tsx
-import type React from "react"
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
-import Authcontext from "@/context/Authcontext"
-import { AppSidebar } from "./component/Sidebar"
-import { DashboardHeader } from "./component/dashboard-header"
+import type React from 'react';
+import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
+import Authcontext from '@/context/Authcontext';
+import { AppSidebar } from './component/Sidebar';
+import { DashboardHeader } from './component/dashboard-header';
 interface DashboardLayoutProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
@@ -21,5 +21,5 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </div>
       </SidebarProvider>
     </Authcontext>
-  )
+  );
 }
