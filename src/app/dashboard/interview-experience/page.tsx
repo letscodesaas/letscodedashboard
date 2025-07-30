@@ -36,6 +36,7 @@ import {
   getStatusColor,
   getOfferStatusColor,
 } from './helper';
+
 import {
   DeleteConfirmationModal,
   DetailModal,
@@ -50,7 +51,6 @@ interface FilterState {
   dateRange: string;
   isAnonymous: string;
 }
-
 interface SortState {
   field: string;
   direction: 'asc' | 'desc';
