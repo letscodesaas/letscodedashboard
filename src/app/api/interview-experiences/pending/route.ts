@@ -4,6 +4,7 @@ import InterviewExperience from '@/models/InterviewExperience.Model';
 import { DB } from '@/utils/db';
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
 DB();
 export async function GET() {
   try {
