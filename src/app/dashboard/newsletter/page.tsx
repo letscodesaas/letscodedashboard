@@ -171,7 +171,7 @@ const SendBulkMail = () => {
   async function sendBulkMails() {
     try {
       const socket = new WebSocket(
-        'ws://z4kw8occc8g44kk4kckkscwg.13.201.126.66.sslip.io/ws'
+       process.env.NEXT_PUBLIC_WS
       );
       socket.onopen = () => {
         toast('sending bulk mails');
@@ -294,7 +294,7 @@ function Page() {
 
   useEffect(() => {
     const socket = new WebSocket(
-      'ws://z4kw8occc8g44kk4kckkscwg.13.201.126.66.sslip.io/ws'
+      process.env.NEXT_PUBLIC_WS
     );
     socket.onopen = () => {
       toast('connected to ws server');
