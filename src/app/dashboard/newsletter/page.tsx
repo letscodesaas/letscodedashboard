@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -27,9 +27,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { toast } from 'sonner';
 import { EmailsUploaderActions } from '@/actions/actions';
 import EmailEdit from '@/components/ui/emailEditor';
+import { toast } from 'sonner';
 
 const SendSingleMail = () => {
   const [email, setEmail] = useState('');
@@ -170,6 +170,20 @@ const SendBulkMail = () => {
 
   async function sendBulkMails() {
     try {
+      const socket = new WebSocket(
+        'ws://z4kw8occc8g44kk4kckkscwg.13.201.126.66.sslip.io/ws'
+      );
+      socket.onopen = () => {
+        toast('sending bulk mails');
+        socket.send(
+          JSON.stringify({
+            message: 'BULKMAIL',
+            subject: subject,
+            body: template,
+          })
+        );
+      };
+
       await axios.post('/api/newsletter/bulkmail', {
         subject: subject,
         template: template,
@@ -272,13 +286,82 @@ const SendBulkMail = () => {
 };
 
 function Page() {
+  const [status, setStatus] = useState({
+    active: 0,
+    completed: 0,
+    failed: 0,
+  });
+
+  useEffect(() => {
+    const socket = new WebSocket(
+      'ws://z4kw8occc8g44kk4kckkscwg.13.201.126.66.sslip.io/ws'
+    );
+    socket.onopen = () => {
+      toast('connected to ws server');
+      socket.send(
+        JSON.stringify({
+          message: 'STATUS',
+        })
+      );
+    };
+
+    socket.onmessage = (event) => {
+      const info = JSON.parse(event.data);
+      setStatus({
+        ...status,
+        active: info.active,
+        completed: info.completed,
+        failed: info.failed,
+      });
+    };
+
+    // Handle errors
+    socket.onerror = (error) => {
+      console.error('WebSocket error:', error);
+      toast('Error ❌');
+    };
+  }, []);
+
   const [editor, setEditor] = useState(false);
+
   return (
     <div className="container mx-auto py-10 px-4 max-w-3xl">
       <div className="flex flex-col items-center space-y-6">
         <div className="text-center space-y-2 mb-4">
           <h1 className="text-3xl font-bold tracking-tight">Email Sender</h1>
           <p className="text-gray-500">Easily send single or bulk emails</p>
+        </div>
+        <div className="flex flex-row items-center justify-center gap-10">
+          <Card>
+            <CardHeader>
+              <CardTitle>Active Jobs</CardTitle>
+            </CardHeader>
+            <CardDescription>
+              <CardContent className="text-center font-semibold text-2xl">
+                {status.active}
+              </CardContent>
+            </CardDescription>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Completed Jobs</CardTitle>
+            </CardHeader>
+            <CardDescription>
+              <CardContent className="text-center font-semibold text-2xl">
+                {status.completed}
+              </CardContent>
+            </CardDescription>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Failed Jobs</CardTitle>
+            </CardHeader>
+            <CardDescription>
+              <CardContent className="text-center font-semibold text-2xl">
+                {status.failed}
+              </CardContent>
+            </CardDescription>
+          </Card>
         </div>
 
         <div className="flex flex-row items-end justify-end w-full gap-10">
