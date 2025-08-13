@@ -170,9 +170,7 @@ const SendBulkMail = () => {
 
   async function sendBulkMails() {
     try {
-      const socket = new WebSocket(
-       process.env.NEXT_PUBLIC_WS
-      );
+      const socket = new WebSocket(process.env.NEXT_PUBLIC_WS);
       socket.onopen = () => {
         toast('sending bulk mails');
         socket.send(
@@ -182,6 +180,9 @@ const SendBulkMail = () => {
             body: template,
           })
         );
+      };
+      socket.onmessage = (event) => {
+        toast(event.data);
       };
 
       await axios.post('/api/newsletter/bulkmail', {
@@ -293,9 +294,7 @@ function Page() {
   });
 
   useEffect(() => {
-    const socket = new WebSocket(
-      process.env.NEXT_PUBLIC_WS
-    );
+    const socket = new WebSocket(process.env.NEXT_PUBLIC_WS);
     socket.onopen = () => {
       toast('connected to ws server');
       socket.send(
