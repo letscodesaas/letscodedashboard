@@ -24,6 +24,7 @@ import {
   DollarSign,
   RefreshCw,
   FileSpreadsheet,
+  Edit3,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { InterviewExperience } from '../../../../types/interview';
@@ -42,6 +43,7 @@ import {
   DetailModal,
   RejectionModal,
 } from './DetailModel';
+import { useRouter } from 'next/navigation';
 
 interface FilterState {
   jobType: string;
@@ -82,13 +84,14 @@ const InterviewExperience = () => {
     'all' | 'pending' | 'approved' | 'rejected'
   >('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedExperience, setSelectedExperience] =
-    useState<InterviewExperience | null>(null);
+  const [selectedExperience, setSelectedExperience] = useState<InterviewExperience | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+
+  const router = useRouter();
 
   // Filter and sort state
   const [filters, setFilters] = useState<FilterState>({
@@ -530,11 +533,10 @@ const InterviewExperience = () => {
         {/* Alert Messages */}
         {(error || successMessage) && (
           <div
-            className={`mb-6 p-4 rounded-lg border flex justify-between items-center ${
-              error
-                ? 'bg-red-50 border-red-200 text-red-700'
-                : 'bg-green-50 border-green-200 text-green-700'
-            }`}
+            className={`mb-6 p-4 rounded-lg border flex justify-between items-center ${error
+              ? 'bg-red-50 border-red-200 text-red-700'
+              : 'bg-green-50 border-green-200 text-green-700'
+              }`}
           >
             <span className="font-medium">{error || successMessage}</span>
             <button
@@ -664,11 +666,10 @@ const InterviewExperience = () => {
                           setActiveTab(tab.key as any);
                           setCurrentPage(1);
                         }}
-                        className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                          activeTab === tab.key
-                            ? 'bg-white text-blue-600 shadow-sm'
-                            : 'text-gray-600 hover:text-gray-900'
-                        }`}
+                        className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === tab.key
+                          ? 'bg-white text-blue-600 shadow-sm'
+                          : 'text-gray-600 hover:text-gray-900'
+                          }`}
                       >
                         {tab.label} ({tab.count})
                       </button>
@@ -827,7 +828,7 @@ const InterviewExperience = () => {
                       checked={
                         paginatedExperiences.length > 0 &&
                         selectedExperiences.length ===
-                          paginatedExperiences.length
+                        paginatedExperiences.length
                       }
                       onChange={(e) => handleSelectAll(e.target.checked)}
                       className="rounded border-gray-300"
@@ -921,7 +922,9 @@ const InterviewExperience = () => {
                             <Star className="w-4 h-4 text-amber-500 fill-current" />
                           )}
                           <div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 cursor-pointer"
+                              onClick={() => { router.push(`/dashboard/interview-experience/${exp._id}`) }}
+                            >
                               <p className="text-sm font-semibold text-gray-900">
                                 {exp.company}
                               </p>
@@ -1043,11 +1046,10 @@ const InterviewExperience = () => {
                           {getStatus(exp) === 'approved' && (
                             <button
                               onClick={() => toggleFeatured(exp._id)}
-                              className={`p-2 rounded-lg transition-colors ${
-                                exp.isFeatured
-                                  ? 'text-amber-600 hover:text-gray-600 hover:bg-gray-50'
-                                  : 'text-gray-600 hover:text-amber-600 hover:bg-amber-50'
-                              }`}
+                              className={`p-2 rounded-lg transition-colors ${exp.isFeatured
+                                ? 'text-amber-600 hover:text-gray-600 hover:bg-gray-50'
+                                : 'text-gray-600 hover:text-amber-600 hover:bg-amber-50'
+                                }`}
                               title={exp.isFeatured ? 'Unfeature' : 'Feature'}
                               disabled={loading}
                             >
@@ -1058,6 +1060,18 @@ const InterviewExperience = () => {
                               )}
                             </button>
                           )}
+                          {/* // edit button  */}
+                          <button
+                            onClick={() =>
+                              router.push(
+                                `/dashboard/interview-experience/${exp._id}/edit`
+                              )
+                            }
+                            className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="Edit"
+                          >
+                            <Edit3 className="w-4 h-4" />
+                          </button>
                           <button
                             onClick={() => {
                               setSelectedExperienceId(exp._id);
@@ -1108,11 +1122,10 @@ const InterviewExperience = () => {
                         <button
                           key={page}
                           onClick={() => setCurrentPage(page)}
-                          className={`px-3 py-1 text-sm rounded ${
-                            currentPage === page
-                              ? 'bg-blue-600 text-white'
-                              : 'text-gray-600 hover:bg-gray-100'
-                          }`}
+                          className={`px-3 py-1 text-sm rounded ${currentPage === page
+                            ? 'bg-blue-600 text-white'
+                            : 'text-gray-600 hover:bg-gray-100'
+                            }`}
                         >
                           {page}
                         </button>
