@@ -85,7 +85,6 @@ export async function DELETE(
   }
 }
 
-
 // Edit an existing interview experience
 export const PUT = async (
   req: NextRequest,
@@ -118,7 +117,7 @@ export const PUT = async (
     }
     // Check if the experience exists
     const experience = await InterviewExperience.findOne({
-      _id: id
+      _id: id,
     });
     if (!experience) {
       return NextResponse.json(
@@ -173,7 +172,6 @@ export const PUT = async (
     );
   }
 };
-
 
 // --- Enum Validations ---
 const VALID_JOB_TYPES = [
