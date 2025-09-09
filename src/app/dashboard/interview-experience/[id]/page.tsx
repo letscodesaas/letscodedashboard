@@ -86,7 +86,7 @@ const InterviewExperiencePage = () => {
 
   const handleViewPublic = (exp: InterviewExperience) => {
     const slug = `${exp.company.toLowerCase().replace(/\s+/g, '-')}-${exp.role.toLowerCase().replace(/\s+/g, '-')}/${exp._id}`;
-    window.open(`/interview-experience/${slug}`, '_blank');
+    window.open(`https://www.lets-code.co.in/interview-experience/${slug}`, '_blank');
   };
 
   const getStatusColor = (status: string) => {
