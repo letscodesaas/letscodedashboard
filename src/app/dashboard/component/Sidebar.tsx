@@ -66,6 +66,11 @@ const navigationItems = [
     url: '/dashboard/interview-experience',
     icon: MessageSquare,
   },
+  {
+    title: 'Public Profile',
+    url: '/dashboard/public-profile',
+    icon: User,
+  },
 ];
 
 export function AppSidebar() {
