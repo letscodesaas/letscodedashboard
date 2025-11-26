@@ -119,6 +119,11 @@ const userProfileSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+
+// Add indexes for filtering performance
+userProfileSchema.index({ role: 1 });
+userProfileSchema.index({ publicProfile: 1 });
+
 export const UserProfile =
   mongoose.models.UserProfile ||
   mongoose.model('UserProfile', userProfileSchema);
