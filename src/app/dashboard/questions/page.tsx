@@ -14,7 +14,7 @@ function Page() {
         const response = await trpc.question.getquestions.query();
         setData(response.data);
       } catch (error) {
-        console.log(error)
+        console.log(error);
         setData([]);
       }
     })();
