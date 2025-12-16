@@ -3,6 +3,7 @@ import { Jobs } from '@/models/Job.Model';
 import { Product } from '@/models/Product.Model';
 import { Auth } from '@/models/Auth.Model';
 import { Task } from '@/models/Task.model';
+import { Questions } from '@/models/Question.Model';
 
 const t = initTRPC
   .context<{
@@ -11,6 +12,7 @@ const t = initTRPC
       Product: typeof Product;
       Auth: typeof Auth;
       Task: typeof Task;
+      Questions: typeof Questions;
     };
   }>()
   .create();

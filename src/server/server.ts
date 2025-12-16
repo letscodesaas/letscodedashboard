@@ -4,6 +4,7 @@ import { healthRouter } from './router/health.router';
 import { productRouter } from './router/product.router';
 import { authRouter } from './router/auth.router';
 import { taskRouter } from './router/task.router';
+import { questionRouter } from './router/questions.router';
 
 export const appRouter = router({
   job: jobRouter,
@@ -11,6 +12,7 @@ export const appRouter = router({
   product: productRouter,
   auth: authRouter,
   task: taskRouter,
+  question: questionRouter,
 });
 
 export type AppRouter = typeof appRouter;
