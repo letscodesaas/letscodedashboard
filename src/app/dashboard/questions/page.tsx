@@ -19,8 +19,6 @@ function Page() {
     })();
   }, []);
 
-  
-
   return (
     <div>
       <div className="flex flex-row items-center justify-end gap-2">

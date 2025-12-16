@@ -5,7 +5,7 @@ import { z } from 'zod';
 const questionType = z.object({
   title: z.string(),
   content: z.string(),
-  categories:z.string(),
+  categories: z.string(),
   contentType: z.string(),
   exceptedInput: z.string(),
   exceptedOutput: z.string(),

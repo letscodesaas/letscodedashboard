@@ -176,7 +176,12 @@ export default function Page() {
 
             {/* Submit */}
             <div className="md:col-span-2 flex justify-end pt-4">
-              <Button disabled={loading} type="submit" size="lg" className="rounded-xl px-8">
+              <Button
+                disabled={loading}
+                type="submit"
+                size="lg"
+                className="rounded-xl px-8"
+              >
                 {loading ? 'Adding...' : 'Add Question'}
               </Button>
             </div>

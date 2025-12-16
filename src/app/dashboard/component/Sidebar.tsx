@@ -13,7 +13,7 @@ import {
   Mail,
   MessageSquare,
   User,
-  Book
+  Book,
 } from 'lucide-react';
 
 import {
