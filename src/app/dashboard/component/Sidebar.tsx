@@ -13,6 +13,7 @@ import {
   Mail,
   MessageSquare,
   User,
+  Book
 } from 'lucide-react';
 
 import {
@@ -70,6 +71,11 @@ const navigationItems = [
     title: 'Public Profile',
     url: '/dashboard/public-profile',
     icon: User,
+  },
+  {
+    title: 'Questions',
+    url: '/dashboard/questions',
+    icon: Book,
   },
 ];
 
