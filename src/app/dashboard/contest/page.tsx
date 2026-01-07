@@ -19,7 +19,7 @@ function Page() {
 
   return (
     <div>
-      <div className='mb-4'>
+      <div className="mb-4">
         <div>Total Regisation : {data.length}</div>
       </div>
       {loading ? 'Loading..' : <DataTable columns={columns} data={data} />}

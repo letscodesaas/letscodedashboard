@@ -4,7 +4,7 @@ export const contestRouter = router({
   getregisations: publicProcedure.query(async (opts) => {
     try {
       const info = await opts.ctx.db.ContestRegistation.find().sort({
-        createdAt:-1
+        createdAt: -1,
       });
       return info;
     } catch (error) {
