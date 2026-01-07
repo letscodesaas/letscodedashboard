@@ -77,6 +77,11 @@ const navigationItems = [
     url: '/dashboard/questions',
     icon: Book,
   },
+   {
+    title: 'Contest Registation',
+    url: '/dashboard/contest',
+    icon: MessageSquare,
+  },
 ];
 
 export function AppSidebar() {
