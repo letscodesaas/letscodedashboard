@@ -94,7 +94,7 @@ export function DataTable<TData, TValue>({
         >
           Previous
         </Button>
-        {table.getRowCount()}
+        {table.getState().pagination.pageIndex + 1}
         <Button
           variant="outline"
           size="sm"
