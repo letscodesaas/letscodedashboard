@@ -8,7 +8,6 @@ import { Questions } from '@/models/Question.Model';
 import { ContestRegister } from '@/models/Contest.Model';
 import mongoose from 'mongoose';
 
-
 mongoose.connect(process.env.DB!);
 const handler = (req: Request) => {
   return fetchRequestHandler({
@@ -23,7 +22,7 @@ const handler = (req: Request) => {
           Auth,
           Task,
           Questions,
-          ContestRegistation:ContestRegister
+          ContestRegistation: ContestRegister,
         },
       };
     },

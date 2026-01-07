@@ -14,7 +14,7 @@ export const appRouter = router({
   auth: authRouter,
   task: taskRouter,
   question: questionRouter,
-  contest:contestRouter
+  contest: contestRouter,
 });
 
 export type AppRouter = typeof appRouter;

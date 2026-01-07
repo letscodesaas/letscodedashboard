@@ -14,7 +14,7 @@ const t = initTRPC
       Auth: typeof Auth;
       Task: typeof Task;
       Questions: typeof Questions;
-      ContestRegistation:typeof ContestRegister
+      ContestRegistation: typeof ContestRegister;
     };
   }>()
   .create();
