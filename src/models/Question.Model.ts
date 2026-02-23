@@ -34,7 +34,9 @@ const questionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+},{
+  timestamps:true
 });
 
 export const Questions =
-  mongoose.models.question || mongoose.model('question', questionSchema);
+  mongoose.models.questions || mongoose.model('question', questionSchema);
