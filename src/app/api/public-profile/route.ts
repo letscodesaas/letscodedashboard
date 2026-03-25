@@ -33,7 +33,18 @@ export const GET = async (req: Request) => {
             {
               $group: {
                 _id: null,
-                totalUsers: { $sum: 1 },
+                totalUsers: {
+                  $sum: {
+                    $cond: [
+                      { $and: [
+                        { $ne: ['$username', null] },
+                        { $ne: ['$username', ''] }
+                      ] },
+                      1,
+                      0
+                    ]
+                  }
+                },
                 completeProfiles: {
                   $sum: {
                     $cond: [{ $eq: ['$isProfileComplete', true] }, 1, 0],
@@ -104,9 +115,6 @@ export const GET = async (req: Request) => {
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
-      .select(
-        'username email firstname lastname role isProfileComplete publicProfile isProfilePublic points views createdAt profilePic'
-      )
       .lean();
 
     // 3) Total count for pagination metadata (filtered)

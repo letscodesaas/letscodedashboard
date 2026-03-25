@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 import React from 'react';
+import dynamic from 'next/dynamic';
 
 const Page = () => {
   const [response, setResponse] = React.useState<any>(null);
+  const [selectedUser, setSelectedUser] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(false);
   const [page, setPage] = React.useState(1);
   const [limit, setLimit] = React.useState(20);
@@ -35,6 +37,11 @@ const Page = () => {
   const redirectToProfile = (userId: string) => {
     window.open(`https://www.lets-code.co.in/u/${userId}`, '_blank');
   };
+
+  // Lazy load modal to avoid SSR issues
+  const ProfileDetailsModal = React.useMemo(() =>
+    dynamic(() => import('./ProfileDetailsModal'), { ssr: false })
+  , []);
 
   // Responsive container and controls
   return (
@@ -184,6 +191,10 @@ const Page = () => {
         </div>
       )}
 
+      {/* User Details Modal */}
+      {selectedUser && (
+        <ProfileDetailsModal user={selectedUser} onClose={() => setSelectedUser(null)} />
+      )}
       {/* Users List & Pagination */}
       <div>
         <h2 className="text-2xl font-semibold mb-4">
@@ -256,16 +267,24 @@ const Page = () => {
                 </div>
                 <div className="mt-3 pt-3 border-t">
                   <p className="text-xs text-gray-500">
-                    Joined: {new Date(user.createdAt).toLocaleDateString()}
+                    Joined: {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
                   </p>
-                  {user.publicProfile && user.username && (
+                  <div className="flex flex-col gap-2 mt-2">
                     <button
-                      onClick={() => redirectToProfile(user.username)}
-                      className="mt-2 w-full bg-blue-500 hover:bg-blue-600 text-white text-sm py-2 px-4 rounded transition-colors"
+                      onClick={() => setSelectedUser(user)}
+                      className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm py-2 px-4 rounded transition-colors"
                     >
-                      View Public Profile
+                      View Details
                     </button>
-                  )}
+                    {user.publicProfile && user.username && (
+                      <button
+                        onClick={() => redirectToProfile(user.username)}
+                        className="w-full bg-blue-500 hover:bg-blue-600 text-white text-sm py-2 px-4 rounded transition-colors"
+                      >
+                        View Public Profile
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
