@@ -36,14 +36,16 @@ export const GET = async (req: Request) => {
                 totalUsers: {
                   $sum: {
                     $cond: [
-                      { $and: [
-                        { $ne: ['$username', null] },
-                        { $ne: ['$username', ''] }
-                      ] },
+                      {
+                        $and: [
+                          { $ne: ['$username', null] },
+                          { $ne: ['$username', ''] },
+                        ],
+                      },
                       1,
-                      0
-                    ]
-                  }
+                      0,
+                    ],
+                  },
                 },
                 completeProfiles: {
                   $sum: {

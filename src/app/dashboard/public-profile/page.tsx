@@ -39,9 +39,10 @@ const Page = () => {
   };
 
   // Lazy load modal to avoid SSR issues
-  const ProfileDetailsModal = React.useMemo(() =>
-    dynamic(() => import('./ProfileDetailsModal'), { ssr: false })
-  , []);
+  const ProfileDetailsModal = React.useMemo(
+    () => dynamic(() => import('./ProfileDetailsModal'), { ssr: false }),
+    []
+  );
 
   // Responsive container and controls
   return (
@@ -193,7 +194,10 @@ const Page = () => {
 
       {/* User Details Modal */}
       {selectedUser && (
-        <ProfileDetailsModal user={selectedUser} onClose={() => setSelectedUser(null)} />
+        <ProfileDetailsModal
+          user={selectedUser}
+          onClose={() => setSelectedUser(null)}
+        />
       )}
       {/* Users List & Pagination */}
       <div>
@@ -267,7 +271,10 @@ const Page = () => {
                 </div>
                 <div className="mt-3 pt-3 border-t">
                   <p className="text-xs text-gray-500">
-                    Joined: {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
+                    Joined:{' '}
+                    {user.createdAt
+                      ? new Date(user.createdAt).toLocaleDateString()
+                      : 'N/A'}
                   </p>
                   <div className="flex flex-col gap-2 mt-2">
                     <button
