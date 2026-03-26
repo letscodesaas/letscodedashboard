@@ -2,58 +2,198 @@
 'use client';
 import React from 'react';
 import StatCard from '@/components/ui/stat';
-import { VistorComponent } from '@/components/ui/vistor-chart';
+import { Pencil, Check, X } from 'lucide-react';
 
 const SOCIAL_PLATFORMS = [
   {
     key: 'telegram',
     label: 'Telegram',
+    url: 'https://t.me/offcampusjobsupdatess',
     emoji: '✈️',
     color: 'bg-sky-500',
-    metric: (s: any) => s?.members != null ? `${s.members.toLocaleString()} members` : null,
+    live: true,
+    defaultLabel: 'members',
   },
   {
     key: 'discord',
     label: 'Discord',
+    url: 'https://discord.gg/XRBheB9QF9',
     emoji: '🎮',
     color: 'bg-indigo-500',
-    metric: (s: any) =>
-      s?.members != null
-        ? `${s.members.toLocaleString()} members · ${s.online} online`
-        : null,
+    live: true,
+    defaultLabel: 'members',
   },
   {
     key: 'youtube',
     label: 'YouTube',
+    url: 'https://www.youtube.com/@letscodewithavinash',
     emoji: '▶️',
     color: 'bg-red-500',
-    metric: (s: any) =>
-      s?.subscribers != null
-        ? `${s.subscribers.toLocaleString()} subscribers · ${s.videos} videos`
-        : null,
+    live: false,
+    defaultLabel: 'subscribers',
   },
   {
     key: 'linkedin',
     label: 'LinkedIn',
+    url: 'https://www.linkedin.com/company/lets-code-forever/',
     emoji: '💼',
     color: 'bg-blue-700',
-    metric: () => null,
+    live: false,
+    defaultLabel: 'followers',
   },
   {
     key: 'instagram',
     label: 'Instagram',
+    url: 'https://www.instagram.com/lets__code/',
     emoji: '📸',
     color: 'bg-pink-500',
-    metric: () => null,
+    live: false,
+    defaultLabel: 'followers',
   },
   {
     key: 'whatsapp',
     label: 'WhatsApp',
+    url: 'https://whatsapp.com/channel/0029Va9IblC7dmecjzkkn811',
     emoji: '💬',
     color: 'bg-green-500',
-    metric: () => null,
+    live: false,
+    defaultLabel: 'members',
   },
 ];
+
+function SocialCard({
+  platform,
+  entry,
+  loading,
+  onSaved,
+}: {
+  platform: (typeof SOCIAL_PLATFORMS)[0];
+  entry: any;
+  loading: boolean;
+  onSaved: () => void;
+}) {
+  const [editing, setEditing] = React.useState(false);
+  const [inputCount, setInputCount] = React.useState('');
+  const [inputLabel, setInputLabel] = React.useState('');
+  const [saving, setSaving] = React.useState(false);
+
+  const liveStats = entry?.stats;
+  const manualStats = entry?.manual;
+
+  const displayCount = platform.live
+    ? liveStats?.members ?? null
+    : manualStats?.count ?? null;
+  const displayLabel = platform.live
+    ? platform.key === 'discord'
+      ? `members · ${liveStats?.online ?? 0} online`
+      : 'members'
+    : manualStats?.label ?? platform.defaultLabel;
+
+  const startEdit = () => {
+    setInputCount(String(manualStats?.count ?? ''));
+    setInputLabel(manualStats?.label ?? platform.defaultLabel);
+    setEditing(true);
+  };
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      await fetch('/api/dashboard/social-stats', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          platform: platform.key,
+          count: Number(inputCount),
+          label: inputLabel,
+        }),
+      });
+      setEditing(false);
+      onSaved();
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="bg-white rounded-lg border border-gray-100 p-4 flex items-center gap-4 hover:shadow-md transition-shadow">
+      <a href={platform.url} target="_blank" rel="noopener noreferrer">
+        <div
+          className={`${platform.color} w-10 h-10 rounded-full flex items-center justify-center text-lg shrink-0 hover:opacity-80 transition-opacity`}
+        >
+          {platform.emoji}
+        </div>
+      </a>
+
+      <div className="flex-1 min-w-0">
+        <a
+          href={platform.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-semibold text-gray-800 hover:underline"
+        >
+          {platform.label}
+        </a>
+
+        {loading ? (
+          <div className="mt-1 h-4 w-28 animate-pulse rounded bg-gray-200" />
+        ) : editing ? (
+          <div className="mt-1 flex items-center gap-1">
+            <input
+              type="number"
+              value={inputCount}
+              onChange={(e) => setInputCount(e.target.value)}
+              placeholder="Count"
+              className="w-24 border rounded px-2 py-0.5 text-sm"
+              autoFocus
+            />
+            <input
+              type="text"
+              value={inputLabel}
+              onChange={(e) => setInputLabel(e.target.value)}
+              placeholder="label"
+              className="w-24 border rounded px-2 py-0.5 text-sm"
+            />
+            <button
+              onClick={save}
+              disabled={saving}
+              className="text-green-600 hover:text-green-700 disabled:opacity-50"
+            >
+              <Check className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setEditing(false)}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        ) : displayCount != null ? (
+          <p className="text-sm text-gray-500 truncate">
+            {Number(displayCount).toLocaleString()} {displayLabel}
+          </p>
+        ) : (
+          <p className="text-xs text-gray-400">No stats yet</p>
+        )}
+      </div>
+
+      <div className="flex items-center gap-2 shrink-0">
+        {platform.live && liveStats ? (
+          <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
+            Live
+          </span>
+        ) : !platform.live && !editing ? (
+          <button
+            onClick={startEdit}
+            className="text-gray-400 hover:text-gray-600 transition-colors"
+            title="Edit stats"
+          >
+            <Pencil className="w-4 h-4" />
+          </button>
+        ) : null}
+      </div>
+    </div>
+  );
+}
 
 function DashboardPage() {
   const [stats, setStats] = React.useState<any>(null);
@@ -62,7 +202,7 @@ function DashboardPage() {
   const [social, setSocial] = React.useState<any>(null);
   const [socialLoading, setSocialLoading] = React.useState(true);
 
-  React.useEffect(() => {
+  const fetchStats = () => {
     fetch('/api/dashboard/stats')
       .then((res) => res.json())
       .then((data) => {
@@ -71,14 +211,20 @@ function DashboardPage() {
       })
       .catch((err) => setError(`Network error: ${err.message}`))
       .finally(() => setLoading(false));
-  }, []);
+  };
 
-  React.useEffect(() => {
+  const fetchSocial = () => {
+    setSocialLoading(true);
     fetch('/api/dashboard/social-stats')
       .then((res) => res.json())
       .then((data) => { if (data.success) setSocial(data.data); })
       .catch(() => {})
       .finally(() => setSocialLoading(false));
+  };
+
+  React.useEffect(() => {
+    fetchStats();
+    fetchSocial();
   }, []);
 
   const u = stats?.users;
@@ -97,6 +243,22 @@ function DashboardPage() {
         </div>
       )}
 
+      {/* Social Media — shown first */}
+      <section>
+        <h3 className="text-xl font-semibold mb-4">Social Media</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {SOCIAL_PLATFORMS.map((platform) => (
+            <SocialCard
+              key={platform.key}
+              platform={platform}
+              entry={social?.[platform.key]}
+              loading={socialLoading}
+              onSaved={fetchSocial}
+            />
+          ))}
+        </div>
+      </section>
+
       {/* Users */}
       <section>
         <h3 className="text-xl font-semibold mb-4">Users</h3>
@@ -106,15 +268,10 @@ function DashboardPage() {
           <StatCard title="Complete Profiles" value={u?.completeProfiles ?? 0} loading={loading} />
           <StatCard title="Total Profile Views" value={u?.totalProfileViews?.toLocaleString() ?? 0} loading={loading} />
         </div>
-
-        {/* Role Breakdown */}
         {!loading && u?.byRole?.length > 0 && (
           <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-4">
             {u.byRole.map((r: any) => (
-              <div
-                key={r.role}
-                className="bg-white rounded-lg border border-gray-100 p-4 flex flex-col"
-              >
+              <div key={r.role} className="bg-white rounded-lg border border-gray-100 p-4 flex flex-col">
                 <span className="text-xs text-gray-500 capitalize">{r.role || 'Unknown'}</span>
                 <span className="text-xl font-bold text-gray-800">{r.count}</span>
               </div>
@@ -155,57 +312,6 @@ function DashboardPage() {
         </div>
       </section>
 
-      {/* Social Media */}
-      <section>
-        <h3 className="text-xl font-semibold mb-4">Social Media</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {SOCIAL_PLATFORMS.map((platform) => {
-            const entry = social?.[platform.key];
-            const metric = platform.metric(entry?.stats);
-            const isYoutubeNoKey = platform.key === 'youtube' && entry?.needsKey;
-            return (
-              <a
-                key={platform.key}
-                href={entry?.url ?? '#'}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-white rounded-lg border border-gray-100 p-4 flex items-center gap-4 hover:shadow-md transition-shadow"
-              >
-                <div className={`${platform.color} w-10 h-10 rounded-full flex items-center justify-center text-lg shrink-0`}>
-                  {platform.emoji}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-gray-800">{platform.label}</p>
-                  {socialLoading ? (
-                    <div className="mt-1 h-4 w-28 animate-pulse rounded bg-gray-200" />
-                  ) : metric ? (
-                    <p className="text-sm text-gray-500 truncate">{metric}</p>
-                  ) : isYoutubeNoKey ? (
-                    <p className="text-xs text-amber-500">Add YOUTUBE_API_KEY to .env</p>
-                  ) : (
-                    <p className="text-xs text-gray-400">Live stats unavailable</p>
-                  )}
-                </div>
-                {metric && (
-                  <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full shrink-0">
-                    Live
-                  </span>
-                )}
-              </a>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Visitor Chart */}
-      <section>
-        <div className="p-4 bg-white rounded-lg shadow-md dark:bg-gray-800">
-          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">
-            Visitor Statistics
-          </h2>
-          <VistorComponent />
-        </div>
-      </section>
     </div>
   );
 }

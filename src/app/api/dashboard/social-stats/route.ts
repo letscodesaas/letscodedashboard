@@ -1,4 +1,9 @@
-import { NextResponse } from 'next/server';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { NextRequest, NextResponse } from 'next/server';
+import { DB } from '@/utils/db';
+import { SocialStats } from '@/models/SocialStats.model';
+
+DB();
 
 const UA =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
@@ -10,27 +15,19 @@ async function fetchTelegram(): Promise<{ members: number } | null> {
       signal: AbortSignal.timeout(7000),
     });
     const html = await res.text();
-    // Telegram uses space as thousands separator: "41 486 subscribers"
     const match = html.match(/(\d[\d\s,]*\d|\d+)\s+subscribers/i);
     if (!match) return null;
-    const cleaned = match[1].replace(/[\s,]/g, '');
-    return { members: parseInt(cleaned, 10) };
+    return { members: parseInt(match[1].replace(/[\s,]/g, ''), 10) };
   } catch {
     return null;
   }
 }
 
-async function fetchDiscord(): Promise<{
-  members: number;
-  online: number;
-} | null> {
+async function fetchDiscord(): Promise<{ members: number; online: number } | null> {
   try {
     const res = await fetch(
       'https://discord.com/api/v9/invites/XRBheB9QF9?with_counts=true',
-      {
-        headers: { 'User-Agent': UA },
-        signal: AbortSignal.timeout(7000),
-      }
+      { headers: { 'User-Agent': UA }, signal: AbortSignal.timeout(7000) }
     );
     const data = await res.json();
     if (!data.approximate_member_count) return null;
@@ -43,66 +40,49 @@ async function fetchDiscord(): Promise<{
   }
 }
 
-async function fetchYouTube(): Promise<{
-  subscribers: number;
-  views: number;
-  videos: number;
-} | null> {
-  const key = process.env.YOUTUBE_API_KEY;
-  if (!key) return null;
-  try {
-    const res = await fetch(
-      `https://www.googleapis.com/youtube/v3/channels?part=statistics&forHandle=letscodewithavinash&key=${key}`,
-      { signal: AbortSignal.timeout(7000) }
-    );
-    const data = await res.json();
-    const stats = data?.items?.[0]?.statistics;
-    if (!stats) return null;
-    return {
-      subscribers: parseInt(stats.subscriberCount, 10),
-      views: parseInt(stats.viewCount, 10),
-      videos: parseInt(stats.videoCount, 10),
-    };
-  } catch {
-    return null;
-  }
-}
-
+// GET — returns live stats + manual stats from DB
 export const GET = async () => {
-  const [telegram, discord, youtube] = await Promise.all([
+  const [telegram, discord, manualStats] = await Promise.all([
     fetchTelegram(),
     fetchDiscord(),
-    fetchYouTube(),
+    SocialStats.find({}).lean(),
   ]);
+
+  const manual: Record<string, any> = {};
+  for (const s of manualStats as any[]) {
+    manual[s.platform] = { count: s.count, label: s.label };
+  }
 
   return NextResponse.json({
     success: true,
     data: {
-      telegram: {
-        url: 'https://t.me/offcampusjobsupdatess',
-        stats: telegram,
-      },
-      discord: {
-        url: 'https://discord.gg/XRBheB9QF9',
-        stats: discord,
-      },
-      youtube: {
-        url: 'https://www.youtube.com/@letscodewithavinash',
-        stats: youtube,
-        needsKey: !process.env.YOUTUBE_API_KEY,
-      },
-      linkedin: {
-        url: 'https://www.linkedin.com/company/lets-code-forever/',
-        stats: null,
-      },
-      instagram: {
-        url: 'https://www.instagram.com/lets__code/',
-        stats: null,
-      },
-      whatsapp: {
-        url: 'https://whatsapp.com/channel/0029Va9IblC7dmecjzkkn811',
-        stats: null,
-      },
+      telegram: { live: true, stats: telegram },
+      discord: { live: true, stats: discord },
+      youtube: { live: false, manual: manual.youtube ?? null },
+      linkedin: { live: false, manual: manual.linkedin ?? null },
+      instagram: { live: false, manual: manual.instagram ?? null },
+      whatsapp: { live: false, manual: manual.whatsapp ?? null },
     },
   });
+};
+
+// PUT — save manually entered stats for a platform
+export const PUT = async (req: NextRequest) => {
+  try {
+    const { platform, count, label } = await req.json();
+    if (!platform) {
+      return NextResponse.json({ message: 'platform is required' }, { status: 400 });
+    }
+    await SocialStats.findOneAndUpdate(
+      { platform },
+      { count: Number(count) || 0, label: label || 'followers' },
+      { upsert: true, new: true }
+    );
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    return NextResponse.json(
+      { success: false, message: error.message },
+      { status: 500 }
+    );
+  }
 };
