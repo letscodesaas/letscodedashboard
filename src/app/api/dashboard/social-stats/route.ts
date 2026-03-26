@@ -15,15 +15,23 @@ async function fetchTelegram(): Promise<{ members: number } | null> {
       signal: AbortSignal.timeout(7000),
     });
     const html = await res.text();
-    const match = html.match(/(\d[\d\s,]*\d|\d+)\s+subscribers/i);
-    if (!match) return null;
-    return { members: parseInt(match[1].replace(/[\s,]/g, ''), 10) };
+    // Use indexOf to locate "subscribers" — no regex backtracking risk.
+    // Then slice a small fixed window before it and extract digits.
+    const idx = html.toLowerCase().indexOf('subscribers');
+    if (idx === -1) return null;
+    const window = html.slice(Math.max(0, idx - 30), idx);
+    const numStr = window.match(/[\d][0-9\s,]*/);
+    if (!numStr) return null;
+    return { members: parseInt(numStr[0].replace(/[\s,]/g, ''), 10) };
   } catch {
     return null;
   }
 }
 
-async function fetchDiscord(): Promise<{ members: number; online: number } | null> {
+async function fetchDiscord(): Promise<{
+  members: number;
+  online: number;
+} | null> {
   try {
     const res = await fetch(
       'https://discord.com/api/v9/invites/XRBheB9QF9?with_counts=true',
@@ -71,7 +79,10 @@ export const PUT = async (req: NextRequest) => {
   try {
     const { platform, count, label } = await req.json();
     if (!platform) {
-      return NextResponse.json({ message: 'platform is required' }, { status: 400 });
+      return NextResponse.json(
+        { message: 'platform is required' },
+        { status: 400 }
+      );
     }
     await SocialStats.findOneAndUpdate(
       { platform },
