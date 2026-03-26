@@ -2,8 +2,11 @@
 'use client';
 import React from 'react';
 import dynamic from 'next/dynamic';
+import { useAuth } from '@/hooks/useAuth';
+import { Trash2 } from 'lucide-react';
 
 const Page = () => {
+  const { token } = useAuth();
   const [response, setResponse] = React.useState<any>(null);
   const [selectedUser, setSelectedUser] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(false);
@@ -11,6 +14,8 @@ const Page = () => {
   const [limit, setLimit] = React.useState(20);
   const [role, setRole] = React.useState<string>('');
   const [publicProfile, setPublicProfile] = React.useState<string>('');
+  const [deleteTarget, setDeleteTarget] = React.useState<any>(null);
+  const [deleteLoading, setDeleteLoading] = React.useState(false);
 
   const fetchProfiles = React.useCallback(() => {
     setLoading(true);
@@ -36,6 +41,29 @@ const Page = () => {
 
   const redirectToProfile = (userId: string) => {
     window.open(`https://www.lets-code.co.in/u/${userId}`, '_blank');
+  };
+
+  const deleteProfile = async () => {
+    if (!deleteTarget) return;
+    setDeleteLoading(true);
+    try {
+      const res = await fetch(`/api/public-profile/${deleteTarget._id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setDeleteTarget(null);
+        fetchProfiles();
+      } else {
+        alert(data.message || 'Failed to delete profile');
+      }
+    } catch {
+      alert('Failed to delete profile');
+    } finally {
+      setDeleteLoading(false);
+    }
   };
 
   // Lazy load modal to avoid SSR issues
@@ -192,6 +220,46 @@ const Page = () => {
         </div>
       )}
 
+      {/* Delete Confirmation Modal */}
+      {deleteTarget && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl max-w-md w-full p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                <Trash2 className="w-5 h-5 text-red-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">Delete Profile</h3>
+            </div>
+            <p className="text-gray-700 mb-2">
+              Are you sure you want to permanently delete the profile of{' '}
+              <span className="font-semibold">
+                {deleteTarget.firstname && deleteTarget.lastname
+                  ? `${deleteTarget.firstname} ${deleteTarget.lastname}`
+                  : deleteTarget.username || 'this user'}
+              </span>
+              ?
+            </p>
+            <p className="text-sm text-red-500 mb-6">This action cannot be undone.</p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setDeleteTarget(null)}
+                disabled={deleteLoading}
+                className="px-4 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={deleteProfile}
+                disabled={deleteLoading}
+                className="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white transition-colors disabled:opacity-50"
+              >
+                {deleteLoading ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* User Details Modal */}
       {selectedUser && (
         <ProfileDetailsModal
@@ -291,6 +359,13 @@ const Page = () => {
                         View Public Profile
                       </button>
                     )}
+                    <button
+                      onClick={() => setDeleteTarget(user)}
+                      className="w-full bg-red-100 hover:bg-red-200 text-red-700 text-sm py-2 px-4 rounded transition-colors flex items-center justify-center gap-1"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Delete Profile
+                    </button>
                   </div>
                 </div>
               </div>
