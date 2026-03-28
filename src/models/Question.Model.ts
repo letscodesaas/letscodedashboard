@@ -35,9 +35,9 @@ const questionSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    editoralvideo:{
-      type:String
-    }
+    editoralvideo: {
+      type: String,
+    },
   },
   {
     timestamps: true,
