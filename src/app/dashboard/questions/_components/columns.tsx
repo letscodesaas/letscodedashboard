@@ -45,6 +45,15 @@ export const columns: ColumnDef<Question>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
+              onClick={() => {
+                window.location.replace(
+                  `/dashboard/questions/editorial/${payment._id}`
+                );
+              }}
+            >
+              Add Editoral Video
+            </DropdownMenuItem>
+            <DropdownMenuItem
               onClick={() =>
                 window.location.replace(
                   `/dashboard/questions/questions/${payment._id}/view`

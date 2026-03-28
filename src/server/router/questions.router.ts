@@ -29,6 +29,11 @@ const questionTypeWithID = z.object({
   testOutput: z.string(),
 });
 
+const videoEditorType = z.object({
+  id: z.string(),
+  link: z.string(),
+});
+
 export const questionRouter = router({
   addquestions: publicProcedure.input(questionType).mutation(async (opts) => {
     try {
@@ -132,6 +137,27 @@ export const questionRouter = router({
           throw new TRPCError({ code: 'NOT_FOUND' });
         }
         await opts.ctx.db.Questions.findByIdAndDelete(input.id);
+        return {
+          code: 200,
+          message: 'success',
+        };
+      } catch (error) {
+        console.log(error);
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
+      }
+    }),
+
+  addVideoLink: publicProcedure
+    .input(videoEditorType)
+    .mutation(async (opts) => {
+      try {
+        const { input } = opts;
+        if (!input) {
+          throw new TRPCError({ code: 'BAD_REQUEST' });
+        }
+        await opts.ctx.db.Questions.findByIdAndUpdate(input.id, {
+          editoralvideo: input.link,
+        });
         return {
           code: 200,
           message: 'success',
