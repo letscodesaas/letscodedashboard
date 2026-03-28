@@ -6,6 +6,7 @@ import { video_system_status, upload_video } from '@/utils/editoral';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { trpc } from '@/app/_trpc/client';
+import {UploadIcon} from "lucide-react"
 
 function Page({ params }: { params: { handler: string } }) {
   const [status, setStatus] = useState(200);
@@ -97,16 +98,23 @@ function Page({ params }: { params: { handler: string } }) {
           </div>
         </div>
       </div>
-      <form onSubmit={handleSubmit}>
+      <form className='w-full' onSubmit={handleSubmit}>
         <Field>
           <FieldLabel htmlFor="editoral">Editoral Video</FieldLabel>
-          <Input
-            disabled={!isOnline || isUploading}
-            id="editorialVideo"
-            name="editorialVideo"
-            type="file"
-            accept="video/*"
-          />
+          <div className='border border-slate-400 border-r-2 flex flex-row items-center justify-center w-full'>
+            <div className='p-3'>
+            <UploadIcon width={100} height={80} className='text-center'/>
+            </div>
+            <Input
+              className="absolute opacity-0"
+              disabled={!isOnline || isUploading}
+              id="editorialVideo"
+              name="editorialVideo"
+              type="file"
+              accept="video/*"
+            />
+          </div>
+
           <FieldDescription>Select a video to upload.</FieldDescription>
         </Field>
         {uploadMessage && (
