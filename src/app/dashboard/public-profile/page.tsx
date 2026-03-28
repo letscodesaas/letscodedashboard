@@ -228,7 +228,9 @@ const Page = () => {
               <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
                 <Trash2 className="w-5 h-5 text-red-600" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900">Delete Profile</h3>
+              <h3 className="text-lg font-semibold text-gray-900">
+                Delete Profile
+              </h3>
             </div>
             <p className="text-gray-700 mb-2">
               Are you sure you want to permanently delete the profile of{' '}
@@ -239,7 +241,9 @@ const Page = () => {
               </span>
               ?
             </p>
-            <p className="text-sm text-red-500 mb-6">This action cannot be undone.</p>
+            <p className="text-sm text-red-500 mb-6">
+              This action cannot be undone.
+            </p>
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setDeleteTarget(null)}

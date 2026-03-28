@@ -81,13 +81,13 @@ function SocialCard({
   const manualStats = entry?.manual;
 
   const displayCount = platform.live
-    ? liveStats?.members ?? null
-    : manualStats?.count ?? null;
+    ? (liveStats?.members ?? null)
+    : (manualStats?.count ?? null);
   const displayLabel = platform.live
     ? platform.key === 'discord'
       ? `members · ${liveStats?.online ?? 0} online`
       : 'members'
-    : manualStats?.label ?? platform.defaultLabel;
+    : (manualStats?.label ?? platform.defaultLabel);
 
   const startEdit = () => {
     setInputCount(String(manualStats?.count ?? ''));
@@ -217,7 +217,9 @@ function DashboardPage() {
     setSocialLoading(true);
     fetch('/api/dashboard/social-stats')
       .then((res) => res.json())
-      .then((data) => { if (data.success) setSocial(data.data); })
+      .then((data) => {
+        if (data.success) setSocial(data.data);
+      })
       .catch(() => {})
       .finally(() => setSocialLoading(false));
   };
@@ -263,17 +265,40 @@ function DashboardPage() {
       <section>
         <h3 className="text-xl font-semibold mb-4">Users</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatCard title="Total Users" value={u?.total ?? 0} loading={loading} />
-          <StatCard title="Public Profiles" value={u?.publicProfiles ?? 0} loading={loading} />
-          <StatCard title="Complete Profiles" value={u?.completeProfiles ?? 0} loading={loading} />
-          <StatCard title="Total Profile Views" value={u?.totalProfileViews?.toLocaleString() ?? 0} loading={loading} />
+          <StatCard
+            title="Total Users"
+            value={u?.total ?? 0}
+            loading={loading}
+          />
+          <StatCard
+            title="Public Profiles"
+            value={u?.publicProfiles ?? 0}
+            loading={loading}
+          />
+          <StatCard
+            title="Complete Profiles"
+            value={u?.completeProfiles ?? 0}
+            loading={loading}
+          />
+          <StatCard
+            title="Total Profile Views"
+            value={u?.totalProfileViews?.toLocaleString() ?? 0}
+            loading={loading}
+          />
         </div>
         {!loading && u?.byRole?.length > 0 && (
           <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-4">
             {u.byRole.map((r: any) => (
-              <div key={r.role} className="bg-white rounded-lg border border-gray-100 p-4 flex flex-col">
-                <span className="text-xs text-gray-500 capitalize">{r.role || 'Unknown'}</span>
-                <span className="text-xl font-bold text-gray-800">{r.count}</span>
+              <div
+                key={r.role}
+                className="bg-white rounded-lg border border-gray-100 p-4 flex flex-col"
+              >
+                <span className="text-xs text-gray-500 capitalize">
+                  {r.role || 'Unknown'}
+                </span>
+                <span className="text-xl font-bold text-gray-800">
+                  {r.count}
+                </span>
               </div>
             ))}
           </div>
@@ -284,10 +309,27 @@ function DashboardPage() {
       <section>
         <h3 className="text-xl font-semibold mb-4">Interview Experiences</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatCard title="Total Submissions" value={ie?.total ?? 0} loading={loading} />
-          <StatCard title="Pending Approval" value={ie?.pending ?? 0} loading={loading} />
-          <StatCard title="Approved" value={ie?.approved ?? 0} loading={loading} />
-          <StatCard title="Offer Rate" value={`${ie?.offerRate ?? 0}%`} loading={loading} sub="selected" />
+          <StatCard
+            title="Total Submissions"
+            value={ie?.total ?? 0}
+            loading={loading}
+          />
+          <StatCard
+            title="Pending Approval"
+            value={ie?.pending ?? 0}
+            loading={loading}
+          />
+          <StatCard
+            title="Approved"
+            value={ie?.approved ?? 0}
+            loading={loading}
+          />
+          <StatCard
+            title="Offer Rate"
+            value={`${ie?.offerRate ?? 0}%`}
+            loading={loading}
+            sub="selected"
+          />
         </div>
       </section>
 
@@ -295,9 +337,21 @@ function DashboardPage() {
       <section>
         <h3 className="text-xl font-semibold mb-4">Jobs</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatCard title="Total Jobs" value={j?.total ?? 0} loading={loading} />
-          <StatCard title="Active Jobs" value={j?.active ?? 0} loading={loading} />
-          <StatCard title="Inactive Jobs" value={j?.inactive ?? 0} loading={loading} />
+          <StatCard
+            title="Total Jobs"
+            value={j?.total ?? 0}
+            loading={loading}
+          />
+          <StatCard
+            title="Active Jobs"
+            value={j?.active ?? 0}
+            loading={loading}
+          />
+          <StatCard
+            title="Inactive Jobs"
+            value={j?.inactive ?? 0}
+            loading={loading}
+          />
         </div>
       </section>
 
@@ -305,13 +359,28 @@ function DashboardPage() {
       <section>
         <h3 className="text-xl font-semibold mb-4">Newsletter & Content</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatCard title="Subscribers" value={nl?.subscribers ?? 0} loading={loading} />
-          <StatCard title="Newsletters Sent" value={nl?.published ?? 0} loading={loading} />
-          <StatCard title="Questions" value={c?.questions ?? 0} loading={loading} />
-          <StatCard title="Products" value={c?.products ?? 0} loading={loading} />
+          <StatCard
+            title="Subscribers"
+            value={nl?.subscribers ?? 0}
+            loading={loading}
+          />
+          <StatCard
+            title="Newsletters Sent"
+            value={nl?.published ?? 0}
+            loading={loading}
+          />
+          <StatCard
+            title="Questions"
+            value={c?.questions ?? 0}
+            loading={loading}
+          />
+          <StatCard
+            title="Products"
+            value={c?.products ?? 0}
+            loading={loading}
+          />
         </div>
       </section>
-
     </div>
   );
 }

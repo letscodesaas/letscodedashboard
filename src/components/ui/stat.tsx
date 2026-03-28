@@ -25,9 +25,7 @@ function StatCard({
               <span className="text-2xl font-medium text-gray-900">
                 {value}
               </span>
-              {sub && (
-                <span className="ml-2 text-sm text-gray-400">{sub}</span>
-              )}
+              {sub && <span className="ml-2 text-sm text-gray-400">{sub}</span>}
             </p>
           )}
         </div>

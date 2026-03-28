@@ -92,7 +92,10 @@ export const GET = async () => {
           completeProfiles,
           totalProfileViews,
           totalPoints,
-          byRole: userRoles.map((r: any) => ({ role: r._id ?? 'unknown', count: r.count })),
+          byRole: userRoles.map((r: any) => ({
+            role: r._id ?? 'unknown',
+            count: r.count,
+          })),
         },
         interviewExperiences: {
           total: totalExperiences,
@@ -119,7 +122,11 @@ export const GET = async () => {
   } catch (error: any) {
     console.error('Dashboard stats error:', error);
     return NextResponse.json(
-      { success: false, message: 'Failed to fetch stats', error: error.message },
+      {
+        success: false,
+        message: 'Failed to fetch stats',
+        error: error.message,
+      },
       { status: 500 }
     );
   }
