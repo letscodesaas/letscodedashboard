@@ -16,6 +16,7 @@ export const GET = async () => {
     const [
       // Users
       totalUsers,
+      usersWithUsername,
       publicProfiles,
       completeProfiles,
       userRoles,
@@ -42,6 +43,7 @@ export const GET = async () => {
       totalProducts,
     ] = await Promise.all([
       // Users
+      UserProfile.countDocuments({}),
       UserProfile.countDocuments({ username: { $exists: true, $ne: '' } }),
       UserProfile.countDocuments({ publicProfile: true }),
       UserProfile.countDocuments({ isProfileComplete: true }),
@@ -88,6 +90,7 @@ export const GET = async () => {
       data: {
         users: {
           total: totalUsers,
+          withUsername: usersWithUsername,
           publicProfiles,
           completeProfiles,
           totalProfileViews,

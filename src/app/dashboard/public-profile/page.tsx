@@ -145,7 +145,7 @@ const Page = () => {
       {response && (
         <div className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">Statistics</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div className="bg-blue-100 p-4 rounded-lg shadow">
               <p className="text-sm text-gray-600">Total Users</p>
               <p className="text-3xl font-bold text-blue-600">
@@ -153,45 +153,21 @@ const Page = () => {
               </p>
             </div>
             <div className="bg-green-100 p-4 rounded-lg shadow">
-              <p className="text-sm text-gray-600">Public Profiles</p>
+              <p className="text-sm text-gray-600">Users with Username</p>
               <p className="text-3xl font-bold text-green-600">
-                {response.data?.stats?.publicProfiles}
+                {response.data?.stats?.withUsername}
               </p>
             </div>
             <div className="bg-purple-100 p-4 rounded-lg shadow">
-              <p className="text-sm text-gray-600">Complete Profiles</p>
+              <p className="text-sm text-gray-600">Public User</p>
               <p className="text-3xl font-bold text-purple-600">
-                {response.data?.stats?.completeProfiles}
+                {response.data?.stats?.publicProfiles}
               </p>
             </div>
             <div className="bg-orange-100 p-4 rounded-lg shadow">
-              <p className="text-sm text-gray-600">Avg Views</p>
+              <p className="text-sm text-gray-600">Private User</p>
               <p className="text-3xl font-bold text-orange-600">
-                {response.data?.stats?.avgViews}
-              </p>
-            </div>
-            <div className="bg-indigo-100 p-4 rounded-lg shadow">
-              <p className="text-sm text-gray-600">Avg Points</p>
-              <p className="text-3xl font-bold text-indigo-600">
-                {response.data?.stats?.avgPoints}
-              </p>
-            </div>
-            <div className="bg-pink-100 p-4 rounded-lg shadow">
-              <p className="text-sm text-gray-600">% Public</p>
-              <p className="text-3xl font-bold text-pink-600">
-                {response.data?.stats?.percentPublic?.toFixed(2)}%
-              </p>
-            </div>
-            <div className="bg-yellow-100 p-4 rounded-lg shadow">
-              <p className="text-sm text-gray-600">% Complete</p>
-              <p className="text-3xl font-bold text-yellow-600">
-                {response.data?.stats?.percentComplete}%
-              </p>
-            </div>
-            <div className="bg-teal-100 p-4 rounded-lg shadow">
-              <p className="text-sm text-gray-600">Public & Complete</p>
-              <p className="text-3xl font-bold text-teal-600">
-                {response.data?.stats?.publicAndComplete}
+                {response.data?.stats?.privateProfiles}
               </p>
             </div>
           </div>

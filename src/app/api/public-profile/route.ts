@@ -19,13 +19,15 @@ export const GET = async (req: Request) => {
     const role = url.searchParams.get('role');
     const publicProfile = url.searchParams.get('publicProfile'); // 'true' | 'false' | null
 
-    // Build filter object
-    const filter: any = {};
+    // Build filter object - ALWAYS filter by username presence for the results list
+    const filter: any = {
+      username: { $exists: true, $ne: '' },
+    };
     if (role) filter.role = role;
     if (publicProfile === 'true') filter.publicProfile = true;
     if (publicProfile === 'false') filter.publicProfile = false;
 
-    // 1) Aggregation for global stats (unfiltered)
+    // 1) Aggregation for global stats (unfiltered across all users)
     const statsAgg = await UserProfile.aggregate([
       {
         $facet: {
@@ -33,7 +35,8 @@ export const GET = async (req: Request) => {
             {
               $group: {
                 _id: null,
-                totalUsers: {
+                absoluteTotalUsers: { $sum: 1 },
+                usersWithUsername: {
                   $sum: {
                     $cond: [
                       {
@@ -47,30 +50,12 @@ export const GET = async (req: Request) => {
                     ],
                   },
                 },
-                completeProfiles: {
-                  $sum: {
-                    $cond: [{ $eq: ['$isProfileComplete', true] }, 1, 0],
-                  },
-                },
                 publicProfiles: {
                   $sum: { $cond: [{ $eq: ['$publicProfile', true] }, 1, 0] },
                 },
-                publicAndComplete: {
-                  $sum: {
-                    $cond: [
-                      {
-                        $and: [
-                          { $eq: ['$publicProfile', true] },
-                          { $eq: ['$isProfileComplete', true] },
-                        ],
-                      },
-                      1,
-                      0,
-                    ],
-                  },
+                privateProfiles: {
+                  $sum: { $cond: [{ $eq: ['$publicProfile', false] }, 1, 0] },
                 },
-                totalPoints: { $sum: { $ifNull: ['$points', 0] } },
-                totalViews: { $sum: { $ifNull: ['$views', 0] } },
               },
             },
           ],
@@ -87,32 +72,14 @@ export const GET = async (req: Request) => {
     ]);
 
     const totals = statsAgg?.[0]?.totals?.[0] || {
-      totalUsers: 0,
-      completeProfiles: 0,
+      absoluteTotalUsers: 0,
+      usersWithUsername: 0,
       publicProfiles: 0,
-      publicAndComplete: 0,
-      totalPoints: 0,
-      totalViews: 0,
+      privateProfiles: 0,
     };
     const byRole = statsAgg?.[0]?.byRole || [];
 
-    // compute derived metrics safely
-    const percentComplete = totals.totalUsers
-      ? Math.round((totals.completeProfiles / totals.totalUsers) * 100 * 100) /
-        100
-      : 0;
-    const percentPublic = totals.totalUsers
-      ? Math.round((totals.publicProfiles / totals.totalUsers) * 100 * 100) /
-        100
-      : 0;
-    const avgPoints = totals.totalUsers
-      ? totals.totalPoints / totals.totalUsers
-      : 0;
-    const avgViews = totals.totalUsers
-      ? totals.totalViews / totals.totalUsers
-      : 0;
-
-    // 2) Paginated user list for admin table (with filtering)
+    // 2) Paginated user list for admin table (with filtering + username requirement)
     const users = await UserProfile.find(filter)
       .sort({ createdAt: -1 })
       .skip(skip)
@@ -131,14 +98,10 @@ export const GET = async (req: Request) => {
         message: 'Admin stats retrieved',
         data: {
           stats: {
-            totalUsers: totals.totalUsers || 0,
-            completeProfiles: totals.completeProfiles || 0,
+            totalUsers: totals.absoluteTotalUsers || 0,
+            withUsername: totals.usersWithUsername || 0,
             publicProfiles: totals.publicProfiles || 0,
-            publicAndComplete: totals.publicAndComplete || 0,
-            percentComplete,
-            percentPublic,
-            avgPoints: Number(avgPoints.toFixed(2)),
-            avgViews: Number(avgViews.toFixed(2)),
+            privateProfiles: totals.privateProfiles || 0,
             byRole: byRole.map((r: any) => ({ role: r._id, count: r.count })),
           },
           users: {

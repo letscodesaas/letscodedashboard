@@ -264,10 +264,15 @@ function DashboardPage() {
       {/* Users */}
       <section>
         <h3 className="text-xl font-semibold mb-4">Users</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
           <StatCard
             title="Total Users"
             value={u?.total ?? 0}
+            loading={loading}
+          />
+          <StatCard
+            title="Users with Username"
+            value={u?.withUsername ?? 0}
             loading={loading}
           />
           <StatCard
