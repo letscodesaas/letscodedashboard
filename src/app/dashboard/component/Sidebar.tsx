@@ -73,6 +73,11 @@ const navigationItems = [
     icon: User,
   },
   {
+    title: 'Manage Subscribers',
+    url: '/dashboard/subscribers',
+    icon: User,
+  },
+  {
     title: 'Questions',
     url: '/dashboard/questions',
     icon: Book,
