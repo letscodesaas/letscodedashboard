@@ -1,25 +1,25 @@
 'use client';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import EmailEditor, { EditorRef, EmailEditorProps } from 'react-email-editor';
-import { Button } from './button';
+import { useEditor } from '@/context/EditorContext';
 
 function EmailEdit() {
   const emailEditorRef = useRef<EditorRef>(null);
+  const { setEmail} = useEditor();
 
-  const exportHtml = () => {
-    const unlayer = emailEditorRef.current?.editor;
-    unlayer?.exportHtml((data) => {
-      const { html } = data;
-      navigator.clipboard
-        .writeText(html)
-        .then(() => {
-          alert('HTML copied to clipboard!');
-        })
-        .catch((err) => {
-          console.error('Clipboard copy failed', err);
-        });
-    });
-  };
+  useEffect(() => {
+    const id = setInterval(() => {
+      emailEditorRef.current.editor.exportHtml((data) => {
+        const { html } = data;
+        setEmail(html);
+      });
+    }, 8000);
+    return () => clearInterval(id);
+  }, []);
+
+
+
+
 
   const onReady: EmailEditorProps['onReady'] = (unlayer) => {
     const templateJson = {
@@ -30,8 +30,7 @@ function EmailEdit() {
   };
 
   return (
-    <div className="w-[60vw] h-[90vh]">
-      <Button onClick={exportHtml}>Copy HTML</Button>
+    <div className="w-full h-[90vh]">
       <EmailEditor ref={emailEditorRef} minHeight={'80vh'} onReady={onReady} />
     </div>
   );
