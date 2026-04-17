@@ -65,5 +65,3 @@ export const send_Bulk_mail = async (datas) => {
     throw new Error(String(error));
   }
 };
-
-

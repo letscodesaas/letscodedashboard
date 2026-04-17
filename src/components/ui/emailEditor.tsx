@@ -5,7 +5,7 @@ import { useEditor } from '@/context/EditorContext';
 
 function EmailEdit() {
   const emailEditorRef = useRef<EditorRef>(null);
-  const { setEmail} = useEditor();
+  const { setEmail } = useEditor();
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -16,10 +16,6 @@ function EmailEdit() {
     }, 8000);
     return () => clearInterval(id);
   }, []);
-
-
-
-
 
   const onReady: EmailEditorProps['onReady'] = (unlayer) => {
     const templateJson = {

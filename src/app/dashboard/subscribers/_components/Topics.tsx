@@ -47,7 +47,13 @@ function Topics() {
               <Button variant="destructive">
                 <Trash2 />
               </Button>
-              <Button onClick={()=>router.push(`/dashboard/subscribers/editor/${ele?.topic}`)}>Schedule mails</Button>
+              <Button
+                onClick={() =>
+                  router.push(`/dashboard/subscribers/editor/${ele?.topic}`)
+                }
+              >
+                Schedule mails
+              </Button>
             </CardFooter>
           </Card>
         );

@@ -72,7 +72,7 @@ const navigationItems = [
     url: '/dashboard/public-profile',
     icon: User,
   },
-   {
+  {
     title: 'Manage Subscribers',
     url: '/dashboard/subscribers',
     icon: User,

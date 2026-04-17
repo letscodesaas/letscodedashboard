@@ -14,8 +14,8 @@ import { Input } from '@/components/ui/input';
 import { useEditor } from '@/context/EditorContext';
 import { String } from 'aws-sdk/clients/acm';
 
-function SendBulkMail({topic}:{topic:String}) {
-  const {emailTemplate} = useEditor()
+function SendBulkMail({ topic }: { topic: String }) {
+  const { emailTemplate } = useEditor();
   return (
     <div>
       <Dialog>

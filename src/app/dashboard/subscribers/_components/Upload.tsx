@@ -44,8 +44,8 @@ function Upload() {
   return (
     <div>
       <Dialog>
-        <DialogTrigger asChild >
-          <Button variant="default" >Add Topics</Button>
+        <DialogTrigger asChild>
+          <Button variant="default">Add Topics</Button>
         </DialogTrigger>
 
         <DialogContent className="sm:max-w-sm">
