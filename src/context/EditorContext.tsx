@@ -3,6 +3,7 @@ import { createContext, useContext, useState } from 'react';
 
 const EditorContext = createContext({
   emailTemplate: '',
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setEmail: (e: string) => {},
 });
 
