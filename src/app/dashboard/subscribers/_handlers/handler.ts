@@ -66,19 +66,17 @@ export const send_Bulk_mail = async (datas) => {
   }
 };
 
-
-export const generate_ai_email_template = async(template:string)=>{
+export const generate_ai_email_template = async (template: string) => {
   try {
-     const response = await fetch('/api/contentgeneration', {
-      method:'POST',
-      body:JSON.stringify({topic: template}),
-
-      });
-      const data = await response.json();
-      return data.message;
+    const response = await fetch('/api/contentgeneration', {
+      method: 'POST',
+      body: JSON.stringify({ topic: template }),
+    });
+    const data = await response.json();
+    return data.message;
   } catch (error) {
-    throw new Error(String(error))
+    throw new Error(String(error));
   }
-}
+};
 
 // export const get_stats = as

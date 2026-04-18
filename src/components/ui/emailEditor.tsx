@@ -3,11 +3,11 @@ import React, { useEffect, useRef } from 'react';
 import EmailEditor, { EditorRef, EmailEditorProps } from 'react-email-editor';
 import { useEditor } from '@/context/EditorContext';
 
-function EmailEdit({focus}:{focus:boolean}) {
+function EmailEdit({ focus }: { focus: boolean }) {
   const emailEditorRef = useRef<EditorRef>(null);
   const { setEmail } = useEditor();
   useEffect(() => {
-    if(focus){
+    if (focus) {
       const id = setInterval(() => {
         emailEditorRef.current.editor.exportHtml((data) => {
           const { html } = data;
@@ -16,7 +16,7 @@ function EmailEdit({focus}:{focus:boolean}) {
       }, 3000);
       return () => clearInterval(id);
     }
-    }, []);
+  }, []);
 
   const onReady: EmailEditorProps['onReady'] = (unlayer) => {
     const templateJson = {

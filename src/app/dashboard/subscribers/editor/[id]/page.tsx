@@ -23,7 +23,7 @@ function Page() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="htmleditor">
-          <HtmlEditor/>
+          <HtmlEditor />
         </TabsContent>
         <TabsContent value="emaileditor">
           <EmailEdit focus={isFocues} />
