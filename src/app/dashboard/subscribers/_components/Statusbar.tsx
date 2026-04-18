@@ -33,7 +33,7 @@ function Statusbar() {
           <Bell
             width={15}
             height={25}
-            className="mr-1 animate-none text-red-500"
+            className="mr-1 animate-none text-white"
           />
         ) : (
           <Bell

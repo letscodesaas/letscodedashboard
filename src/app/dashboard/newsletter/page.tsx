@@ -406,7 +406,7 @@ function Page() {
 
         {editor ? (
           <div className="relative  w-full min-h-full">
-            <EmailEdit />
+            <EmailEdit focus={false}/>
           </div>
         ) : (
           <>

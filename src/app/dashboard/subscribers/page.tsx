@@ -2,6 +2,7 @@ import React from 'react';
 import Statusbar from './_components/Statusbar';
 import Upload from './_components/Upload';
 import Topics from './_components/Topics';
+import Stats from './_components/Stats';
 
 function Page() {
   return (
@@ -14,7 +15,16 @@ function Page() {
       </div>
 
       <div>
+        <Stats />
+      </div>
+
+      <div>
+        <h2 className="text-3xl font-semibold  mb-2">Topics</h2>
         <Topics />
+      </div>
+
+      <div>
+        <h2 className="text-3xl font-semibold mb-2 mt-5">Notification Info</h2>
       </div>
     </div>
   );
