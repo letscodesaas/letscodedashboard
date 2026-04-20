@@ -79,4 +79,18 @@ export const generate_ai_email_template = async (template: string) => {
   }
 };
 
-// export const get_stats = as
+export const notificatonEvent = async () => {
+  try {
+    const response = await fetch(`${URL}/api/v1/scheduled`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw new Error(String(error));
+  }
+};
