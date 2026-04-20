@@ -16,12 +16,16 @@ function Topics() {
 
   useEffect(() => {
     topics()
-      .then((d) => setData(d.data))
-      .catch((e) => console.log(e))
-      .finally(() => setLoading(false));
+      .then((d) => setData(d.data || []))
+      .catch((e) => {
+        console.log(e);
+        setData([]);
+      })
+      .finally(() => {
+        setLoading(false);
+        setData([]);
+      });
   }, []);
-
-  // 🔄 Loading
   if (loading) {
     return (
       <div className="flex items-center justify-center h-60">
@@ -29,9 +33,7 @@ function Topics() {
       </div>
     );
   }
-
-  // ❌ Empty state (fixed)
-  if (datas.length === 0) {
+  if (datas?.length === 0) {
     return (
       <div className="flex items-center justify-center h-60">
         <h3 className="text-2xl font-semibold text-muted-foreground">
@@ -43,7 +45,7 @@ function Topics() {
 
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 p-4">
-      {datas.map((ele, index) => {
+      {datas?.map((ele, index) => {
         const isActive = ele?.isActive;
 
         return (
