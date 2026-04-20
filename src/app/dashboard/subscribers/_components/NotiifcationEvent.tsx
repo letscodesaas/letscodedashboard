@@ -16,11 +16,14 @@ function NotificationEvent() {
       })
       .catch((e) => {
         console.error(e);
+        setData([]);
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        setData([]);
+      });
   }, []);
 
-  // 🔄 Loading State
   if (loading) {
     return (
       <div className="flex justify-center items-center h-40 text-lg">
@@ -29,8 +32,7 @@ function NotificationEvent() {
     );
   }
 
-  // ❌ Empty State (fixed return bug)
-  if (datas.length === 0) {
+  if (datas?.length === 0) {
     return (
       <div className="flex justify-center items-center h-40">
         <h3 className="text-2xl font-semibold text-gray-500">
