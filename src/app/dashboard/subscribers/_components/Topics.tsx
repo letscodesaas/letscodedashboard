@@ -2,12 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { topics } from '../_handlers/handler';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Trash2 } from 'lucide-react';
@@ -82,20 +77,14 @@ function Topics() {
 
             {/* Actions */}
             <CardFooter className="flex items-center justify-between gap-2">
-              <Button
-                variant="destructive"
-                size="icon"
-                className="shrink-0"
-              >
+              <Button variant="destructive" size="icon" className="shrink-0">
                 <Trash2 className="w-4 h-4" />
               </Button>
 
               <Button
                 className="w-full"
                 onClick={() =>
-                  router.push(
-                    `/dashboard/subscribers/editor/${ele?.topic}`
-                  )
+                  router.push(`/dashboard/subscribers/editor/${ele?.topic}`)
                 }
               >
                 Schedule Mail

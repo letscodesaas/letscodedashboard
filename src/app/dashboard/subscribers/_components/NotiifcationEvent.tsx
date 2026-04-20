@@ -2,11 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { notificatonEvent } from '../_handlers/handler';
-import {
-  Card,
-  CardHeader,
-  CardFooter,
-} from '@/components/ui/card';
+import { Card, CardHeader, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
 function NotificationEvent() {
@@ -80,9 +76,7 @@ function NotificationEvent() {
 
               {/* Scheduled */}
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-500">
-                  Scheduled Status
-                </span>
+                <span className="text-sm text-gray-500">Scheduled Status</span>
                 <Badge
                   variant="outline"
                   className={`${
