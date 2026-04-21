@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Eye, EyeClosed } from 'lucide-react';
+// import { stats } from '../_handlers/handler';
 
 function Stats() {
   const [visible, setVisible] = useState(true);
@@ -42,6 +43,20 @@ function Stats() {
     if (isRate) return `${(value * 100).toFixed(1)}%`;
     return value;
   };
+
+  // useState(() => {
+  //   const params = {
+  //     start_date: new Date().toLocaleDateString().replaceAll("/","-"),
+  //     end_date: new Date().toLocaleDateString().replaceAll("/","-"),
+  //   };
+  //   stats(params)
+  //     .then((d) => {
+  //       console.log(d);
+  //     })
+  //     .catch((e) => {
+  //       console.log(e);
+  //     });
+  // }, []);
 
   return (
     <div className="p-4">

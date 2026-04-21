@@ -34,6 +34,7 @@ function Upload() {
       }
       const data = await upload_topic_subscriber(formdata);
       toast.success(data.message || 'Uploaded successfully');
+      window.location.reload();
     } catch (error) {
       toast.error(error?.message || 'Something went wrong');
     } finally {

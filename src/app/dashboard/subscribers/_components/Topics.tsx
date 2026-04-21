@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
+
 function Topics() {
   const router = useRouter();
 
@@ -16,14 +17,15 @@ function Topics() {
 
   useEffect(() => {
     topics()
-      .then((d) => setData(d.data || []))
+      .then((d) => {
+        setData(d.data);
+      })
       .catch((e) => {
         console.log(e);
         setData([]);
       })
       .finally(() => {
         setLoading(false);
-        setData([]);
       });
   }, []);
   if (loading) {
