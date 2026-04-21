@@ -16,14 +16,15 @@ function Topics() {
 
   useEffect(() => {
     topics()
-      .then((d) => setData(d.data || []))
+      .then((d) => {
+        setData(d.data);
+      })
       .catch((e) => {
         console.log(e);
         setData([]);
       })
       .finally(() => {
         setLoading(false);
-        setData([]);
       });
   }, []);
   if (loading) {

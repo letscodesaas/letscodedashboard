@@ -15,8 +15,10 @@ import { useEditor } from '@/context/EditorContext';
 import { send_Bulk_mail } from '../_handlers/handler';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 function SendBulkMail({ topic }: { topic: string }) {
+  const router = useRouter();
   const { emailTemplate } = useEditor();
   const [subject, setSubject] = useState<string>('');
   const [category, setCategory] = useState<string>('');
@@ -32,6 +34,7 @@ function SendBulkMail({ topic }: { topic: string }) {
 
       const response = await send_Bulk_mail(datas);
       toast(response.message);
+      router.push('/dashboard/subscribers');
     } catch (error) {
       console.log(error);
       toast.error(String(error) || 'Something went wrong');

@@ -40,6 +40,9 @@ export const topics = async () => {
       headers: {
         'Content-Type': 'application/json',
       },
+      next: {
+        revalidate: 60,
+      },
     });
 
     const data = await response.json();
@@ -86,8 +89,27 @@ export const notificatonEvent = async () => {
       headers: {
         'Content-Type': 'application/json',
       },
+      next: {
+        revalidate: 60,
+      },
     });
 
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw new Error(String(error));
+  }
+};
+
+export const stats = async (params) => {
+  try {
+    const response = await fetch(`${URL}/api/v1/stats`, {
+      method: 'POST',
+      body: JSON.stringify(params),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
     const data = await response.json();
     return data;
   } catch (error) {
