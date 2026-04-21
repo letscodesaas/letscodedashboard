@@ -23,11 +23,11 @@ function SendBulkMail({ topic }: { topic: string }) {
   const { emailTemplate } = useEditor();
   const [subject, setSubject] = useState<string>('');
   const [category, setCategory] = useState<string>('');
-  const [loading,setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
       const datas = {
         topic,
         html: emailTemplate,
@@ -37,14 +37,14 @@ function SendBulkMail({ topic }: { topic: string }) {
 
       const response = await send_Bulk_mail(datas);
       toast(response.message);
-      setLoading(false)
+      setLoading(false);
       router.push('/dashboard/subscribers');
     } catch (error) {
       console.log(error);
-      setLoading(false)
+      setLoading(false);
       toast.error(String(error) || 'Something went wrong');
-    }finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -81,7 +81,7 @@ function SendBulkMail({ topic }: { topic: string }) {
               <Button variant="destructive">close</Button>
             </DialogClose>
             <Button variant="default" onClick={handleSubmit}>
-            {loading && <Spinner/>}
+              {loading && <Spinner />}
               Schedule
             </Button>
           </DialogFooter>
