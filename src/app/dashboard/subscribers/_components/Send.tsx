@@ -16,15 +16,18 @@ import { send_Bulk_mail } from '../_handlers/handler';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { Spinner } from '@/components/ui/spinner';
 
 function SendBulkMail({ topic }: { topic: string }) {
   const router = useRouter();
   const { emailTemplate } = useEditor();
   const [subject, setSubject] = useState<string>('');
   const [category, setCategory] = useState<string>('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
     try {
+      setLoading(true);
       const datas = {
         topic,
         html: emailTemplate,
@@ -34,10 +37,14 @@ function SendBulkMail({ topic }: { topic: string }) {
 
       const response = await send_Bulk_mail(datas);
       toast(response.message);
+      setLoading(false);
       router.push('/dashboard/subscribers');
     } catch (error) {
       console.log(error);
+      setLoading(false);
       toast.error(String(error) || 'Something went wrong');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -74,6 +81,7 @@ function SendBulkMail({ topic }: { topic: string }) {
               <Button variant="destructive">close</Button>
             </DialogClose>
             <Button variant="default" onClick={handleSubmit}>
+              {loading && <Spinner />}
               Schedule
             </Button>
           </DialogFooter>
