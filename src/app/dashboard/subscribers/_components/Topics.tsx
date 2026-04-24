@@ -97,7 +97,9 @@ function Topics() {
               <Button
                 className="w-full"
                 onClick={() =>
-                  router.push(`/dashboard/subscribers/editor/${ele?.topics?.topic}`)
+                  router.push(
+                    `/dashboard/subscribers/editor/${ele?.topics?.topic}`
+                  )
                 }
               >
                 Schedule Mail

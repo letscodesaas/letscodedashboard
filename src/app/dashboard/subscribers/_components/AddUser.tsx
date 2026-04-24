@@ -80,7 +80,7 @@ function AddUser({ topics }: { topics: string }) {
                     />
                   </Field>
                 </FieldGroup>
-                <DialogFooter className='mt-4'>
+                <DialogFooter className="mt-4">
                   <DialogClose asChild>
                     <Button variant="default">Close</Button>
                   </DialogClose>
@@ -100,7 +100,7 @@ function AddUser({ topics }: { topics: string }) {
                   </Field>
                 </FieldGroup>
               </form>
-              <DialogFooter className='mt-4'>
+              <DialogFooter className="mt-4">
                 <DialogClose asChild>
                   <Button variant="default">Close</Button>
                 </DialogClose>

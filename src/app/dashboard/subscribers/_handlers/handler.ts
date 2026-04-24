@@ -117,11 +117,10 @@ export const stats = async (params) => {
   }
 };
 
-
-export const subscribers = async (form:FormData) => {
+export const subscribers = async (form: FormData) => {
   try {
-    const email = form.get("email")?.toString().trim() || "";
-    const topic = form.get("topic")?.toString().trim() || "";
+    const email = form.get('email')?.toString().trim() || '';
+    const topic = form.get('topic')?.toString().trim() || '';
     const response = await fetch(`${URL}/api/v1/subscribe`, {
       method: 'POST',
       body: JSON.stringify({ email, topic }),
