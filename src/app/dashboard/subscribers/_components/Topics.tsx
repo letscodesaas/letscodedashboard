@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import AddUser from '../_components/AddUser';
 
 function Topics() {
   const router = useRouter();
@@ -47,11 +48,11 @@ function Topics() {
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 p-4">
       {datas?.map((ele, index) => {
-        const isActive = ele?.isActive;
+        const isActive = ele?.topics?.isActive;
 
         return (
           <Card
-            key={ele._id || index}
+            key={ele.topics._id || index}
             className="hover:shadow-lg transition-all duration-200 border border-muted"
           >
             <CardHeader className="space-y-4">
@@ -60,6 +61,8 @@ function Topics() {
                 <Badge variant={isActive ? 'default' : 'secondary'}>
                   {isActive ? 'Active' : 'Inactive'}
                 </Badge>
+
+                <AddUser topics={ele?.topics?.topic} />
               </div>
 
               {/* Topic */}
@@ -68,13 +71,20 @@ function Topics() {
                   Topic
                 </p>
                 <CardTitle className="text-xl font-semibold mt-1">
-                  {ele?.topic}
+                  {ele?.topics?.topic}
                 </CardTitle>
+              </div>
+
+              <div>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide">
+                  Subscribers
+                </p>
+                <p className="text-xl font-semibold mt-1">{ele?.subscribers}</p>
               </div>
 
               {/* Created date */}
               <p className="text-xs text-muted-foreground">
-                Created: {new Date(ele?.createdAt).toLocaleDateString()}
+                Created: {new Date(ele?.topics?.createdAt).toLocaleDateString()}
               </p>
             </CardHeader>
 
@@ -87,7 +97,7 @@ function Topics() {
               <Button
                 className="w-full"
                 onClick={() =>
-                  router.push(`/dashboard/subscribers/editor/${ele?.topic}`)
+                  router.push(`/dashboard/subscribers/editor/${ele?.topics?.topic}`)
                 }
               >
                 Schedule Mail

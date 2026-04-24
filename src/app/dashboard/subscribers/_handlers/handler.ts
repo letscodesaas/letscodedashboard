@@ -116,3 +116,22 @@ export const stats = async (params) => {
     throw new Error(String(error));
   }
 };
+
+
+export const subscribers = async (form:FormData) => {
+  try {
+    const email = form.get("email")?.toString().trim() || "";
+    const topic = form.get("topic")?.toString().trim() || "";
+    const response = await fetch(`${URL}/api/v1/subscribe`, {
+      method: 'POST',
+      body: JSON.stringify({ email, topic }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw new Error(String(error));
+  }
+};
