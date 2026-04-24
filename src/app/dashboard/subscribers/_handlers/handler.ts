@@ -153,3 +153,16 @@ export const managesemails = async (datas) => {
     throw new Error(String(error));
   }
 };
+
+export const csv_subscribers = async (form: FormData) => {
+  try {
+    const response = await fetch(`${URL}/api/v1/upload-existing-csv`, {
+      method: 'POST',
+      body: form,
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw new Error(String(error));
+  }
+};

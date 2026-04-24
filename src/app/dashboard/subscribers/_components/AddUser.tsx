@@ -16,13 +16,14 @@ import {
 } from '@/components/ui/dialog';
 import { PlusCircleIcon } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { subscribers } from '../_handlers/handler';
+import { subscribers, csv_subscribers } from '../_handlers/handler';
 import { toast } from 'sonner';
 import { Spinner } from '@/components/ui/spinner';
 
 function AddUser({ topics }: { topics: string }) {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const [emailFile, setEmailFile] = useState<File | null>(null);
   const handleEmailUpload = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
@@ -31,6 +32,28 @@ function AddUser({ topics }: { topics: string }) {
       form.set('email', email);
       form.set('topic', topics);
       const info = await subscribers(form);
+      if (info.message == 'success') {
+        toast.success('success');
+        setLoading(false);
+        window.location.reload();
+      }
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+      toast.error(String(error) || 'Internal Server Error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCSVEmailUpload = async (e: React.FormEvent<HTMLFormElement>) => {
+    try {
+      e.preventDefault();
+      setLoading(true);
+      const form = new FormData(e.currentTarget);
+      form.set('csv_file', emailFile as File);
+      form.set('topic', topics);
+      const info = await csv_subscribers(form);
       if (info.message == 'success') {
         toast.success('success');
         setLoading(false);
@@ -92,22 +115,28 @@ function AddUser({ topics }: { topics: string }) {
             </TabsContent>
 
             <TabsContent value="bulk">
-              <form>
+              <form onSubmit={handleCSVEmailUpload}>
                 <FieldGroup>
                   <Field>
                     <Label>Upload CSV File</Label>
-                    <Input type="file" accept=".csv" />
+                    <Input
+                      type="file"
+                      accept=".csv"
+                      required
+                      onChange={(e) => setEmailFile(e.target.files[0])}
+                    />
                   </Field>
                 </FieldGroup>
+
+                <DialogFooter className="mt-4">
+                  <DialogClose asChild>
+                    <Button variant="default">Close</Button>
+                  </DialogClose>
+                  <Button variant="outline" type="submit">
+                    {loading && <Spinner />}Upload
+                  </Button>
+                </DialogFooter>
               </form>
-              <DialogFooter className="mt-4">
-                <DialogClose asChild>
-                  <Button variant="default">Close</Button>
-                </DialogClose>
-                <Button variant="outline" type="submit">
-                  {loading && <Spinner />}Upload
-                </Button>
-              </DialogFooter>
             </TabsContent>
           </Tabs>
         </DialogContent>

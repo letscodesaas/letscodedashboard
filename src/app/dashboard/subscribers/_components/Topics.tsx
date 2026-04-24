@@ -28,6 +28,26 @@ function Topics() {
         setLoading(false);
       });
   }, []);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      topics()
+        .then((d) => {
+          setData(d.data);
+        })
+        .catch((e) => {
+          console.log(e);
+          setData([]);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }, 3000);
+
+    return () => {
+      clearInterval(id);
+    };
+  }, []);
   if (loading) {
     return (
       <div className="flex items-center justify-center h-60">
