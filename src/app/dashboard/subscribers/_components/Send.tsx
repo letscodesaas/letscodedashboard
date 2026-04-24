@@ -12,7 +12,7 @@ import { Field, FieldGroup } from '@/components/ui/field';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useEditor } from '@/context/EditorContext';
-import { send_Bulk_mail,managesemails } from '../_handlers/handler';
+import { send_Bulk_mail, managesemails } from '../_handlers/handler';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
@@ -36,7 +36,7 @@ function SendBulkMail({ topic }: { topic: string }) {
       };
 
       const response = await send_Bulk_mail(datas);
-      await managesemails(datas)
+      await managesemails(datas);
       toast(response.message);
       setLoading(false);
       router.push('/dashboard/subscribers');

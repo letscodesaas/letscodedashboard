@@ -135,11 +135,11 @@ export const subscribers = async (form: FormData) => {
   }
 };
 
-export const managesemails = async(datas)=>{
-    try {
+export const managesemails = async (datas) => {
+  try {
     const response = await fetch(`${URL}/api/v1/emails`, {
       method: 'POST',
-      body:JSON.stringify(datas),
+      body: JSON.stringify(datas),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -152,4 +152,4 @@ export const managesemails = async(datas)=>{
   } catch (error) {
     throw new Error(String(error));
   }
-}
+};
