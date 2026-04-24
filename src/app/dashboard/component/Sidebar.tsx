@@ -78,6 +78,11 @@ const navigationItems = [
     icon: User,
   },
   {
+    title: 'Manage Newsletters',
+    url: '/dashboard/managenewsletters',
+    icon: User,
+  },
+  {
     title: 'Questions',
     url: '/dashboard/questions',
     icon: Book,

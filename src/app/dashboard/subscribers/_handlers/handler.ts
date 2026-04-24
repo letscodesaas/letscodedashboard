@@ -134,3 +134,22 @@ export const subscribers = async (form: FormData) => {
     throw new Error(String(error));
   }
 };
+
+export const managesemails = async (datas) => {
+  try {
+    const response = await fetch(`${URL}/api/v1/emails`, {
+      method: 'POST',
+      body: JSON.stringify(datas),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      next: {
+        revalidate: 60,
+      },
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw new Error(String(error));
+  }
+};
