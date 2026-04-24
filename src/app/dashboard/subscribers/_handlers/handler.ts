@@ -154,7 +154,6 @@ export const managesemails = async (datas) => {
   }
 };
 
-
 export const csv_subscribers = async (form: FormData) => {
   try {
     const response = await fetch(`${URL}/api/v1/upload-existing-csv`, {
