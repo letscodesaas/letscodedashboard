@@ -52,7 +52,7 @@ function Topics() {
 
         return (
           <Card
-            key={ele.topics._id || index}
+            key={ele?.topics?._id || index}
             className="hover:shadow-lg transition-all duration-200 border border-muted"
           >
             <CardHeader className="space-y-4">
