@@ -77,6 +77,11 @@ const navigationItems = [
     url: '/dashboard/subscribers',
     icon: User,
   },
+   {
+    title: 'Manage Newsletters',
+    url: '/dashboard/managenewsletters',
+    icon: User,
+  },
   {
     title: 'Questions',
     url: '/dashboard/questions',
