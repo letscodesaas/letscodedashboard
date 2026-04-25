@@ -26,7 +26,7 @@ function Page() {
     const id = setInterval(() => {
       logs()
         .then((d) => {
-            console.log(d)
+          console.log(d);
           setDatas(d.data);
           setLoading(false);
         })
@@ -63,7 +63,6 @@ function Page() {
 
   return (
     <div className="p-6 space-y-4">
-
       {/* Table */}
       <Table>
         <TableHeader>
@@ -77,10 +76,7 @@ function Page() {
 
         <TableBody>
           {datas?.map((ele, index) => (
-            <TableRow
-              key={index}
-              className="cursor-pointer"
-            >
+            <TableRow key={index} className="cursor-pointer">
               <TableCell className="font-medium">{ele?.topic}</TableCell>
               <TableCell>{ele?.email}</TableCell>
               <TableCell>{ele?.status}</TableCell>
