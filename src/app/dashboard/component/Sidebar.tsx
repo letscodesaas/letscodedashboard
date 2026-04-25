@@ -14,6 +14,8 @@ import {
   MessageSquare,
   User,
   Book,
+  Logs,
+  List,
 } from 'lucide-react';
 
 import {
@@ -80,7 +82,13 @@ const navigationItems = [
   {
     title: 'Manage Newsletters',
     url: '/dashboard/managenewsletters',
-    icon: User,
+    icon: List,
+  },
+
+  {
+    title: 'Mail Logs',
+    url: '/dashboard/maillogs',
+    icon: Logs,
   },
   {
     title: 'Questions',
