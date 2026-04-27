@@ -17,29 +17,33 @@ export type Contest = {
 
 
 
+
+
+
+
 export const columns: ColumnDef<Contest>[] = [
   {
     accessorKey: '_id',
     header: 'ID',
   },
   {
-    accessorKey: 'firstname',
-    header: 'Firstname',
+    accessorKey: 'userId',
+    header: 'User ID',
   },
   {
-    accessorKey: 'lastname',
-    header: 'Lastname',
+    accessorKey: 'submissionStatus',
+    header: 'Submission Status',
   },
   {
-    accessorKey: 'phonenumber',
-    header: 'Phone Number',
+    accessorKey: 'status',
+    header: 'Status',
   },
   {
-    accessorKey: 'email',
-    header: 'Email',
+    accessorKey: 'questionId',
+    header: 'Question Id',
   },
   {
-    accessorKey: 'userType',
+    accessorKey: 'createdAt',
     header: ({ column }) => {
       return (
         <>
@@ -47,7 +51,7 @@ export const columns: ColumnDef<Contest>[] = [
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           >
-            Status
+            Time Stamp
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         </>
