@@ -10,14 +10,14 @@ function Page() {
   useEffect(() => {
     (async function () {
       setLoading(true);
-      const info = await fetch(`/api/submissions`,{
-        method:'GET',
-        headers:{
-            'Content-type':'application/json'
-        }
-      })
+      const info = await fetch(`/api/submissions`, {
+        method: 'GET',
+        headers: {
+          'Content-type': 'application/json',
+        },
+      });
       const datas = await info.json();
-      console.log(datas)
+      console.log(datas);
       setData(datas.data);
       setLoading(false);
     })();

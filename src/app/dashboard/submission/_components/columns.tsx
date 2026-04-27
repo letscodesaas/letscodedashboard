@@ -15,12 +15,6 @@ export type Contest = {
   email: string;
 };
 
-
-
-
-
-
-
 export const columns: ColumnDef<Contest>[] = [
   {
     accessorKey: '_id',
