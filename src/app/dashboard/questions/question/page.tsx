@@ -30,6 +30,7 @@ export default function Page() {
   const [expectedOutputs, setExpectedOutputs] = useState('');
   const [testInputs, setTestInputs] = useState('');
   const [testOutputs, setTestOutputs] = useState('');
+  const [publishDate, setPublishDate] = useState('');
   const [loading, setLoading] = useState(false);
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -45,6 +46,7 @@ export default function Page() {
         exceptedOutput: expectedOutputs,
         testInput: testInputs,
         testOutput: testOutputs,
+        publishingDate: publishDate,
       });
       setLoading(false);
       toast(response.message);
@@ -56,6 +58,7 @@ export default function Page() {
       setExpectedOutputs('');
       setTestInputs('');
       setTestOutputs('');
+      setPublishDate('');
     } catch (error) {
       toast.error(error);
       setLoading(false);
@@ -113,6 +116,17 @@ export default function Page() {
               />
             </div>
 
+            <div className="space-y-2">
+              <Label>Publishing Date</Label>
+              <Input
+                value={publishDate}
+                onChange={(e) => {
+                  setPublishDate(e.target.value);
+                }}
+                placeholder="12-2-25"
+                type="date"
+              />
+            </div>
             {/* Content Type */}
             <div className="space-y-2">
               <Label>Content Type</Label>

@@ -17,6 +17,8 @@ export type Question = {
   _id: string;
   title: string;
   contentType: string;
+  publishingDate: string;
+  published: boolean;
 };
 
 export const columns: ColumnDef<Question>[] = [
@@ -27,6 +29,14 @@ export const columns: ColumnDef<Question>[] = [
   {
     accessorKey: 'contentType',
     header: 'Content Type',
+  },
+  {
+    accessorKey: 'publishingDate',
+    header: 'publish Date',
+  },
+  {
+    accessorKey: 'isVisible',
+    header: 'Is Published',
   },
   {
     id: 'actions',
