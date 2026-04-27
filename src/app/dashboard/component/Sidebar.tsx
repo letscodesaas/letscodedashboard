@@ -86,8 +86,8 @@ const navigationItems = [
   },
 
   {
-    title: 'Mail Logs',
-    url: '/dashboard/maillogs',
+    title: 'Submission Logs',
+    url: '/dashboard/submission',
     icon: Logs,
   },
   {
