@@ -9,17 +9,16 @@ export const GET = async () => {
     let currentMonth = (new Date().getMonth() + 1).toLocaleString();
     const currentYear = new Date().getFullYear();
 
-    if(parseInt(currentMonth) < 10){
-        currentMonth = "0" + currentMonth.toLocaleString()
+    if (parseInt(currentMonth) < 10) {
+      currentMonth = '0' + currentMonth.toLocaleString();
     }
 
-    const fullDate = currentYear+"-"+currentMonth+"-"+currentDate;
+    const fullDate = currentYear + '-' + currentMonth + '-' + currentDate;
 
-    
     const question = await Questions.findOne({
       publishingDate: fullDate.toString(),
     });
-    
+
     if (!question) {
       return NextResponse.json({ message: 'No question' }, { status: 404 });
     }

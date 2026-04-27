@@ -19,7 +19,6 @@ import { toast } from 'sonner';
 import '@uiw/react-md-editor/markdown-editor.css';
 import '@uiw/react-markdown-preview/markdown.css';
 
-
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false });
 
 export default function Page() {
@@ -47,7 +46,7 @@ export default function Page() {
         exceptedOutput: expectedOutputs,
         testInput: testInputs,
         testOutput: testOutputs,
-        publishingDate:publishDate
+        publishingDate: publishDate,
       });
       setLoading(false);
       toast(response.message);

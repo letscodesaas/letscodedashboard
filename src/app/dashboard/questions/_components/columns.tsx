@@ -18,7 +18,7 @@ export type Question = {
   title: string;
   contentType: string;
   publishingDate: string;
-  published:boolean
+  published: boolean;
 };
 
 export const columns: ColumnDef<Question>[] = [
@@ -34,7 +34,7 @@ export const columns: ColumnDef<Question>[] = [
     accessorKey: 'publishingDate',
     header: 'publish Date',
   },
-   {
+  {
     accessorKey: 'isVisible',
     header: 'Is Published',
   },

@@ -38,13 +38,13 @@ const questionSchema = new mongoose.Schema(
     editoralvideo: {
       type: String,
     },
-    publishingDate:{
-      type:String,
+    publishingDate: {
+      type: String,
     },
-    isVisible:{
-      type:Boolean,
-      default:false
-    }
+    isVisible: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

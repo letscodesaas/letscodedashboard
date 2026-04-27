@@ -11,7 +11,7 @@ const questionType = z.object({
   exceptedOutput: z.string(),
   testInput: z.string(),
   testOutput: z.string(),
-  publishingDate:z.string()
+  publishingDate: z.string(),
 });
 
 const questionTypeID = z.object({
@@ -28,7 +28,7 @@ const questionTypeWithID = z.object({
   exceptedOutput: z.string(),
   testInput: z.string(),
   testOutput: z.string(),
-  publishingDate:z.string(),
+  publishingDate: z.string(),
 });
 
 const videoEditorType = z.object({
@@ -54,7 +54,7 @@ export const questionRouter = router({
         exceptedOutput: input.exceptedOutput,
         testInput: input.testInput,
         testOutput: input.testOutput,
-        publishingDate:input.publishingDate
+        publishingDate: input.publishingDate,
       });
 
       return {
@@ -116,7 +116,7 @@ export const questionRouter = router({
           exceptedOutput: input.exceptedOutput,
           testInput: input.testInput,
           testOutput: input.testOutput,
-          publishingDate:input.publishingDate
+          publishingDate: input.publishingDate,
         });
         return {
           code: 200,
