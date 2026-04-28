@@ -5,7 +5,7 @@
       "path": "/api/cron",
       "schedule": "30 6 * * *"
     },
-      {
+    {
       "path": "/api/test",
       "schedule": "*/5 * * * *"
     }

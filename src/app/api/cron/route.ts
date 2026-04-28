@@ -32,7 +32,7 @@ export const GET = async () => {
       }
     );
     if (!info.isVisible) {
-      console.log("Re run")
+      console.log('Re run');
       await Questions.findOneAndUpdate(
         {
           publishingDate: fullDate.toString(),
@@ -42,7 +42,7 @@ export const GET = async () => {
         }
       );
     }
-    console.log("cron run");
+    console.log('cron run');
     return NextResponse.json({ message: 'success' });
   } catch (error) {
     console.log(error);
