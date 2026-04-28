@@ -27,9 +27,7 @@ function AuthContext({ children }: { children: React.ReactNode }) {
 
     const decoded = decodeToken(token);
     if (decoded) {
-      console.log('\n\nDecoded token:', decoded);
       setUserInfo({ ...decoded, token });
-
       // Redirect logged-in users away from auth pages
       if (isPublicRoute && pathname !== '/') {
         router.push('/dashboard');
