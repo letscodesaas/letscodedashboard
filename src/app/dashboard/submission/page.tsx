@@ -7,37 +7,22 @@ function Page() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // useEffect(() => {
-  //   (async function () {
-  //     const id = setInterval(async () => {
-  //       const info = await fetch(`/api/submissions`, {
-  //         method: 'GET',
-  //         headers: {
-  //           'Content-type': 'application/json',
-  //         },
-  //       });
-  //       const datas = await info.json();
-  //       setData(datas.data);
-  //       setLoading(false);
-  //     }, 20000);
-  //     return () => {
-  //       return clearInterval(id);
-  //     };
-  //   })();
-  // }, []);
-
   useEffect(() => {
     (async function () {
-      const info = await fetch(`/api/submissions`, {
-        method: 'GET',
-        headers: {
-          'Content-type': 'application/json',
-        },
-      });
-      const datas = await info.json();
-      console.log(datas);
-      setData(datas.data);
-      setLoading(false);
+      const id = setInterval(async () => {
+        const info = await fetch(`/api/submissions`, {
+          method: 'GET',
+          headers: {
+            'Content-type': 'application/json',
+          },
+        });
+        const datas = await info.json();
+        setData(datas.data);
+        setLoading(false);
+      }, 10000);
+      return () => {
+        clearInterval(id);
+      };
     })();
   }, []);
 
