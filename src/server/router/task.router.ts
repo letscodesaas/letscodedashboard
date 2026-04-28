@@ -143,7 +143,7 @@ export const taskRouter = router({
   deleteTasks: publicProcedure.input(taskAssign).mutation(async (opts) => {
     try {
       const { input } = opts;
-       await opts.ctx.db.Task.findByIdAndDelete({
+      await opts.ctx.db.Task.findByIdAndDelete({
         _id: input.id,
       });
       return {

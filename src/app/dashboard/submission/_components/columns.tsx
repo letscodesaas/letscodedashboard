@@ -25,8 +25,8 @@ export const columns: ColumnDef<Contest>[] = [
     header: 'User ID',
   },
   {
-    accessorKey:'email',
-    header:"Email"
+    accessorKey: 'email',
+    header: 'Email',
   },
   {
     accessorKey: 'submissionStatus',

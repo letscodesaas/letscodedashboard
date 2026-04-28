@@ -143,7 +143,7 @@ export function AppSidebar() {
           title: 'Show Products',
           url: '/dashboard/product/show',
           icon: Package,
-        },
+        }
       );
       return items;
     }

@@ -35,7 +35,7 @@ function Page() {
         },
       });
       const datas = await info.json();
-      console.log(datas)
+      console.log(datas);
       setData(datas.data);
       setLoading(false);
     })();

@@ -81,7 +81,7 @@ export default function Question({ id, type }: { id: string; type: string }) {
       setExpectedOutputs('');
       setTestInputs('');
       setTestOutputs('');
-      window.location.reload()
+      window.location.reload();
     } catch (error) {
       toast.error(String(error));
       setLoading(false);
