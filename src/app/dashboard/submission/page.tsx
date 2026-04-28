@@ -5,11 +5,29 @@ import { DataTable } from './_components/data-table';
 
 function Page() {
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // useEffect(() => {
+  //   (async function () {
+  //     const id = setInterval(async () => {
+  //       const info = await fetch(`/api/submissions`, {
+  //         method: 'GET',
+  //         headers: {
+  //           'Content-type': 'application/json',
+  //         },
+  //       });
+  //       const datas = await info.json();
+  //       setData(datas.data);
+  //       setLoading(false);
+  //     }, 20000);
+  //     return () => {
+  //       return clearInterval(id);
+  //     };
+  //   })();
+  // }, []);
 
   useEffect(() => {
     (async function () {
-      setLoading(true);
       const info = await fetch(`/api/submissions`, {
         method: 'GET',
         headers: {
@@ -17,7 +35,7 @@ function Page() {
         },
       });
       const datas = await info.json();
-      console.log(datas);
+      console.log(datas)
       setData(datas.data);
       setLoading(false);
     })();
@@ -26,7 +44,7 @@ function Page() {
   return (
     <div>
       <div className="mb-4">
-        <div>Total Regisation : {data.length}</div>
+        <div>Total Submission : {data.length}</div>
       </div>
       {loading ? 'Loading..' : <DataTable columns={columns} data={data} />}
     </div>

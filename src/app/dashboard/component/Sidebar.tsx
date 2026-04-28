@@ -144,8 +144,6 @@ export function AppSidebar() {
           url: '/dashboard/product/show',
           icon: Package,
         },
-        { title: 'Newsletter', url: '/dashboard/newsletter', icon: Mail },
-        { title: 'Show All Newsletters', url: '/published', icon: Mail }
       );
       return items;
     }
@@ -201,24 +199,6 @@ export function AppSidebar() {
         });
       }
     }
-
-    if (policy?.[3]?.access) {
-      if (policy[3].resources.includes('Create')) {
-        items.push({
-          title: 'Newsletter',
-          url: '/dashboard/newsletter',
-          icon: Mail,
-        });
-      }
-      if (policy[3].resources.includes('Manage')) {
-        items.push({
-          title: 'Show All Newsletters',
-          url: '/published',
-          icon: Mail,
-        });
-      }
-    }
-
     return items;
   };
 

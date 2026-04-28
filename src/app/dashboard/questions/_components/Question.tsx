@@ -30,6 +30,7 @@ export default function Question({ id, type }: { id: string; type: string }) {
   const [expectedOutputs, setExpectedOutputs] = useState('');
   const [testInputs, setTestInputs] = useState('');
   const [testOutputs, setTestOutputs] = useState('');
+  const [publishingDate, setPublishDate] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -46,6 +47,7 @@ export default function Question({ id, type }: { id: string; type: string }) {
         setExpectedOutputs(response.data.exceptedOutput);
         setTestInputs(response.data.testInput);
         setTestOutputs(response.data.testOutput);
+        setPublishDate(response.data.publishingDate);
       } catch (error) {
         console.log(error);
       }
@@ -66,9 +68,11 @@ export default function Question({ id, type }: { id: string; type: string }) {
         exceptedOutput: expectedOutputs,
         testInput: testInputs,
         testOutput: testOutputs,
+        publishingDate: publishingDate,
       });
+
       setLoading(false);
-      toast(response.message);
+      toast.message(response.message || 'Done');
       setTitle('');
       setContent('');
       setCategory('');
@@ -77,8 +81,9 @@ export default function Question({ id, type }: { id: string; type: string }) {
       setExpectedOutputs('');
       setTestInputs('');
       setTestOutputs('');
+      window.location.reload()
     } catch (error) {
-      toast.error(error);
+      toast.error(String(error));
       setLoading(false);
     } finally {
       setLoading(false);
@@ -131,6 +136,18 @@ export default function Question({ id, type }: { id: string; type: string }) {
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 placeholder="Array, Graph, DP"
+              />
+            </div>
+
+            {/* Piblishing Date */}
+
+            <div className="space-y-2">
+              <Label>Publishing Date</Label>
+              <Input
+                type="date"
+                value={publishingDate}
+                onChange={(e) => setPublishDate(e.target.value)}
+                placeholder="12/5/26"
               />
             </div>
 

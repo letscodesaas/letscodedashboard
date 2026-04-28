@@ -31,5 +31,5 @@ const contestRegistationSchema = new mongoose.Schema(
 );
 
 export const ContestRegister =
-  mongoose.models.contestregisters ||
+  mongoose.models.contentregister ||
   mongoose.model('contentregister', contestRegistationSchema);
