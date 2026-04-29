@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { columns } from './_components/columns';
 import { DataTable } from './_components/data-table';
-import {logs} from "./_handlers/handler"
+import { logs } from './_handlers/handler';
 
 function Page() {
   const [data, setData] = useState([]);
@@ -11,8 +11,8 @@ function Page() {
   useEffect(() => {
     (async function () {
       const id = setInterval(async () => {
-        const datas = await logs()
-        console.log(datas)
+        const datas = await logs();
+        console.log(datas);
         setData(datas.data);
         setLoading(false);
       }, 5000);
