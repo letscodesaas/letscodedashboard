@@ -86,6 +86,12 @@ const navigationItems = [
   },
 
   {
+    title: 'Newsletters logs',
+    url: '/dashboard/notificationlogs',
+    icon: List,
+  },
+
+  {
     title: 'Submission Logs',
     url: '/dashboard/submission',
     icon: Logs,
