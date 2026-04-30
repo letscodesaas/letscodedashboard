@@ -17,12 +17,14 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { Spinner } from '@/components/ui/spinner';
+import { Slider } from '@/components/ui/slider';
 
-function SendBulkMail({ topic }: { topic: string }) {
+function SendBulkMail({ topic, limits }: { topic: string; limits: number }) {
   const router = useRouter();
   const { emailTemplate } = useEditor();
   const [subject, setSubject] = useState<string>('');
   const [category, setCategory] = useState<string>('');
+  const [limit, setLimit] = useState([1]);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
@@ -33,6 +35,7 @@ function SendBulkMail({ topic }: { topic: string }) {
         html: emailTemplate,
         category,
         subject,
+        limit: limit[0],
       };
 
       const response = await send_Bulk_mail(datas);
@@ -63,6 +66,7 @@ function SendBulkMail({ topic }: { topic: string }) {
                 placeholder="Add Subject"
                 name="subject"
                 onChange={(e) => setSubject(e.target.value)}
+                required
               />
             </FieldGroup>
           </Field>
@@ -74,6 +78,21 @@ function SendBulkMail({ topic }: { topic: string }) {
                 type="text"
                 name="category"
                 onChange={(e) => setCategory(e.target.value)}
+                required
+              />
+            </FieldGroup>
+          </Field>
+          <Field>
+            <FieldGroup>
+              <Label>Number of subscriber {limit}</Label>
+              <Slider
+                value={limit}
+                defaultValue={limit}
+                step={1}
+                onValueChange={setLimit}
+                max={limits}
+                min={1}
+                className="mx-auto w-full max-w-xs"
               />
             </FieldGroup>
           </Field>
@@ -81,7 +100,11 @@ function SendBulkMail({ topic }: { topic: string }) {
             <DialogClose>
               <Button variant="destructive">close</Button>
             </DialogClose>
-            <Button variant="default" onClick={handleSubmit}>
+            <Button
+              variant="default"
+              disabled={subject.length === 0 || limit[0] === 0}
+              onClick={handleSubmit}
+            >
               {loading && <Spinner />}
               Schedule
             </Button>
