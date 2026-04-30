@@ -11,7 +11,7 @@ function Page() {
   return (
     <div>
       <div className="mb-5 mt-3 flex items-center justify-end">
-        <SendBulkMail topic={id.id as string} />
+        <SendBulkMail topic={id.id[0] as string} limits={parseInt(id.id[1])} />
       </div>
       <Tabs defaultValue="htmleditor">
         <TabsList>

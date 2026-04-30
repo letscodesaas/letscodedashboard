@@ -118,7 +118,7 @@ function Topics() {
                 className="w-full"
                 onClick={() =>
                   router.push(
-                    `/dashboard/subscribers/editor/${ele?.topics?.topic}`
+                    `/dashboard/subscribers/editor/${ele?.topics?.topic}/${ele.subscribers}`
                   )
                 }
               >
