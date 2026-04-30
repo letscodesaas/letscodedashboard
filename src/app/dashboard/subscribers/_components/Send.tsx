@@ -35,7 +35,7 @@ function SendBulkMail({ topic, limits }: { topic: string; limits: number }) {
         html: emailTemplate,
         category,
         subject,
-        limit:limit[0]
+        limit: limit[0],
       };
 
       const response = await send_Bulk_mail(datas);
@@ -93,7 +93,6 @@ function SendBulkMail({ topic, limits }: { topic: string; limits: number }) {
                 max={limits}
                 min={1}
                 className="mx-auto w-full max-w-xs"
-                
               />
             </FieldGroup>
           </Field>
@@ -101,7 +100,11 @@ function SendBulkMail({ topic, limits }: { topic: string; limits: number }) {
             <DialogClose>
               <Button variant="destructive">close</Button>
             </DialogClose>
-            <Button variant="default" disabled={subject.length ===0 ||  limit[0] === 0} onClick={handleSubmit}>
+            <Button
+              variant="default"
+              disabled={subject.length === 0 || limit[0] === 0}
+              onClick={handleSubmit}
+            >
               {loading && <Spinner />}
               Schedule
             </Button>
