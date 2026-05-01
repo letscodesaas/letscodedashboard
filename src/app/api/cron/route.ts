@@ -15,10 +15,9 @@ export const GET = async () => {
       currentMonth = '0' + currentMonth.toLocaleString();
     }
 
-    if(parseInt(currentDate) < 10){
+    if (parseInt(currentDate) < 10) {
       currentDate = '0' + currentDate.toLocaleString();
     }
-
 
     const fullDate = currentYear + '-' + currentMonth + '-' + currentDate;
     console.log(fullDate);
