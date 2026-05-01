@@ -60,7 +60,12 @@ function HtmlEditor() {
               <DialogClose>
                 <Button variant="destructive">close</Button>
               </DialogClose>
-              <Button variant="outline" className={`${loading} ? "animate-pulse" :""`} disabled={loading} onClick={handleSubmit}>
+              <Button
+                variant="outline"
+                className={`${loading} ? "animate-pulse" :""`}
+                disabled={loading}
+                onClick={handleSubmit}
+              >
                 {loading ? 'Generating....' : 'Generate'}
               </Button>
             </DialogFooter>
