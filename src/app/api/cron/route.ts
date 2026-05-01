@@ -7,12 +7,16 @@ export const revalidate = 0;
 DB();
 export const GET = async () => {
   try {
-    const currentDate = new Date().getDate();
+    let currentDate = new Date().getDate().toLocaleString();
     let currentMonth = (new Date().getMonth() + 1).toLocaleString();
     const currentYear = new Date().getFullYear();
 
     if (parseInt(currentMonth) < 10) {
       currentMonth = '0' + currentMonth.toLocaleString();
+    }
+
+    if (parseInt(currentDate) < 10) {
+      currentDate = '0' + currentDate.toLocaleString();
     }
 
     const fullDate = currentYear + '-' + currentMonth + '-' + currentDate;
