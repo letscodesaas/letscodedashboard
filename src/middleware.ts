@@ -1,27 +1,27 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export const revalidate = 0
+export const revalidate = 0;
 export async function middleware(request: NextRequest) {
   try {
-    console.log('middleware run')
+    console.log('middleware run');
     const headers = await request.headers.get('AUTHORIZATION');
     const xff = request.headers.get('x-forwarded-for');
     const ip =
       (xff && xff.split(',')[0].trim()) ||
       request.headers.get('x-real-ip') ||
       'unknown';
-      const userIPAllow = process.env.ALLOWIPS;
-      const IPS = [];
-      if(!Array.isArray(userIPAllow)){
-        userIPAllow.split(",").map((ele)=>{
-          IPS.push(ele)
-        })
-      }
-      if(!IPS.includes(ip)){
-        console.log('not allowed')
+    const userIPAllow = process.env.ALLOWIPS;
+    const IPS = [];
+    if (!Array.isArray(userIPAllow)) {
+      userIPAllow.split(',').map((ele) => {
+        IPS.push(ele);
+      });
+    }
+    if (!IPS.includes(ip)) {
+      console.log('not allowed');
       return NextResponse.redirect(new URL('/', request.url));
-      }
+    }
     if (!headers) {
       return NextResponse.redirect(new URL('/', request.url));
     }
