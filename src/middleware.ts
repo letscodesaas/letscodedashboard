@@ -18,7 +18,8 @@ export async function middleware(request: NextRequest) {
     }
     if (!IPS.includes(ip)) {
       console.log('not allowed');
-      return NextResponse.redirect(new URL('/', request.url));
+      throw new Error('Not Allowed')
+      // return NextResponse.redirect(new URL('/', request.url));
     }
   } catch (error) {
     console.log(error);
