@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { DB } from '@/utils/db';
 import { Questions } from '@/models/Question.Model';
 
+export const revalidate = 0;
+
 DB();
 export const GET = async () => {
   try {
