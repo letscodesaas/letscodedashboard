@@ -35,6 +35,8 @@ export default function CreateJob() {
   ];
 
   const [disabled, setDisabled] = useState(false);
+  const [rawJobText, setRawJobText] = useState('');
+  const [parsing, setParsing] = useState(false);
   const [jobData, setJobData] = useState<JobData>({
     title: '',
     company: '',
@@ -58,6 +60,35 @@ export default function CreateJob() {
       ...prev,
       [name]: name === 'status' ? value === 'true' : value, // Convert status to boolean
     }));
+  };
+
+  const parseJobHandler = async () => {
+    if (!rawJobText.trim()) {
+      toast.error('Please enter job posting text');
+      return;
+    }
+
+    setParsing(true);
+    try {
+      const result = await trpc.job.parseJobText.mutate({ text: rawJobText });
+      if (result.success && result.data) {
+        setJobData((prev) => ({
+          ...prev,
+          ...result.data,
+          status: true,
+        }));
+        toast.success('Job details auto-filled! Review and adjust if needed.');
+        setRawJobText('');
+      } else {
+        toast.error('Failed to parse job text');
+      }
+    } catch (error: any) {
+      const errorMsg = error?.message || 'Failed to parse job text. Please fill in manually.';
+      toast.error(errorMsg);
+      console.error('Parse error:', error);
+    } finally {
+      setParsing(false);
+    }
   };
 
   const submitHandler = async () => {
@@ -95,23 +126,60 @@ export default function CreateJob() {
           <CardTitle>Create a New Job</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
+          <div className="space-y-6">
+            {/* Quick Add Section */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h3 className="font-semibold text-blue-900 mb-3">Quick Add (Auto-Fill)</h3>
+              <p className="text-sm text-blue-700 mb-3">
+                Paste job posting text and we'll automatically extract the details:
+              </p>
+              <textarea
+                value={rawJobText}
+                onChange={(e) => setRawJobText(e.target.value)}
+                placeholder="Paste job posting text here...&#10;Example: Interview.io is hiring SDE I (Full Stack Developer)&#10;Batch: 2022, 2023, 2024, 2025&#10;Location: Bangalore&#10;Apply: https://..."
+                className="w-full p-3 border rounded-md text-sm mb-3 font-mono"
+                rows={6}
+              />
+              <Button
+                onClick={parseJobHandler}
+                disabled={parsing || !rawJobText.trim()}
+                className="w-full bg-blue-600 hover:bg-blue-700"
+              >
+                {parsing ? 'Parsing...' : 'Parse & Auto-Fill'}
+              </Button>
+            </div>
+
+            {/* Divider */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">OR</span>
+              </div>
+            </div>
+
+            {/* Manual Form Section */}
+            <div>
+              <h3 className="font-semibold mb-4 text-gray-700">Manual Entry</h3>
+              <div className="space-y-4">
             <div>
               <Label>Job Title</Label>
-              <Input name="title" onChange={handleChange} required />
+              <Input name="title" value={jobData.title} onChange={handleChange} required />
             </div>
             <div>
               <Label>Company</Label>
-              <Input name="company" onChange={handleChange} required />
+              <Input name="company" value={jobData.company} onChange={handleChange} required />
             </div>
             <div>
               <Label>Location</Label>
-              <Input name="location" onChange={handleChange} required />
+              <Input name="location" value={jobData.location} onChange={handleChange} required />
             </div>
             <div>
               <Label>Job Type</Label>
               <select
                 name="type"
+                value={jobData.type}
                 onChange={handleChange}
                 className="w-full p-2 border rounded"
               >
@@ -127,10 +195,11 @@ export default function CreateJob() {
               <Label>Job Status</Label>
               <select
                 name="status"
+                value={jobData.status ? 'true' : 'false'}
                 onChange={handleChange}
                 className="w-full p-2 border rounded"
               >
-                <option value="">Select Job Type</option>
+                <option value="">Select Job Status</option>
                 <option value="true">Active</option>
                 <option value="false">UnActive</option>
               </select>
@@ -140,6 +209,7 @@ export default function CreateJob() {
               <Label>Experience</Label>
               <select
                 name="experience"
+                value={jobData.experience}
                 onChange={handleChange}
                 className="w-full p-2 border rounded"
               >
@@ -153,7 +223,7 @@ export default function CreateJob() {
             </div>
             <div>
               <Label>Salary</Label>
-              <Input name="salary" onChange={handleChange} required />
+              <Input name="salary" value={jobData.salary} onChange={handleChange} required />
             </div>
             <div className="pb-10">
               <Label>Description</Label>
@@ -166,7 +236,7 @@ export default function CreateJob() {
             </div>
             <div>
               <Label>Apply Link</Label>
-              <Input name="applyLink" onChange={handleChange} required />
+              <Input name="applyLink" value={jobData.applyLink} onChange={handleChange} required />
             </div>
             <Button
               disabled={disabled}
@@ -175,6 +245,8 @@ export default function CreateJob() {
             >
               {disabled ? 'Loading...' : 'Create Job'}
             </Button>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
