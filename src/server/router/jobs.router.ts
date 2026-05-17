@@ -127,55 +127,75 @@ export const jobRouter = router({
     }),
 
   parseJobText: publicProcedure
-    .input(z.object({
-      text: z.string(),
-    }))
+    .input(
+      z.object({
+        text: z.string(),
+      })
+    )
     .mutation((opts) => {
       const text = opts.input.text;
       const n = text.replace(/\r\n/g, '\n').trim();
 
       // Title — extract only the role name
       let title = '';
-      const titleLabel = n.match(/(?:job title|position|role|title)\s*[:\-]\s*([^\n]+)/i);
+      const titleLabel = n.match(
+        /(?:job title|position|role|title)\s*[:\-]\s*([^\n]+)/i
+      );
       if (titleLabel) {
         title = titleLabel[1].trim();
       } else {
         // Match "is hiring [role]", "looking for [a] [role]", "join us as [a] [role]", "hiring: [role]"
-        const hiringMatch = n.match(/(?:is hiring|are hiring|we(?:'re| are) hiring|hiring\s*[:\-]|looking for\s*(?:a\s+|an\s+)?|join us as\s*(?:a\s+|an\s+)?|opening for\s*(?:a\s+|an\s+)?)\s*([A-Za-z][A-Za-z\s\-\/]+?)(?:\s*[\|,\n–]|$)/i);
+        // Negated class [^\|,\n–]+ avoids ReDoS — no ambiguous overlap with the delimiter set
+        const hiringMatch = n.match(
+          /(?:is hiring|are hiring|we(?:'re| are) hiring|hiring\s*[:\-]|looking for\s*(?:a\s+|an\s+)?|join us as\s*(?:a\s+|an\s+)?|opening for\s*(?:a\s+|an\s+)?)\s*([^|,\n–]+)/i
+        );
         if (hiringMatch) {
           title = hiringMatch[1].trim();
         } else {
           const firstLine = n.split('\n')[0].trim();
           if (
             firstLine.length < 100 &&
-            /engineer|developer|designer|manager|analyst|lead|director|specialist|coordinator|intern|consultant|architect|devops|frontend|backend|fullstack|full.stack/i.test(firstLine)
+            /engineer|developer|designer|manager|analyst|lead|director|specialist|coordinator|intern|consultant|architect|devops|frontend|backend|fullstack|full.stack/i.test(
+              firstLine
+            )
           ) {
             title = firstLine;
           }
         }
       }
       // Strip any trailing "at Company", "| location", "– info" that slipped through
-      title = title.replace(/\s*[\|–]\s*.+$/, '').replace(/\s+at\s+.+$/i, '').trim();
+      title = title
+        .replace(/\s*[\|–]\s*.+$/, '')
+        .replace(/\s+at\s+.+$/i, '')
+        .trim();
       // Strip leading articles
       title = title.replace(/^(a|an|the)\s+/i, '').trim();
 
       // Company
       let company = '';
-      const companyLabel = n.match(/(?:company|employer|organisation|organization)\s*[:\-]\s*([^\n]+)/i);
+      const companyLabel = n.match(
+        /(?:company|employer|organisation|organization)\s*[:\-]\s*([^\n]+)/i
+      );
       if (companyLabel) {
         company = companyLabel[1].trim();
       } else {
-        const atMatch = n.match(/\bat\s+([A-Z][a-zA-Z0-9\s&.]+?)(?:\s*[,|\n|–|-])/);
+        const atMatch = n.match(
+          /\bat\s+([A-Z][a-zA-Z0-9\s&.]+?)(?:\s*[,|\n|–|-])/
+        );
         if (atMatch) company = atMatch[1].trim();
         else {
-          const nameMatch = n.match(/([A-Z][a-zA-Z0-9\s&.]+?)\s+(?:is hiring|is looking|pvt\.?|ltd\.?|llc|inc\.?|corp\.?|technologies|solutions|systems)/i);
+          const nameMatch = n.match(
+            /([A-Z][a-zA-Z0-9\s&.]+?)\s+(?:is hiring|is looking|pvt\.?|ltd\.?|llc|inc\.?|corp\.?|technologies|solutions|systems)/i
+          );
           if (nameMatch) company = nameMatch[1].trim();
         }
       }
 
       // Location
       let location = '';
-      const locationLabel = n.match(/(?:location|based in|office location|city)\s*[:\-]\s*([^\n]+)/i);
+      const locationLabel = n.match(
+        /(?:location|based in|office location|city)\s*[:\-]\s*([^\n]+)/i
+      );
       if (locationLabel) {
         location = locationLabel[1].trim();
       } else if (/\bhybrid\b/i.test(n) && /\bremote\b/i.test(n)) {
@@ -194,7 +214,9 @@ export const jobRouter = router({
 
       // Experience
       let experience = '';
-      const expRange = n.match(/(\d+)\s*(?:\+?\s*(?:to|[-–])\s*(\d+))?\s*\+?\s*years?/i);
+      const expRange = n.match(
+        /(\d+)\s*(?:\+?\s*(?:to|[-–])\s*(\d+))?\s*\+?\s*years?/i
+      );
       if (expRange) {
         const years = parseInt(expRange[1]);
         if (years === 0) experience = '0+ years';
@@ -214,14 +236,20 @@ export const jobRouter = router({
 
       // Salary
       let salary = 'Not specified';
-      const salaryLabel = n.match(/(?:salary|compensation|pay|ctc|package|stipend)\s*[:\-]\s*([^\n]+)/i);
+      const salaryLabel = n.match(
+        /(?:salary|compensation|pay|ctc|package|stipend)\s*[:\-]\s*([^\n]+)/i
+      );
       if (salaryLabel) {
         salary = salaryLabel[1].trim();
       } else {
-        const currencyMatch = n.match(/(?:\$|₹|rs\.?\s*|inr|usd|eur|gbp)\s*[\d,]+(?:\s*(?:k|lpa|lac|lakh))?(?:\s*[-–to]+\s*(?:\$|₹|rs\.?\s*|inr|usd|eur|gbp)?\s*[\d,]+(?:\s*(?:k|lpa|lac|lakh))?)?/i);
+        const currencyMatch = n.match(
+          /(?:\$|₹|rs\.?\s*|inr|usd|eur|gbp)\s*[\d,]+(?:\s*(?:k|lpa|lac|lakh))?(?:\s*[-–to]+\s*(?:\$|₹|rs\.?\s*|inr|usd|eur|gbp)?\s*[\d,]+(?:\s*(?:k|lpa|lac|lakh))?)?/i
+        );
         if (currencyMatch) salary = currencyMatch[0].trim();
         else {
-          const lpaMatch = n.match(/[\d.]+\s*(?:[-–to]+\s*[\d.]+)?\s*(?:lpa|lac|lakh|ctc)/i);
+          const lpaMatch = n.match(
+            /[\d.]+\s*(?:[-–to]+\s*[\d.]+)?\s*(?:lpa|lac|lakh|ctc)/i
+          );
           if (lpaMatch) salary = lpaMatch[0].trim();
         }
       }
