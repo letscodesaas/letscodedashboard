@@ -82,8 +82,9 @@ export default function CreateJob() {
       } else {
         toast.error('Failed to parse job text');
       }
-    } catch (error: any) {
-      const errorMsg = error?.message || 'Failed to parse job text. Please fill in manually.';
+    } catch (error: unknown) {
+      const errorMsg =
+        error instanceof Error ? error.message : 'Failed to parse job text. Please fill in manually.';
       toast.error(errorMsg);
       console.error('Parse error:', error);
     } finally {
@@ -129,9 +130,12 @@ export default function CreateJob() {
           <div className="space-y-6">
             {/* Quick Add Section */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h3 className="font-semibold text-blue-900 mb-3">Quick Add (Auto-Fill)</h3>
+              <h3 className="font-semibold text-blue-900 mb-3">
+                Quick Add (Auto-Fill)
+              </h3>
               <p className="text-sm text-blue-700 mb-3">
-                Paste job posting text and we'll automatically extract the details:
+                Paste job posting text and we&apos;ll automatically extract the
+                details:
               </p>
               <textarea
                 value={rawJobText}
@@ -163,88 +167,113 @@ export default function CreateJob() {
             <div>
               <h3 className="font-semibold mb-4 text-gray-700">Manual Entry</h3>
               <div className="space-y-4">
-            <div>
-              <Label>Job Title</Label>
-              <Input name="title" value={jobData.title} onChange={handleChange} required />
-            </div>
-            <div>
-              <Label>Company</Label>
-              <Input name="company" value={jobData.company} onChange={handleChange} required />
-            </div>
-            <div>
-              <Label>Location</Label>
-              <Input name="location" value={jobData.location} onChange={handleChange} required />
-            </div>
-            <div>
-              <Label>Job Type</Label>
-              <select
-                name="type"
-                value={jobData.type}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-              >
-                <option value="">Select Job Type</option>
-                {jobTypes.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <Label>Job Status</Label>
-              <select
-                name="status"
-                value={jobData.status ? 'true' : 'false'}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-              >
-                <option value="">Select Job Status</option>
-                <option value="true">Active</option>
-                <option value="false">UnActive</option>
-              </select>
-            </div>
+                <div>
+                  <Label>Job Title</Label>
+                  <Input
+                    name="title"
+                    value={jobData.title}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label>Company</Label>
+                  <Input
+                    name="company"
+                    value={jobData.company}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label>Location</Label>
+                  <Input
+                    name="location"
+                    value={jobData.location}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label>Job Type</Label>
+                  <select
+                    name="type"
+                    value={jobData.type}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded"
+                  >
+                    <option value="">Select Job Type</option>
+                    {jobTypes.map((type) => (
+                      <option key={type} value={type}>
+                        {type}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <Label>Job Status</Label>
+                  <select
+                    name="status"
+                    value={jobData.status ? 'true' : 'false'}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded"
+                  >
+                    <option value="">Select Job Status</option>
+                    <option value="true">Active</option>
+                    <option value="false">UnActive</option>
+                  </select>
+                </div>
 
-            <div>
-              <Label>Experience</Label>
-              <select
-                name="experience"
-                value={jobData.experience}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-              >
-                <option value="">Select Experience Level</option>
-                {experienceLevels.map((level) => (
-                  <option key={level} value={level}>
-                    {level}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <Label>Salary</Label>
-              <Input name="salary" value={jobData.salary} onChange={handleChange} required />
-            </div>
-            <div className="pb-10">
-              <Label>Description</Label>
-              <QuillEditor
-                value={jobData.description}
-                onChange={(content: string) =>
-                  setJobData((prev) => ({ ...prev, description: content }))
-                }
-              />
-            </div>
-            <div>
-              <Label>Apply Link</Label>
-              <Input name="applyLink" value={jobData.applyLink} onChange={handleChange} required />
-            </div>
-            <Button
-              disabled={disabled}
-              onClick={submitHandler}
-              className="w-full"
-            >
-              {disabled ? 'Loading...' : 'Create Job'}
-            </Button>
+                <div>
+                  <Label>Experience</Label>
+                  <select
+                    name="experience"
+                    value={jobData.experience}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded"
+                  >
+                    <option value="">Select Experience Level</option>
+                    {experienceLevels.map((level) => (
+                      <option key={level} value={level}>
+                        {level}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <Label>Salary</Label>
+                  <Input
+                    name="salary"
+                    value={jobData.salary}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div className="pb-10">
+                  <Label>Description</Label>
+                  <QuillEditor
+                    value={jobData.description}
+                    onChange={(content: string) =>
+                      setJobData((prev) => ({ ...prev, description: content }))
+                    }
+                  />
+                </div>
+                <div>
+                  <Label>Apply Link</Label>
+                  <Input
+                    name="applyLink"
+                    value={jobData.applyLink}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <Button
+                  disabled={disabled}
+                  onClick={submitHandler}
+                  className="w-full"
+                >
+                  {disabled ? 'Loading...' : 'Create Job'}
+                </Button>
               </div>
             </div>
           </div>
