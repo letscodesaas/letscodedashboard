@@ -186,7 +186,7 @@ const VALID_DIFFICULTY = ['Easy', 'Medium', 'Hard'];
 const VALID_STATUS = ['Selected', 'Rejected', 'Waiting for Results'];
 
 // --- Field Validation Utility ---
-export const validateExperience = (data: any): string | null => {
+const validateExperience = (data: any): string | null => {
   const requiredFields = [
     'company',
     'role',
