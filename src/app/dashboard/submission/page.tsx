@@ -21,10 +21,34 @@ function Page() {
     })();
   }, []);
 
+  const handleDateChange = async (date: string) => {
+    try {
+      setLoading(true);
+      const info = await fetch(`/api/submissions?date=${date}`, {
+        method: 'GET',
+        headers: {
+          'Content-type': 'application/json',
+        },
+      });
+      const datas = await info.json();
+      setData(datas.data);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div>
       <div className="mb-4">
-        <div>Total Submission : {data.length}</div>
+        <div className="flex flex-row  w-full items-center justify-between">
+          <div>Total Submission : {data.length}</div>
+          <div>
+            <input
+              type="date"
+              onChange={(e) => handleDateChange(e.target.value)}
+            />
+          </div>
+        </div>
       </div>
       {loading ? 'Loading..' : <DataTable columns={columns} data={data} />}
     </div>

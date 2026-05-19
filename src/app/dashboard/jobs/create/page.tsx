@@ -84,7 +84,9 @@ export default function CreateJob() {
       }
     } catch (error: unknown) {
       const errorMsg =
-        error instanceof Error ? error.message : 'Failed to parse job text. Please fill in manually.';
+        error instanceof Error
+          ? error.message
+          : 'Failed to parse job text. Please fill in manually.';
       toast.error(errorMsg);
       console.error('Parse error:', error);
     } finally {
