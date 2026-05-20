@@ -29,6 +29,22 @@ function labelValue(lower: string, n: string, labels: string[]): string {
   return '';
 }
 
+function stripTags(html: string): string {
+  let out = '';
+  let i = 0;
+  while (i < html.length) {
+    const open = html.indexOf('<', i);
+    if (open === -1) {
+      out += html.slice(i);
+      break;
+    }
+    out += html.slice(i, open) + ' ';
+    const close = html.indexOf('>', open);
+    i = close === -1 ? html.length : close + 1;
+  }
+  return out.trim();
+}
+
 function parseJobTextLocally(text: string): ParsedJob {
   const n = text.replace(/\r\n/g, '\n').trim();
   const lower = n.toLowerCase();
@@ -483,7 +499,7 @@ ${text}`;
         jobTitle ? `Job Title: ${jobTitle}` : '',
         company ? `Company: ${company}` : '',
         existingContent
-          ? `Existing description:\n${existingContent.replace(/<[^>]+>/g, ' ').trim()}`
+          ? `Existing description:\n${stripTags(existingContent)}`
           : '',
       ]
         .filter(Boolean)
