@@ -3,6 +3,133 @@ import { router, publicProcedure } from '../trpc';
 import { z } from 'zod';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
+interface ParsedJob {
+  title: string;
+  company: string;
+  location: string;
+  type: string;
+  experience: string;
+  salary: string;
+  applyLink: string;
+  description: string;
+}
+
+function parseJobTextLocally(text: string): ParsedJob {
+  const n = text.replace(/\r\n/g, '\n').trim();
+
+  let title = '';
+  const titleLabel = n.match(
+    /(?:job title|position|role|title)\s*[:\-]\s*([^\n]+)/i
+  );
+  if (titleLabel) {
+    title = titleLabel[1].trim();
+  } else {
+    const lower = n.toLowerCase();
+    const prefixes = [
+      'is hiring', 'are hiring', "we're hiring", 'we are hiring',
+      'hiring:', 'hiring -', 'looking for', 'join us as', 'opening for',
+    ];
+    for (const prefix of prefixes) {
+      const idx = lower.indexOf(prefix);
+      if (idx !== -1) {
+        let rest = n.slice(idx + prefix.length).trimStart();
+        rest = rest.replace(/^(a|an|the)\s+/i, '');
+        const delim = rest.search(/[|,\n–]/);
+        title = (delim === -1 ? rest : rest.slice(0, delim)).trim();
+        break;
+      }
+    }
+    if (!title) {
+      const firstLine = n.split('\n')[0].trim();
+      if (
+        firstLine.length < 100 &&
+        /engineer|developer|designer|manager|analyst|lead|director|specialist|coordinator|intern|consultant|architect|devops|frontend|backend|fullstack|full.stack/i.test(firstLine)
+      ) {
+        title = firstLine;
+      }
+    }
+  }
+  title = title.replace(/\s*[|–]\s*.+$/, '').replace(/\s+at\s+.+$/i, '').trim();
+
+  let company = '';
+  const companyLabel = n.match(
+    /(?:company|employer|organisation|organization)\s*[:\-]\s*([^\n]+)/i
+  );
+  if (companyLabel) {
+    company = companyLabel[1].trim();
+  } else {
+    const atMatch = n.match(/\bat\s+([A-Z][a-zA-Z0-9\s&.]+?)(?:\s*[,|\n|–|-])/);
+    if (atMatch) company = atMatch[1].trim();
+    else {
+      const nameMatch = n.match(
+        /([A-Z][a-zA-Z0-9\s&.]+?)\s+(?:is hiring|is looking|pvt\.?|ltd\.?|llc|inc\.?|corp\.?|technologies|solutions|systems)/i
+      );
+      if (nameMatch) company = nameMatch[1].trim();
+    }
+  }
+
+  let location = '';
+  const locationLabel = n.match(
+    /(?:location|based in|office location|city)\s*[:\-]\s*([^\n]+)/i
+  );
+  if (locationLabel) {
+    location = locationLabel[1].trim();
+  } else if (/\bhybrid\b/i.test(n) && /\bremote\b/i.test(n)) {
+    location = 'Hybrid / Remote';
+  } else if (/\bremote\b/i.test(n)) {
+    location = 'Remote';
+  } else if (/\bhybrid\b/i.test(n)) {
+    location = 'Hybrid';
+  }
+
+  let type = 'Full-Time';
+  if (/\binternship\b|\bintern\b/i.test(n)) type = 'Internship';
+  else if (/\bpart[\s-]?time\b/i.test(n)) type = 'Part-Time';
+  else if (/\bcontract\b|\bfreelance\b/i.test(n)) type = 'Contract';
+
+  let experience = '';
+  const expRange = n.match(/(\d+)\s*(?:\+?\s*(?:to|[-–])\s*(\d+))?\s*\+?\s*years?/i);
+  if (expRange) {
+    const years = parseInt(expRange[1]);
+    if (years === 0) experience = '0+ years';
+    else if (years === 1) experience = '1+ years';
+    else if (years === 2) experience = '2+ years';
+    else if (years <= 4) experience = '3+ years';
+    else experience = '5+ years';
+  } else if (/\bfresher\b|\bentry[\s-]?level\b/i.test(n)) {
+    experience = '0+ years';
+  } else if (/\bjunior\b/i.test(n)) {
+    experience = '1+ years';
+  } else if (/\bmid[\s-]?level\b/i.test(n)) {
+    experience = '3+ years';
+  } else if (/\bsenior\b|\blead\b|\bprincipal\b/i.test(n)) {
+    experience = '5+ years';
+  }
+
+  let salary = 'Not specified';
+  const salaryLabel = n.match(
+    /(?:salary|compensation|pay|ctc|package|stipend)\s*[:\-]\s*([^\n]+)/i
+  );
+  if (salaryLabel) {
+    salary = salaryLabel[1].trim();
+  } else {
+    const currencyMatch = n.match(
+      /(?:\$|₹|rs\.?\s*|inr|usd|eur|gbp)\s*[\d,]+(?:\s*(?:k|lpa|lac|lakh))?(?:\s*[-–to]+\s*(?:\$|₹|rs\.?\s*|inr|usd|eur|gbp)?\s*[\d,]+(?:\s*(?:k|lpa|lac|lakh))?)?/i
+    );
+    if (currencyMatch) salary = currencyMatch[0].trim();
+    else {
+      const lpaMatch = n.match(/[\d.]+\s*(?:[-–to]+\s*[\d.]+)?\s*(?:lpa|lac|lakh|ctc)/i);
+      if (lpaMatch) salary = lpaMatch[0].trim();
+    }
+  }
+
+  let applyLink = '';
+  const urlMatch = n.match(/https?:\/\/[^\s<>"{}|\\^`[\]]+/i);
+  if (urlMatch) applyLink = urlMatch[0].replace(/[.,;:)]+$/, '');
+
+  return { title, company, location, type, experience, salary, applyLink, description: '' };
+}
+
 const jobInfo = z.object({
   title: z.string(),
   company: z.string(),
@@ -188,134 +315,8 @@ ${text}`;
         }
       }
 
-      // --- Regex fallback ---
-      const n = text.replace(/\r\n/g, '\n').trim();
-
-      let title = '';
-      const titleLabel = n.match(
-        /(?:job title|position|role|title)\s*[:\-]\s*([^\n]+)/i
-      );
-      if (titleLabel) {
-        title = titleLabel[1].trim();
-      } else {
-        const hiringMatch = n.match(
-          /(?:is hiring|are hiring|we(?:'re| are) hiring|hiring\s*[:\-]|looking for\s*(?:a\s+|an\s+)?|join us as\s*(?:a\s+|an\s+)?|opening for\s*(?:a\s+|an\s+)?)\s*([^|,\n–]+)/i
-        );
-        if (hiringMatch) {
-          title = hiringMatch[1].trim();
-        } else {
-          const firstLine = n.split('\n')[0].trim();
-          if (
-            firstLine.length < 100 &&
-            /engineer|developer|designer|manager|analyst|lead|director|specialist|coordinator|intern|consultant|architect|devops|frontend|backend|fullstack|full.stack/i.test(
-              firstLine
-            )
-          ) {
-            title = firstLine;
-          }
-        }
-      }
-      title = title
-        .replace(/\s*[\|–]\s*.+$/, '')
-        .replace(/\s+at\s+.+$/i, '')
-        .trim();
-      title = title.replace(/^(a|an|the)\s+/i, '').trim();
-
-      let company = '';
-      const companyLabel = n.match(
-        /(?:company|employer|organisation|organization)\s*[:\-]\s*([^\n]+)/i
-      );
-      if (companyLabel) {
-        company = companyLabel[1].trim();
-      } else {
-        const atMatch = n.match(
-          /\bat\s+([A-Z][a-zA-Z0-9\s&.]+?)(?:\s*[,|\n|–|-])/
-        );
-        if (atMatch) company = atMatch[1].trim();
-        else {
-          const nameMatch = n.match(
-            /([A-Z][a-zA-Z0-9\s&.]+?)\s+(?:is hiring|is looking|pvt\.?|ltd\.?|llc|inc\.?|corp\.?|technologies|solutions|systems)/i
-          );
-          if (nameMatch) company = nameMatch[1].trim();
-        }
-      }
-
-      let location = '';
-      const locationLabel = n.match(
-        /(?:location|based in|office location|city)\s*[:\-]\s*([^\n]+)/i
-      );
-      if (locationLabel) {
-        location = locationLabel[1].trim();
-      } else if (/\bhybrid\b/i.test(n) && /\bremote\b/i.test(n)) {
-        location = 'Hybrid / Remote';
-      } else if (/\bremote\b/i.test(n)) {
-        location = 'Remote';
-      } else if (/\bhybrid\b/i.test(n)) {
-        location = 'Hybrid';
-      }
-
-      let type = 'Full-Time';
-      if (/\binternship\b|\bintern\b/i.test(n)) type = 'Internship';
-      else if (/\bpart[\s-]?time\b/i.test(n)) type = 'Part-Time';
-      else if (/\bcontract\b|\bfreelance\b/i.test(n)) type = 'Contract';
-
-      let experience = '';
-      const expRange = n.match(
-        /(\d+)\s*(?:\+?\s*(?:to|[-–])\s*(\d+))?\s*\+?\s*years?/i
-      );
-      if (expRange) {
-        const years = parseInt(expRange[1]);
-        if (years === 0) experience = '0+ years';
-        else if (years === 1) experience = '1+ years';
-        else if (years === 2) experience = '2+ years';
-        else if (years <= 4) experience = '3+ years';
-        else experience = '5+ years';
-      } else if (/\bfresher\b|\bentry[\s-]?level\b/i.test(n)) {
-        experience = '0+ years';
-      } else if (/\bjunior\b/i.test(n)) {
-        experience = '1+ years';
-      } else if (/\bmid[\s-]?level\b/i.test(n)) {
-        experience = '3+ years';
-      } else if (/\bsenior\b|\blead\b|\bprincipal\b/i.test(n)) {
-        experience = '5+ years';
-      }
-
-      let salary = 'Not specified';
-      const salaryLabel = n.match(
-        /(?:salary|compensation|pay|ctc|package|stipend)\s*[:\-]\s*([^\n]+)/i
-      );
-      if (salaryLabel) {
-        salary = salaryLabel[1].trim();
-      } else {
-        const currencyMatch = n.match(
-          /(?:\$|₹|rs\.?\s*|inr|usd|eur|gbp)\s*[\d,]+(?:\s*(?:k|lpa|lac|lakh))?(?:\s*[-–to]+\s*(?:\$|₹|rs\.?\s*|inr|usd|eur|gbp)?\s*[\d,]+(?:\s*(?:k|lpa|lac|lakh))?)?/i
-        );
-        if (currencyMatch) salary = currencyMatch[0].trim();
-        else {
-          const lpaMatch = n.match(
-            /[\d.]+\s*(?:[-–to]+\s*[\d.]+)?\s*(?:lpa|lac|lakh|ctc)/i
-          );
-          if (lpaMatch) salary = lpaMatch[0].trim();
-        }
-      }
-
-      let applyLink = '';
-      const urlMatch = n.match(/https?:\/\/[^\s<>"{}|\\^`[\]]+/i);
-      if (urlMatch) applyLink = urlMatch[0].replace(/[.,;:)]+$/, '');
-
-      return {
-        success: true,
-        data: {
-          title,
-          company,
-          location,
-          type,
-          experience,
-          salary,
-          applyLink,
-          description: '',
-        },
-      };
+      // AI unavailable — use local regex parser
+      return { success: true, data: parseJobTextLocally(text) };
     }),
 
   generateDescription: publicProcedure
