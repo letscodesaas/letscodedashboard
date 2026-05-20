@@ -73,13 +73,33 @@ function parseJobTextLocally(text: string): ParsedJob {
   if (companyLabel) {
     company = companyLabel[1].trim();
   } else {
-    const atMatch = n.match(/\bat\s+([A-Z][a-zA-Z0-9\s&.]+?)(?:\s*[,|\n|–|-])/);
-    if (atMatch) company = atMatch[1].trim();
-    else {
-      const nameMatch = n.match(
-        /([A-Z][a-zA-Z0-9\s&.]+?)\s+(?:is hiring|is looking|pvt\.?|ltd\.?|llc|inc\.?|corp\.?|technologies|solutions|systems)/i
-      );
-      if (nameMatch) company = nameMatch[1].trim();
+    const lower = n.toLowerCase();
+    // "at CompanyName" — find " at " then take until delimiter
+    const atPos = lower.indexOf(' at ');
+    if (atPos !== -1) {
+      const rest = n.slice(atPos + 4).trimStart();
+      const delim = rest.search(/[,\n|–\-]/);
+      const candidate = (delim === -1 ? rest : rest.slice(0, delim)).trim();
+      if (/^[A-Z]/.test(candidate)) company = candidate;
+    }
+    if (!company) {
+      // "CompanyName is hiring / pvt / ltd …" — find suffix, extract words before it
+      const companySuffixes = [
+        'is hiring', 'is looking', ' pvt', ' ltd', ' llc', ' inc', ' corp',
+        'technologies', 'solutions', 'systems',
+      ];
+      for (const suffix of companySuffixes) {
+        const idx = lower.indexOf(suffix);
+        if (idx !== -1) {
+          const words = n.slice(0, idx).trim().split(/\s+/);
+          const caps: string[] = [];
+          for (let i = words.length - 1; i >= 0; i--) {
+            if (/^[A-Z]/.test(words[i])) caps.unshift(words[i]);
+            else break;
+          }
+          if (caps.length) { company = caps.join(' '); break; }
+        }
+      }
     }
   }
 
