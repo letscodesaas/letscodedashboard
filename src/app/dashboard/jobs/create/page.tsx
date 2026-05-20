@@ -37,6 +37,8 @@ export default function CreateJob() {
   const [disabled, setDisabled] = useState(false);
   const [rawJobText, setRawJobText] = useState('');
   const [parsing, setParsing] = useState(false);
+  const [descCommand, setDescCommand] = useState('');
+  const [generatingDesc, setGeneratingDesc] = useState(false);
   const [jobData, setJobData] = useState<JobData>({
     title: '',
     company: '',
@@ -91,6 +93,28 @@ export default function CreateJob() {
       console.error('Parse error:', error);
     } finally {
       setParsing(false);
+    }
+  };
+
+  const handleGenerateDescription = async () => {
+    if (!descCommand.trim()) return;
+    setGeneratingDesc(true);
+    try {
+      const result = await trpc.job.generateDescription.mutate({
+        command: descCommand,
+        existingContent: jobData.description || undefined,
+        jobTitle: jobData.title || undefined,
+        company: jobData.company || undefined,
+      });
+      setJobData((prev) => ({ ...prev, description: result.description }));
+      setDescCommand('');
+      toast.success('Description generated!');
+    } catch (error: unknown) {
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to generate description'
+      );
+    } finally {
+      setGeneratingDesc(false);
     }
   };
 
@@ -253,6 +277,34 @@ export default function CreateJob() {
                 </div>
                 <div className="pb-10">
                   <Label>Description</Label>
+                  <div className="flex gap-2 mt-1 mb-2">
+                    <input
+                      type="text"
+                      value={descCommand}
+                      onChange={(e) => setDescCommand(e.target.value)}
+                      onKeyDown={(e) =>
+                        e.key === 'Enter' && handleGenerateDescription()
+                      }
+                      placeholder={
+                        jobData.description
+                          ? 'e.g. "Make it more concise" or "Add a perks section"'
+                          : 'e.g. "Write a job description for a senior React developer"'
+                      }
+                      className="flex-1 p-2 border rounded-md text-sm"
+                    />
+                    <Button
+                      type="button"
+                      onClick={handleGenerateDescription}
+                      disabled={generatingDesc || !descCommand.trim()}
+                      className="bg-purple-600 hover:bg-purple-700 whitespace-nowrap"
+                    >
+                      {generatingDesc
+                        ? 'Generating...'
+                        : jobData.description
+                          ? '✨ Rewrite'
+                          : '✨ Generate'}
+                    </Button>
+                  </div>
                   <QuillEditor
                     value={jobData.description}
                     onChange={(content: string) =>

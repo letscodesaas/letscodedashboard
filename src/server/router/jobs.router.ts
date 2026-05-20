@@ -1,6 +1,7 @@
 import { TRPCError } from '@trpc/server';
 import { router, publicProcedure } from '../trpc';
 import { z } from 'zod';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const jobInfo = z.object({
   title: z.string(),
@@ -127,16 +128,58 @@ export const jobRouter = router({
     }),
 
   parseJobText: publicProcedure
-    .input(
-      z.object({
-        text: z.string(),
-      })
-    )
-    .mutation((opts) => {
+    .input(z.object({ text: z.string() }))
+    .mutation(async (opts) => {
       const text = opts.input.text;
+
+      // --- Try AI first ---
+      const apiKey = process.env.GEMINI_API_KEY;
+      if (apiKey) {
+        try {
+          const client = new GoogleGenerativeAI(apiKey);
+          const model = client.getGenerativeModel({
+            model: 'gemini-2.5-flash-lite',
+          });
+          const prompt = `Extract job info from the text below. Return ONLY a valid JSON object with exactly these keys:
+{
+  "title": "job role/title only — no company name, no articles like a/an/the",
+  "company": "company name",
+  "location": "city, country, Remote, or Hybrid",
+  "type": "Full-Time | Part-Time | Contract | Internship",
+  "experience": "0+ years | 1+ years | 2+ years | 3+ years | 5+ years",
+  "salary": "salary info or Not specified",
+  "applyLink": "full URL or empty string"
+}
+Text:
+${text}`;
+          const result = await model.generateContent(prompt);
+          const raw = result.response.text().trim();
+          const jsonStr =
+            raw.match(/```(?:json)?\n?([\s\S]*?)\n?```/)?.[1] ??
+            raw.match(/\{[\s\S]*\}/)?.[0] ??
+            raw;
+          const parsed = JSON.parse(jsonStr);
+          return {
+            success: true,
+            data: {
+              title: (parsed.title ?? '').trim(),
+              company: (parsed.company ?? '').trim(),
+              location: (parsed.location ?? '').trim(),
+              type: (parsed.type ?? 'Full-Time').trim(),
+              experience: (parsed.experience ?? '').trim(),
+              salary: (parsed.salary ?? 'Not specified').trim(),
+              applyLink: (parsed.applyLink ?? '').trim(),
+              description: '',
+            },
+          };
+        } catch {
+          // fall through to regex
+        }
+      }
+
+      // --- Regex fallback ---
       const n = text.replace(/\r\n/g, '\n').trim();
 
-      // Title — extract only the role name
       let title = '';
       const titleLabel = n.match(
         /(?:job title|position|role|title)\s*[:\-]\s*([^\n]+)/i
@@ -144,8 +187,6 @@ export const jobRouter = router({
       if (titleLabel) {
         title = titleLabel[1].trim();
       } else {
-        // Match "is hiring [role]", "looking for [a] [role]", "join us as [a] [role]", "hiring: [role]"
-        // Negated class [^\|,\n–]+ avoids ReDoS — no ambiguous overlap with the delimiter set
         const hiringMatch = n.match(
           /(?:is hiring|are hiring|we(?:'re| are) hiring|hiring\s*[:\-]|looking for\s*(?:a\s+|an\s+)?|join us as\s*(?:a\s+|an\s+)?|opening for\s*(?:a\s+|an\s+)?)\s*([^|,\n–]+)/i
         );
@@ -163,15 +204,12 @@ export const jobRouter = router({
           }
         }
       }
-      // Strip any trailing "at Company", "| location", "– info" that slipped through
       title = title
         .replace(/\s*[\|–]\s*.+$/, '')
         .replace(/\s+at\s+.+$/i, '')
         .trim();
-      // Strip leading articles
       title = title.replace(/^(a|an|the)\s+/i, '').trim();
 
-      // Company
       let company = '';
       const companyLabel = n.match(
         /(?:company|employer|organisation|organization)\s*[:\-]\s*([^\n]+)/i
@@ -191,7 +229,6 @@ export const jobRouter = router({
         }
       }
 
-      // Location
       let location = '';
       const locationLabel = n.match(
         /(?:location|based in|office location|city)\s*[:\-]\s*([^\n]+)/i
@@ -206,13 +243,11 @@ export const jobRouter = router({
         location = 'Hybrid';
       }
 
-      // Job type — internship checked first to avoid misclassifying as full-time
       let type = 'Full-Time';
       if (/\binternship\b|\bintern\b/i.test(n)) type = 'Internship';
       else if (/\bpart[\s-]?time\b/i.test(n)) type = 'Part-Time';
       else if (/\bcontract\b|\bfreelance\b/i.test(n)) type = 'Contract';
 
-      // Experience
       let experience = '';
       const expRange = n.match(
         /(\d+)\s*(?:\+?\s*(?:to|[-–])\s*(\d+))?\s*\+?\s*years?/i
@@ -234,7 +269,6 @@ export const jobRouter = router({
         experience = '5+ years';
       }
 
-      // Salary
       let salary = 'Not specified';
       const salaryLabel = n.match(
         /(?:salary|compensation|pay|ctc|package|stipend)\s*[:\-]\s*([^\n]+)/i
@@ -254,7 +288,6 @@ export const jobRouter = router({
         }
       }
 
-      // Apply link — first URL in text
       let applyLink = '';
       const urlMatch = n.match(/https?:\/\/[^\s<>"{}|\\^`[\]]+/i);
       if (urlMatch) applyLink = urlMatch[0].replace(/[.,;:)]+$/, '');
@@ -269,8 +302,61 @@ export const jobRouter = router({
           experience,
           salary,
           applyLink,
-          description: `Job posting for ${title || 'Position'} at ${company || 'Company'}`,
+          description: '',
         },
       };
+    }),
+
+  generateDescription: publicProcedure
+    .input(
+      z.object({
+        command: z.string(),
+        existingContent: z.string().optional(),
+        jobTitle: z.string().optional(),
+        company: z.string().optional(),
+      })
+    )
+    .mutation(async (opts) => {
+      const { command, existingContent, jobTitle, company } = opts.input;
+      const apiKey = process.env.GEMINI_API_KEY;
+      if (!apiKey) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'AI not configured',
+        });
+      }
+      const client = new GoogleGenerativeAI(apiKey);
+      const model = client.getGenerativeModel({
+        model: 'gemini-2.5-flash-lite',
+      });
+
+      const context = [
+        jobTitle ? `Job Title: ${jobTitle}` : '',
+        company ? `Company: ${company}` : '',
+        existingContent
+          ? `Existing description:\n${existingContent.replace(/<[^>]+>/g, ' ').trim()}`
+          : '',
+      ]
+        .filter(Boolean)
+        .join('\n');
+
+      const prompt = `You are writing a job description for a job board website.
+${context ? `Context:\n${context}\n` : ''}
+Instruction: ${command}
+
+Write a professional, engaging job description in HTML. Use only these tags: <p>, <ul>, <li>, <strong>, <br>.
+Include sections for: About the Role, Responsibilities, Requirements, and What We Offer.
+Return ONLY the HTML — no markdown, no code fences, no extra text.`;
+
+      try {
+        const result = await model.generateContent(prompt);
+        return { description: result.response.text().trim() };
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message:
+            error instanceof Error ? error.message : 'Failed to generate description',
+        });
+      }
     }),
 });
