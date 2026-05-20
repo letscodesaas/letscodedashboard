@@ -201,6 +201,7 @@ export default function CreateJob() {
                     name="title"
                     value={jobData.title}
                     onChange={handleChange}
+                    placeholder="e.g. Senior Frontend Developer"
                     required
                   />
                 </div>
@@ -210,6 +211,7 @@ export default function CreateJob() {
                     name="company"
                     value={jobData.company}
                     onChange={handleChange}
+                    placeholder="e.g. Google, Flipkart"
                     required
                   />
                 </div>
@@ -219,6 +221,7 @@ export default function CreateJob() {
                     name="location"
                     value={jobData.location}
                     onChange={handleChange}
+                    placeholder="e.g. Bangalore, Remote"
                     required
                   />
                 </div>
@@ -274,6 +277,7 @@ export default function CreateJob() {
                     name="salary"
                     value={jobData.salary}
                     onChange={handleChange}
+                    placeholder="e.g. 10-15 LPA or Not specified"
                     required
                   />
                 </div>
@@ -320,6 +324,7 @@ export default function CreateJob() {
                     name="applyLink"
                     value={jobData.applyLink}
                     onChange={handleChange}
+                    placeholder="https://company.com/apply"
                     required
                   />
                 </div>
