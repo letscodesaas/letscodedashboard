@@ -19,12 +19,20 @@ function parseJobTextLocally(text: string): ParsedJob {
   const lower = n.toLowerCase();
 
   let title = '';
-  const titleLabel = n.match(
-    /(?:job title|position|role|title)\s*[:\-]\s*([^\n]+)/i
-  );
-  if (titleLabel) {
-    title = titleLabel[1].trim();
-  } else {
+  const titleLabels = ['job title', 'position', 'role', 'title'];
+  for (const lbl of titleLabels) {
+    const lblIdx = lower.indexOf(lbl);
+    if (lblIdx !== -1) {
+      let rest = n.slice(lblIdx + lbl.length).trimStart();
+      if (rest.startsWith(':') || rest.startsWith('-')) {
+        rest = rest.slice(1).trimStart();
+        const nl = rest.indexOf('\n');
+        title = (nl === -1 ? rest : rest.slice(0, nl)).trim();
+        break;
+      }
+    }
+  }
+  if (!title) {
     const prefixes = [
       'is hiring',
       'are hiring',
@@ -67,12 +75,20 @@ function parseJobTextLocally(text: string): ParsedJob {
   title = title.trim();
 
   let company = '';
-  const companyLabel = n.match(
-    /(?:company|employer|organisation|organization)\s*[:\-]\s*([^\n]+)/i
-  );
-  if (companyLabel) {
-    company = companyLabel[1].trim();
-  } else {
+  const companyLabels = ['company', 'employer', 'organisation', 'organization'];
+  for (const lbl of companyLabels) {
+    const lblIdx = lower.indexOf(lbl);
+    if (lblIdx !== -1) {
+      let rest = n.slice(lblIdx + lbl.length).trimStart();
+      if (rest.startsWith(':') || rest.startsWith('-')) {
+        rest = rest.slice(1).trimStart();
+        const nl = rest.indexOf('\n');
+        company = (nl === -1 ? rest : rest.slice(0, nl)).trim();
+        break;
+      }
+    }
+  }
+  if (!company) {
     // "at CompanyName" — find " at " then take until delimiter
     const atPos = lower.indexOf(' at ');
     if (atPos !== -1) {
@@ -114,22 +130,28 @@ function parseJobTextLocally(text: string): ParsedJob {
   }
 
   let location = '';
-  const locationLabel = n.match(
-    /(?:location|based in|office location|city)\s*[:\-]\s*([^\n]+)/i
-  );
-  if (locationLabel) {
-    location = locationLabel[1].trim();
-  } else if (/\bhybrid\b/i.test(n) && /\bremote\b/i.test(n)) {
-    location = 'Hybrid / Remote';
-  } else if (/\bremote\b/i.test(n)) {
-    location = 'Remote';
-  } else if (/\bhybrid\b/i.test(n)) {
-    location = 'Hybrid';
+  const locationLabels = ['location', 'based in', 'office location', 'city'];
+  for (const lbl of locationLabels) {
+    const lblIdx = lower.indexOf(lbl);
+    if (lblIdx !== -1) {
+      let rest = n.slice(lblIdx + lbl.length).trimStart();
+      if (rest.startsWith(':') || rest.startsWith('-')) {
+        rest = rest.slice(1).trimStart();
+        const nl = rest.indexOf('\n');
+        location = (nl === -1 ? rest : rest.slice(0, nl)).trim();
+        break;
+      }
+    }
+  }
+  if (!location) {
+    if (/\bhybrid\b/i.test(n) && /\bremote\b/i.test(n)) location = 'Hybrid / Remote';
+    else if (/\bremote\b/i.test(n)) location = 'Remote';
+    else if (/\bhybrid\b/i.test(n)) location = 'Hybrid';
   }
 
   let type = 'Full-Time';
   if (/\binternship\b|\bintern\b/i.test(n)) type = 'Internship';
-  else if (/\bpart[\s-]?time\b/i.test(n)) type = 'Part-Time';
+  else if (lower.includes('part-time') || lower.includes('part time')) type = 'Part-Time';
   else if (/\bcontract\b|\bfreelance\b/i.test(n)) type = 'Contract';
 
   let experience = '';
@@ -150,21 +172,39 @@ function parseJobTextLocally(text: string): ParsedJob {
     }
   }
   if (!experience) {
-    if (/\bfresher\b|\bentry[\s-]?level\b/i.test(n)) experience = '0+ years';
+    if (/\bfresher\b/i.test(n) || lower.includes('entry-level') || lower.includes('entry level')) experience = '0+ years';
     else if (/\bjunior\b/i.test(n)) experience = '1+ years';
-    else if (/\bmid[\s-]?level\b/i.test(n)) experience = '3+ years';
-    else if (/\bsenior\b|\blead\b|\bprincipal\b/i.test(n)) experience = '5+ years';
+    else if (lower.includes('mid-level') || lower.includes('mid level')) experience = '3+ years';
+    else if (/\bsenior\b|\blead\b|\bprincipal\b/i.test(n))
+      experience = '5+ years';
   }
 
   let salary = 'Not specified';
-  const salaryLabel = n.match(
-    /(?:salary|compensation|pay|ctc|package|stipend)\s*[:\-]\s*([^\n]+)/i
-  );
-  if (salaryLabel) {
-    salary = salaryLabel[1].trim();
-  } else {
+  const salaryLabels = ['salary', 'compensation', 'pay', 'ctc', 'package', 'stipend'];
+  for (const lbl of salaryLabels) {
+    const lblIdx = lower.indexOf(lbl);
+    if (lblIdx !== -1) {
+      let rest = n.slice(lblIdx + lbl.length).trimStart();
+      if (rest.startsWith(':') || rest.startsWith('-')) {
+        rest = rest.slice(1).trimStart();
+        const nl = rest.indexOf('\n');
+        salary = (nl === -1 ? rest : rest.slice(0, nl)).trim();
+        break;
+      }
+    }
+  }
+  if (salary === 'Not specified') {
     // Search for currency-prefixed amounts — indexOf only, no nested quantifiers
-    const currencyPfxs = ['$', '₹', 'rs.', 'rs ', 'inr ', 'usd ', 'eur ', 'gbp '];
+    const currencyPfxs = [
+      '$',
+      '₹',
+      'rs.',
+      'rs ',
+      'inr ',
+      'usd ',
+      'eur ',
+      'gbp ',
+    ];
     for (const pfx of currencyPfxs) {
       const idx = lower.indexOf(pfx);
       if (idx !== -1) {
@@ -188,8 +228,22 @@ function parseJobTextLocally(text: string): ParsedJob {
   }
 
   let applyLink = '';
-  const urlMatch = n.match(/https?:\/\/[^\s<>"{}|\\^`[\]]+/i);
-  if (urlMatch) applyLink = urlMatch[0].replace(/[.,;:)]+$/, '');
+  const httpIdx = n.indexOf('http');
+  if (httpIdx !== -1) {
+    let end = httpIdx;
+    while (end < n.length) {
+      const c = n[end];
+      if (c === ' ' || c === '\t' || c === '\n' || c === '\r' || c === '<' || c === '"' || c === '>') break;
+      end++;
+    }
+    // Strip trailing punctuation without regex
+    while (end > httpIdx) {
+      const last = n[end - 1];
+      if (last === '.' || last === ',' || last === ';' || last === ':' || last === ')') end--;
+      else break;
+    }
+    applyLink = n.slice(httpIdx, end);
+  }
 
   return {
     title,
