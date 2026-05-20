@@ -26,8 +26,15 @@ function parseJobTextLocally(text: string): ParsedJob {
   } else {
     const lower = n.toLowerCase();
     const prefixes = [
-      'is hiring', 'are hiring', "we're hiring", 'we are hiring',
-      'hiring:', 'hiring -', 'looking for', 'join us as', 'opening for',
+      'is hiring',
+      'are hiring',
+      "we're hiring",
+      'we are hiring',
+      'hiring:',
+      'hiring -',
+      'looking for',
+      'join us as',
+      'opening for',
     ];
     for (const prefix of prefixes) {
       const idx = lower.indexOf(prefix);
@@ -43,13 +50,21 @@ function parseJobTextLocally(text: string): ParsedJob {
       const firstLine = n.split('\n')[0].trim();
       if (
         firstLine.length < 100 &&
-        /engineer|developer|designer|manager|analyst|lead|director|specialist|coordinator|intern|consultant|architect|devops|frontend|backend|fullstack|full.stack/i.test(firstLine)
+        /engineer|developer|designer|manager|analyst|lead|director|specialist|coordinator|intern|consultant|architect|devops|frontend|backend|fullstack|full.stack/i.test(
+          firstLine
+        )
       ) {
         title = firstLine;
       }
     }
   }
-  title = title.replace(/\s*[|–]\s*.+$/, '').replace(/\s+at\s+.+$/i, '').trim();
+  // Strip "| anything" or "– anything" — character class search, no backtracking
+  const pipeIdx = title.search(/[|–]/);
+  if (pipeIdx !== -1) title = title.slice(0, pipeIdx);
+  // Strip " at Company" suffix — indexOf, no backtracking
+  const atIdx = title.toLowerCase().lastIndexOf(' at ');
+  if (atIdx !== -1) title = title.slice(0, atIdx);
+  title = title.trim();
 
   let company = '';
   const companyLabel = n.match(
@@ -88,7 +103,9 @@ function parseJobTextLocally(text: string): ParsedJob {
   else if (/\bcontract\b|\bfreelance\b/i.test(n)) type = 'Contract';
 
   let experience = '';
-  const expRange = n.match(/(\d+)\s*(?:\+?\s*(?:to|[-–])\s*(\d+))?\s*\+?\s*years?/i);
+  const expRange = n.match(
+    /(\d+)\s*(?:\+?\s*(?:to|[-–])\s*(\d+))?\s*\+?\s*years?/i
+  );
   if (expRange) {
     const years = parseInt(expRange[1]);
     if (years === 0) experience = '0+ years';
@@ -118,7 +135,9 @@ function parseJobTextLocally(text: string): ParsedJob {
     );
     if (currencyMatch) salary = currencyMatch[0].trim();
     else {
-      const lpaMatch = n.match(/[\d.]+\s*(?:[-–to]+\s*[\d.]+)?\s*(?:lpa|lac|lakh|ctc)/i);
+      const lpaMatch = n.match(
+        /[\d.]+\s*(?:[-–to]+\s*[\d.]+)?\s*(?:lpa|lac|lakh|ctc)/i
+      );
       if (lpaMatch) salary = lpaMatch[0].trim();
     }
   }
@@ -127,7 +146,16 @@ function parseJobTextLocally(text: string): ParsedJob {
   const urlMatch = n.match(/https?:\/\/[^\s<>"{}|\\^`[\]]+/i);
   if (urlMatch) applyLink = urlMatch[0].replace(/[.,;:)]+$/, '');
 
-  return { title, company, location, type, experience, salary, applyLink, description: '' };
+  return {
+    title,
+    company,
+    location,
+    type,
+    experience,
+    salary,
+    applyLink,
+    description: '',
+  };
 }
 
 const jobInfo = z.object({
