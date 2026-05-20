@@ -16,6 +16,7 @@ interface ParsedJob {
 
 function parseJobTextLocally(text: string): ParsedJob {
   const n = text.replace(/\r\n/g, '\n').trim();
+  const lower = n.toLowerCase();
 
   let title = '';
   const titleLabel = n.match(
@@ -24,7 +25,6 @@ function parseJobTextLocally(text: string): ParsedJob {
   if (titleLabel) {
     title = titleLabel[1].trim();
   } else {
-    const lower = n.toLowerCase();
     const prefixes = [
       'is hiring',
       'are hiring',
@@ -73,7 +73,6 @@ function parseJobTextLocally(text: string): ParsedJob {
   if (companyLabel) {
     company = companyLabel[1].trim();
   } else {
-    const lower = n.toLowerCase();
     // "at CompanyName" — find " at " then take until delimiter
     const atPos = lower.indexOf(' at ');
     if (atPos !== -1) {
@@ -85,8 +84,16 @@ function parseJobTextLocally(text: string): ParsedJob {
     if (!company) {
       // "CompanyName is hiring / pvt / ltd …" — find suffix, extract words before it
       const companySuffixes = [
-        'is hiring', 'is looking', ' pvt', ' ltd', ' llc', ' inc', ' corp',
-        'technologies', 'solutions', 'systems',
+        'is hiring',
+        'is looking',
+        ' pvt',
+        ' ltd',
+        ' llc',
+        ' inc',
+        ' corp',
+        'technologies',
+        'solutions',
+        'systems',
       ];
       for (const suffix of companySuffixes) {
         const idx = lower.indexOf(suffix);
@@ -97,7 +104,10 @@ function parseJobTextLocally(text: string): ParsedJob {
             if (/^[A-Z]/.test(words[i])) caps.unshift(words[i]);
             else break;
           }
-          if (caps.length) { company = caps.join(' '); break; }
+          if (caps.length) {
+            company = caps.join(' ');
+            break;
+          }
         }
       }
     }
@@ -123,24 +133,27 @@ function parseJobTextLocally(text: string): ParsedJob {
   else if (/\bcontract\b|\bfreelance\b/i.test(n)) type = 'Contract';
 
   let experience = '';
-  const expRange = n.match(
-    /(\d+)\s*(?:\+?\s*(?:to|[-–])\s*(\d+))?\s*\+?\s*years?/i
-  );
-  if (expRange) {
-    const years = parseInt(expRange[1]);
-    if (years === 0) experience = '0+ years';
-    else if (years === 1) experience = '1+ years';
-    else if (years === 2) experience = '2+ years';
-    else if (years <= 4) experience = '3+ years';
-    else experience = '5+ years';
-  } else if (/\bfresher\b|\bentry[\s-]?level\b/i.test(n)) {
-    experience = '0+ years';
-  } else if (/\bjunior\b/i.test(n)) {
-    experience = '1+ years';
-  } else if (/\bmid[\s-]?level\b/i.test(n)) {
-    experience = '3+ years';
-  } else if (/\bsenior\b|\blead\b|\bprincipal\b/i.test(n)) {
-    experience = '5+ years';
+  // Walk backward from "year" to find the preceding digit — no regex backtracking
+  const yearIdx = lower.indexOf('year');
+  if (yearIdx !== -1) {
+    let p = yearIdx - 1;
+    while (p >= 0 && (n[p] === ' ' || n[p] === '+')) p--;
+    if (p >= 0 && n[p] >= '0' && n[p] <= '9') {
+      const numEnd = p + 1;
+      while (p > 0 && n[p - 1] >= '0' && n[p - 1] <= '9') p--;
+      const years = parseInt(n.slice(p, numEnd), 10);
+      if (years === 0) experience = '0+ years';
+      else if (years === 1) experience = '1+ years';
+      else if (years === 2) experience = '2+ years';
+      else if (years <= 4) experience = '3+ years';
+      else experience = '5+ years';
+    }
+  }
+  if (!experience) {
+    if (/\bfresher\b|\bentry[\s-]?level\b/i.test(n)) experience = '0+ years';
+    else if (/\bjunior\b/i.test(n)) experience = '1+ years';
+    else if (/\bmid[\s-]?level\b/i.test(n)) experience = '3+ years';
+    else if (/\bsenior\b|\blead\b|\bprincipal\b/i.test(n)) experience = '5+ years';
   }
 
   let salary = 'Not specified';
@@ -150,15 +163,27 @@ function parseJobTextLocally(text: string): ParsedJob {
   if (salaryLabel) {
     salary = salaryLabel[1].trim();
   } else {
-    const currencyMatch = n.match(
-      /(?:\$|₹|rs\.?\s*|inr|usd|eur|gbp)\s*[\d,]+(?:\s*(?:k|lpa|lac|lakh))?(?:\s*[-–to]+\s*(?:\$|₹|rs\.?\s*|inr|usd|eur|gbp)?\s*[\d,]+(?:\s*(?:k|lpa|lac|lakh))?)?/i
-    );
-    if (currencyMatch) salary = currencyMatch[0].trim();
-    else {
-      const lpaMatch = n.match(
-        /[\d.]+\s*(?:[-–to]+\s*[\d.]+)?\s*(?:lpa|lac|lakh|ctc)/i
-      );
-      if (lpaMatch) salary = lpaMatch[0].trim();
+    // Search for currency-prefixed amounts — indexOf only, no nested quantifiers
+    const currencyPfxs = ['$', '₹', 'rs.', 'rs ', 'inr ', 'usd ', 'eur ', 'gbp '];
+    for (const pfx of currencyPfxs) {
+      const idx = lower.indexOf(pfx);
+      if (idx !== -1) {
+        const nl = n.indexOf('\n', idx);
+        salary = (nl === -1 ? n.slice(idx) : n.slice(idx, nl)).trim();
+        break;
+      }
+    }
+    if (salary === 'Not specified') {
+      // Search for LPA/lakh/lac amounts using indexOf
+      const lpaKws = ['lpa', 'lakh', 'lac'];
+      for (const kw of lpaKws) {
+        const idx = lower.indexOf(kw);
+        if (idx !== -1) {
+          const lineStart = lower.lastIndexOf('\n', idx) + 1;
+          salary = n.slice(lineStart, idx + kw.length).trim();
+          break;
+        }
+      }
     }
   }
 
