@@ -154,10 +154,21 @@ Text:
 ${text}`;
           const result = await model.generateContent(prompt);
           const raw = result.response.text().trim();
-          const jsonStr =
-            raw.match(/```(?:json)?\n?([\s\S]*?)\n?```/)?.[1] ??
-            raw.match(/\{[\s\S]*\}/)?.[0] ??
-            raw;
+          // Extract JSON using string ops — no regex backtracking risk
+          const jsonStr = (() => {
+            const fenceStart = raw.indexOf('```');
+            if (fenceStart !== -1) {
+              const contentStart = raw.indexOf('\n', fenceStart) + 1;
+              const fenceEnd = raw.indexOf('```', contentStart);
+              if (fenceEnd !== -1)
+                return raw.slice(contentStart, fenceEnd).trim();
+            }
+            const objStart = raw.indexOf('{');
+            const objEnd = raw.lastIndexOf('}');
+            if (objStart !== -1 && objEnd > objStart)
+              return raw.slice(objStart, objEnd + 1);
+            return raw;
+          })();
           const parsed = JSON.parse(jsonStr);
           return {
             success: true,
@@ -355,7 +366,9 @@ Return ONLY the HTML — no markdown, no code fences, no extra text.`;
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message:
-            error instanceof Error ? error.message : 'Failed to generate description',
+            error instanceof Error
+              ? error.message
+              : 'Failed to generate description',
         });
       }
     }),

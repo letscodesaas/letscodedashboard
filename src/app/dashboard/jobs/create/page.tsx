@@ -111,7 +111,9 @@ export default function CreateJob() {
       toast.success('Description generated!');
     } catch (error: unknown) {
       toast.error(
-        error instanceof Error ? error.message : 'Failed to generate description'
+        error instanceof Error
+          ? error.message
+          : 'Failed to generate description'
       );
     } finally {
       setGeneratingDesc(false);
