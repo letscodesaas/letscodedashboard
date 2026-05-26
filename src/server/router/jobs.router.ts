@@ -292,6 +292,8 @@ const jobInfo = z.object({
   salary: z.string(),
   description: z.string(),
   applyLink: z.string(),
+  linkedinEmployeesLink: z.string().optional(),
+  interviewExperience: z.string().optional(),
   status: z.boolean(),
 });
 
@@ -305,6 +307,8 @@ const updateJobInfo = z.object({
   salary: z.string(),
   description: z.string(),
   applyLink: z.string(),
+  linkedinEmployeesLink: z.string().optional(),
+  interviewExperience: z.string().optional(),
   status: z.boolean(),
 });
 
@@ -335,6 +339,8 @@ export const jobRouter = router({
         salary: input.salary,
         description: input.description,
         applyLink: input.applyLink,
+        linkedinEmployeesLink: input.linkedinEmployeesLink,
+        interviewExperience: input.interviewExperience,
         status: input.status,
       }
     );
@@ -450,16 +456,43 @@ ${text}`;
             return raw;
           })();
           const parsed = JSON.parse(jsonStr);
+          const companyName = (parsed.company ?? '').trim();
+
+          // Fetch LinkedIn company ID and construct employees search URL
+          let linkedinEmployeesLink = '';
+          if (companyName) {
+            try {
+              const linkedinPrompt = `Find the LinkedIn company ID (numeric ID) for "${companyName}". 
+Return ONLY the numeric company ID. For example, if the company is Microsoft, return "123456" (but use the actual ID).
+If you cannot find the company on LinkedIn, return "NOT_FOUND".
+Do not include any other text or explanation.`;
+              const linkedinResult = await model.generateContent(linkedinPrompt);
+              const companyId = linkedinResult.response.text().trim();
+              
+              if (
+                companyId &&
+                companyId !== 'NOT_FOUND' &&
+                /^\d+$/.test(companyId)
+              ) {
+                linkedinEmployeesLink = `https://www.linkedin.com/search/results/people?skipRedirect=true&origin=COMPANY_PAGE_CANNED_SEARCH&currentCompany=%5B%22${companyId}%22%5D`;
+              }
+            } catch {
+              // Silently fail for LinkedIn lookup
+              linkedinEmployeesLink = '';
+            }
+          }
+
           return {
             success: true,
             data: {
               title: (parsed.title ?? '').trim(),
-              company: (parsed.company ?? '').trim(),
+              company: companyName,
               location: (parsed.location ?? '').trim(),
               type: (parsed.type ?? 'Full-Time').trim(),
               experience: (parsed.experience ?? '').trim(),
               salary: (parsed.salary ?? 'Not specified').trim(),
               applyLink: (parsed.applyLink ?? '').trim(),
+              linkedinEmployeesLink,
               description: '',
             },
           };
@@ -469,7 +502,8 @@ ${text}`;
       }
 
       // AI unavailable — use local regex parser
-      return { success: true, data: parseJobTextLocally(text) };
+      const localData = parseJobTextLocally(text);
+      return { success: true, data: { ...localData, linkedinEmployeesLink: '' } };
     }),
 
   generateDescription: publicProcedure

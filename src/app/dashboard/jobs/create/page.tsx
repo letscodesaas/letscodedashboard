@@ -22,6 +22,8 @@ export default function CreateJob() {
     salary: string;
     description: string;
     applyLink: string;
+    linkedinEmployeesLink: string;
+    interviewExperience: string;
     status: boolean;
   }
 
@@ -48,6 +50,8 @@ export default function CreateJob() {
     salary: '',
     description: '',
     applyLink: '',
+    linkedinEmployeesLink: '',
+    interviewExperience: '',
     status: true,
   });
 
@@ -136,6 +140,8 @@ export default function CreateJob() {
         salary: '',
         description: '',
         applyLink: '',
+        linkedinEmployeesLink: '',
+        interviewExperience: '',
         status: true,
       });
       setDisabled(false);
@@ -316,6 +322,24 @@ export default function CreateJob() {
                     onChange={(content: string) =>
                       setJobData((prev) => ({ ...prev, description: content }))
                     }
+                  />
+                </div>
+                <div>
+                  <Label>LinkedIn Employees Link</Label>
+                  <Input
+                    name="linkedinEmployeesLink"
+                    value={jobData.linkedinEmployeesLink}
+                    onChange={handleChange}
+                    placeholder="https://linkedin.com/company/..."
+                  />
+                </div>
+                <div>
+                  <Label>Interview Experience</Label>
+                  <Input
+                    name="interviewExperience"
+                    value={jobData.interviewExperience}
+                    onChange={handleChange}
+                    placeholder="e.g. Technical round, HR round details"
                   />
                 </div>
                 <div>

@@ -10,6 +10,8 @@ const JobSchema = new mongoose.Schema(
     salary: { type: String, required: true },
     description: { type: String, required: true },
     applyLink: { type: String, required: true },
+    linkedinEmployeesLink: { type: String, required: false },
+    interviewExperience: { type: String, required: false },
     status: { type: Boolean, requried: true, default: true },
   },
   { timestamps: true }
