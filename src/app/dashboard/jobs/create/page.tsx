@@ -81,6 +81,7 @@ export default function CreateJob() {
         setJobData((prev) => ({
           ...prev,
           ...result.data,
+          linkedinEmployeesLink: '',
           status: true,
         }));
         toast.success('Job details auto-filled! Review and adjust if needed.');

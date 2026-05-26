@@ -328,7 +328,7 @@ export const jobRouter = router({
     if (!input) {
       return new TRPCError({ code: 'NOT_FOUND' });
     }
-    await opts.ctx.db.Jobs.findByIdAndUpdate(
+    const updatedJob = await opts.ctx.db.Jobs.findByIdAndUpdate(
       { _id: input.id },
       {
         title: input.title,
@@ -342,11 +342,13 @@ export const jobRouter = router({
         linkedinEmployeesLink: input.linkedinEmployeesLink,
         interviewExperience: input.interviewExperience,
         status: input.status,
-      }
+      },
+      { new: true }
     );
 
     return {
       message: 'updated',
+      data: updatedJob,
     };
   }),
   deleteJobPost: publicProcedure
@@ -466,9 +468,10 @@ ${text}`;
 Return ONLY the numeric company ID. For example, if the company is Microsoft, return "123456" (but use the actual ID).
 If you cannot find the company on LinkedIn, return "NOT_FOUND".
 Do not include any other text or explanation.`;
-              const linkedinResult = await model.generateContent(linkedinPrompt);
+              const linkedinResult =
+                await model.generateContent(linkedinPrompt);
               const companyId = linkedinResult.response.text().trim();
-              
+
               if (
                 companyId &&
                 companyId !== 'NOT_FOUND' &&
@@ -503,7 +506,10 @@ Do not include any other text or explanation.`;
 
       // AI unavailable — use local regex parser
       const localData = parseJobTextLocally(text);
-      return { success: true, data: { ...localData, linkedinEmployeesLink: '' } };
+      return {
+        success: true,
+        data: { ...localData, linkedinEmployeesLink: '' },
+      };
     }),
 
   generateDescription: publicProcedure

@@ -35,6 +35,8 @@ export default function UpdateJob() {
     salary: string;
     description: string;
     applyLink: string;
+    linkedinEmployeesLink?: string;
+    interviewExperience?: string;
     status: boolean;
   }
 
@@ -49,6 +51,8 @@ export default function UpdateJob() {
     salary: '',
     description: '',
     applyLink: '',
+    linkedinEmployeesLink: '',
+    interviewExperience: '',
     status: true,
   });
 
@@ -227,6 +231,24 @@ export default function UpdateJob() {
                 value={jobData.applyLink}
                 onChange={handleChange}
                 required
+              />
+            </div>
+            <div>
+              <Label>LinkedIn Employees Link</Label>
+              <Input
+                name="linkedinEmployeesLink"
+                value={jobData.linkedinEmployeesLink}
+                onChange={handleChange}
+                placeholder="https://linkedin.com/company/..."
+              />
+            </div>
+            <div>
+              <Label>Interview Experience</Label>
+              <Input
+                name="interviewExperience"
+                value={jobData.interviewExperience}
+                onChange={handleChange}
+                placeholder="e.g. Technical round, HR round details"
               />
             </div>
             <Button
