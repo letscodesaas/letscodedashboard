@@ -16,6 +16,7 @@ import {
   Book,
   Logs,
   List,
+  BarChart3,
 } from 'lucide-react';
 
 import {
@@ -84,13 +85,11 @@ const navigationItems = [
     url: '/dashboard/managenewsletters',
     icon: List,
   },
-
   {
     title: 'Newsletters logs',
     url: '/dashboard/notificationlogs',
     icon: List,
   },
-
   {
     title: 'Submission Logs',
     url: '/dashboard/submission',
@@ -105,6 +104,11 @@ const navigationItems = [
     title: 'Contest Registation',
     url: '/dashboard/contest',
     icon: MessageSquare,
+  },
+  {
+    title: 'AI Tools Analytics',
+    url: '/dashboard/ai-tools-stats',
+    icon: BarChart3,
   },
 ];
 

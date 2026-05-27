@@ -5,6 +5,7 @@ import { Auth } from '@/models/Auth.Model';
 import { Task } from '@/models/Task.model';
 import { Questions } from '@/models/Question.Model';
 import { ContestRegister } from '@/models/Contest.Model';
+import { ToolUsage } from '@/models/ToolUsage.Model';
 
 const t = initTRPC
   .context<{
@@ -15,6 +16,7 @@ const t = initTRPC
       Task: typeof Task;
       Questions: typeof Questions;
       ContestRegistation: typeof ContestRegister;
+      ToolUsage: typeof ToolUsage;
     };
   }>()
   .create();

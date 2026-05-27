@@ -6,6 +6,7 @@ import { authRouter } from './router/auth.router';
 import { taskRouter } from './router/task.router';
 import { questionRouter } from './router/questions.router';
 import { contestRouter } from './router/contest.router';
+import { statsRouter } from './router/stats.router';
 
 export const appRouter = router({
   job: jobRouter,
@@ -15,6 +16,7 @@ export const appRouter = router({
   task: taskRouter,
   question: questionRouter,
   contest: contestRouter,
+  stats: statsRouter,
 });
 
 export type AppRouter = typeof appRouter;

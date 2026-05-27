@@ -6,6 +6,7 @@ import { Auth } from '@/models/Auth.Model';
 import { Task } from '@/models/Task.model';
 import { Questions } from '@/models/Question.Model';
 import { ContestRegister } from '@/models/Contest.Model';
+import { ToolUsage } from '@/models/ToolUsage.Model';
 import mongoose from 'mongoose';
 
 mongoose.connect(process.env.DB!);
@@ -23,6 +24,7 @@ const handler = (req: Request) => {
           Task,
           Questions,
           ContestRegistation: ContestRegister,
+          ToolUsage,
         },
       };
     },
