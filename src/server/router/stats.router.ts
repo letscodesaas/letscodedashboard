@@ -165,4 +165,88 @@ export const statsRouter = router({
 
       return detailStats;
     }),
+
+  getResumeBuilderStats: publicProcedure
+    .input(z.object({ days: z.number().default(30) }))
+    .query(async (opts) => {
+      const { input } = opts;
+      const db = opts.ctx.db;
+
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - input.days);
+
+      const match = { tool: 'resume_builder', createdAt: { $gte: startDate } };
+
+      const [actionCounts, dailyTrend, userBreakdown, uniqueUsersResult] =
+        await Promise.all([
+          db.ToolUsage.aggregate([
+            { $match: match },
+            { $group: { _id: '$action', count: { $sum: 1 } } },
+          ]),
+          db.ToolUsage.aggregate([
+            { $match: match },
+            {
+              $group: {
+                _id: {
+                  date: {
+                    $dateToString: { format: '%Y-%m-%d', date: '$createdAt' },
+                  },
+                  action: '$action',
+                },
+                count: { $sum: 1 },
+              },
+            },
+            { $sort: { '_id.date': 1 } },
+          ]),
+          db.ToolUsage.aggregate([
+            { $match: match },
+            {
+              $group: {
+                _id: {
+                  $cond: [
+                    { $eq: ['$userId', 'guest'] },
+                    'guest',
+                    'authenticated',
+                  ],
+                },
+                count: { $sum: 1 },
+              },
+            },
+          ]),
+          db.ToolUsage.aggregate([
+            { $match: match },
+            { $group: { _id: '$userId' } },
+            { $count: 'total' },
+          ]),
+        ]);
+
+      const actions: Record<string, number> = {};
+      actionCounts.forEach((a: { _id: string; count: number }) => {
+        actions[a._id] = a.count;
+      });
+
+      const opens = actions['open'] || 0;
+      const downloads = actions['download'] || 0;
+      const saves = actions['save'] || 0;
+      const updates = actions['update'] || 0;
+
+      return {
+        summary: {
+          opens,
+          downloads,
+          saves,
+          updates,
+          total: opens + downloads + saves + updates,
+          downloadRate:
+            opens > 0
+              ? Math.round((downloads / opens) * 100 * 100) / 100
+              : 0,
+          saveRate:
+            opens > 0 ? Math.round((saves / opens) * 100 * 100) / 100 : 0,
+          uniqueUsers: (uniqueUsersResult[0] as { total: number } | undefined)?.total || 0,
+        },
+        dailyTrend,
+        userBreakdown,
+      };
+    }),
 });

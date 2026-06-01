@@ -110,6 +110,11 @@ const navigationItems = [
     url: '/dashboard/ai-tools-stats',
     icon: BarChart3,
   },
+  {
+    title: 'Resume Builder Stats',
+    url: '/dashboard/resume-builder-stats',
+    icon: BarChart3,
+  },
 ];
 
 export function AppSidebar() {
