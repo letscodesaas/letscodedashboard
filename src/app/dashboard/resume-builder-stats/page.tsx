@@ -25,7 +25,14 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-import { Loader2, FileText, Download, Save, RefreshCw, Users } from 'lucide-react';
+import {
+  Loader2,
+  FileText,
+  Download,
+  Save,
+  RefreshCw,
+  Users,
+} from 'lucide-react';
 
 interface Summary {
   opens: number;
@@ -72,7 +79,7 @@ const ACTION_COLORS: Record<string, string> = {
 const PIE_COLORS = ['#3b82f6', '#10b981'];
 
 export default function ResumeBuilderStats() {
-  const [days, setDays] = useState(30);
+  const [days, setDays] = useState(1);
   const [stats, setStats] = useState<StatsData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -127,7 +134,11 @@ export default function ResumeBuilderStats() {
   // Action distribution bar data
   const actionBarData = [
     { action: 'Opens', count: summary.opens, fill: ACTION_COLORS.open },
-    { action: 'Downloads', count: summary.downloads, fill: ACTION_COLORS.download },
+    {
+      action: 'Downloads',
+      count: summary.downloads,
+      fill: ACTION_COLORS.download,
+    },
     { action: 'Saves', count: summary.saves, fill: ACTION_COLORS.save },
     { action: 'Updates', count: summary.updates, fill: ACTION_COLORS.update },
   ];
@@ -229,9 +240,7 @@ export default function ResumeBuilderStats() {
             <div className="text-3xl font-bold text-purple-600">
               {summary.updates}
             </div>
-            <p className="text-xs text-gray-500 mt-1">
-              Resume edits saved
-            </p>
+            <p className="text-xs text-gray-500 mt-1">Resume edits saved</p>
           </CardContent>
         </Card>
       </div>

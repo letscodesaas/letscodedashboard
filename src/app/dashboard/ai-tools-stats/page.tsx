@@ -91,7 +91,7 @@ const TOOL_NAMES: Record<string, string> = {
 };
 
 export default function AIToolsStats() {
-  const [days, setDays] = useState(30);
+  const [days, setDays] = useState(1);
   const [stats, setStats] = useState<StatsData | null>(null);
   const [loading, setLoading] = useState(true);
 
