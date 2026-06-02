@@ -88,7 +88,6 @@ const TOOL_NAMES: Record<string, string> = {
   linkedin_optimizer: 'LinkedIn Optimizer',
   job_ready_score: 'Job Ready Score',
   mock_test: 'Mock Test',
-  resume_builder: 'Resume Builder',
 };
 
 export default function AIToolsStats() {

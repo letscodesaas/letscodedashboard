@@ -15,9 +15,14 @@ export const statsRouter = router({
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - input.days);
 
+      const baseMatch = {
+        createdAt: { $gte: startDate },
+        tool: { $ne: 'resume_builder' },
+      };
+
       // Total tool usage by type
       const toolUsageByType = await db.ToolUsage.aggregate([
-        { $match: { createdAt: { $gte: startDate } } },
+        { $match: baseMatch },
         {
           $group: {
             _id: '$tool',
@@ -31,7 +36,7 @@ export const statsRouter = router({
 
       // Success rate by tool
       const successRateByTool = await db.ToolUsage.aggregate([
-        { $match: { createdAt: { $gte: startDate } } },
+        { $match: baseMatch },
         {
           $group: {
             _id: '$tool',
@@ -46,7 +51,10 @@ export const statsRouter = router({
             total: 1,
             success: 1,
             successRate: {
-              $round: [{ $multiply: [{ $divide: ['$success', '$total'] }, 100] }, 2],
+              $round: [
+                { $multiply: [{ $divide: ['$success', '$total'] }, 100] },
+                2,
+              ],
             },
           },
         },
@@ -55,7 +63,7 @@ export const statsRouter = router({
 
       // Usage trends over time
       const usageTrends = await db.ToolUsage.aggregate([
-        { $match: { createdAt: { $gte: startDate } } },
+        { $match: baseMatch },
         {
           $group: {
             _id: {
@@ -70,7 +78,7 @@ export const statsRouter = router({
 
       // Action breakdown
       const actionBreakdown = await db.ToolUsage.aggregate([
-        { $match: { createdAt: { $gte: startDate } } },
+        { $match: baseMatch },
         {
           $group: {
             _id: '$action',
@@ -83,7 +91,7 @@ export const statsRouter = router({
 
       // Overall stats
       const overallStats = await db.ToolUsage.aggregate([
-        { $match: { createdAt: { $gte: startDate } } },
+        { $match: baseMatch },
         {
           $group: {
             _id: null,
@@ -103,7 +111,15 @@ export const statsRouter = router({
             successCount: 1,
             failureCount: 1,
             successRate: {
-              $round: [{ $multiply: [{ $divide: ['$successCount', '$totalUsage'] }, 100] }, 2],
+              $round: [
+                {
+                  $multiply: [
+                    { $divide: ['$successCount', '$totalUsage'] },
+                    100,
+                  ],
+                },
+                2,
+              ],
             },
             avgResponseTime: { $round: ['$avgResponseTime', 2] },
             maxResponseTime: 1,
@@ -238,12 +254,11 @@ export const statsRouter = router({
           updates,
           total: opens + downloads + saves + updates,
           downloadRate:
-            opens > 0
-              ? Math.round((downloads / opens) * 100 * 100) / 100
-              : 0,
+            opens > 0 ? Math.round((downloads / opens) * 100 * 100) / 100 : 0,
           saveRate:
             opens > 0 ? Math.round((saves / opens) * 100 * 100) / 100 : 0,
-          uniqueUsers: (uniqueUsersResult[0] as { total: number } | undefined)?.total || 0,
+          uniqueUsers:
+            (uniqueUsersResult[0] as { total: number } | undefined)?.total || 0,
         },
         dailyTrend,
         userBreakdown,
