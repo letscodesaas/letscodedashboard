@@ -31,7 +31,7 @@ interface ToolUsageStat {
   _id: string;
   count: number;
   successCount: number;
-  avgResponseTime: number;
+  avgResponseTime: number | null;
 }
 
 interface SuccessRateStat {
@@ -381,7 +381,7 @@ export default function AIToolsStats() {
                       {((tool.successCount / tool.count) * 100).toFixed(1)}%
                     </p>
                     <p className="text-sm text-gray-500">
-                      Avg: {tool.avgResponseTime.toFixed(0)}ms
+                      Avg: {(tool.avgResponseTime ?? 0).toFixed(0)}ms
                     </p>
                   </div>
                 </div>
