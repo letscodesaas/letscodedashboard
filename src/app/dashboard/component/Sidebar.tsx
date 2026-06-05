@@ -115,6 +115,11 @@ const navigationItems = [
     url: '/dashboard/resume-builder-stats',
     icon: BarChart3,
   },
+  {
+    title: 'Job Tracker Stats',
+    url: '/dashboard/job-tracker-stats',
+    icon: BarChart3,
+  },
 ];
 
 export function AppSidebar() {

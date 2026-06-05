@@ -16,6 +16,7 @@ const toolUsageSchema = new mongoose.Schema(
         'job_ready_score',
         'mock_test',
         'resume_builder',
+        'job_tracker',
       ],
       required: true,
     },
@@ -34,6 +35,10 @@ const toolUsageSchema = new mongoose.Schema(
         'download',
         'save',
         'update',
+        'job_added',
+        'status_changed',
+        'job_edited',
+        'job_deleted',
       ],
       required: true,
     },
@@ -58,5 +63,4 @@ const toolUsageSchema = new mongoose.Schema(
 );
 
 export const ToolUsage =
-  mongoose.models.ToolUsage ||
-  mongoose.model('ToolUsage', toolUsageSchema);
+  mongoose.models.ToolUsage || mongoose.model('ToolUsage', toolUsageSchema);

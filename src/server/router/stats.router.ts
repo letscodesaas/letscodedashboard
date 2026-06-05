@@ -17,7 +17,7 @@ export const statsRouter = router({
 
       const baseMatch = {
         createdAt: { $gte: startDate },
-        tool: { $ne: 'resume_builder' },
+        tool: { $nin: ['resume_builder', 'job_tracker'] },
       };
 
       // Total tool usage by type
@@ -262,6 +262,136 @@ export const statsRouter = router({
         },
         dailyTrend,
         userBreakdown,
+      };
+    }),
+
+  getJobTrackerStats: publicProcedure
+    .input(z.object({ days: z.number().default(1) }))
+    .query(async (opts) => {
+      const { input } = opts;
+      const db = opts.ctx.db;
+
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - input.days);
+
+      const match = { tool: 'job_tracker', createdAt: { $gte: startDate } };
+
+      const [
+        actionCounts,
+        statusDistribution,
+        statusTransitions,
+        topCompanies,
+        appliedFromSources,
+        dailyTrend,
+        topUsers,
+      ] = await Promise.all([
+        // Action counts
+        db.ToolUsage.aggregate([
+          { $match: match },
+          { $group: { _id: '$action', count: { $sum: 1 } } },
+        ]),
+
+        // Status distribution from job_added metadata
+        db.ToolUsage.aggregate([
+          { $match: { ...match, action: 'job_added' } },
+          { $group: { _id: '$metadata.status', count: { $sum: 1 } } },
+          { $sort: { count: -1 } },
+        ]),
+
+        // Status transitions (status_changed)
+        db.ToolUsage.aggregate([
+          { $match: { ...match, action: 'status_changed' } },
+          {
+            $group: {
+              _id: {
+                from: '$metadata.oldStatus',
+                to: '$metadata.newStatus',
+              },
+              count: { $sum: 1 },
+            },
+          },
+          { $sort: { count: -1 } },
+          { $limit: 10 },
+        ]),
+
+        // Top companies applied to
+        db.ToolUsage.aggregate([
+          { $match: { ...match, action: 'job_added' } },
+          { $group: { _id: '$metadata.companyName', count: { $sum: 1 } } },
+          { $sort: { count: -1 } },
+          { $limit: 10 },
+        ]),
+
+        // Applied from sources
+        db.ToolUsage.aggregate([
+          { $match: { ...match, action: 'job_added' } },
+          { $group: { _id: '$metadata.appliedFrom', count: { $sum: 1 } } },
+          { $sort: { count: -1 } },
+        ]),
+
+        // Daily trend by action
+        db.ToolUsage.aggregate([
+          { $match: match },
+          {
+            $group: {
+              _id: {
+                date: {
+                  $dateToString: { format: '%Y-%m-%d', date: '$createdAt' },
+                },
+                action: '$action',
+              },
+              count: { $sum: 1 },
+            },
+          },
+          { $sort: { '_id.date': 1 } },
+        ]),
+
+        // Top active users (from metadata.userEmail)
+        db.ToolUsage.aggregate([
+          { $match: { ...match, action: 'job_added' } },
+          {
+            $group: {
+              _id: '$metadata.userEmail',
+              name: { $first: '$metadata.userName' },
+              jobsAdded: { $sum: 1 },
+            },
+          },
+          { $sort: { jobsAdded: -1 } },
+          { $limit: 10 },
+        ]),
+      ]);
+
+      const actions: Record<string, number> = {};
+      actionCounts.forEach((a: { _id: string; count: number }) => {
+        actions[a._id] = a.count;
+      });
+
+      const uniqueUsersResult = await db.ToolUsage.aggregate([
+        { $match: match },
+        { $group: { _id: '$metadata.userEmail' } },
+        { $count: 'total' },
+      ]);
+
+      return {
+        summary: {
+          jobsAdded: actions['job_added'] || 0,
+          statusChanges: actions['status_changed'] || 0,
+          jobsEdited: actions['job_edited'] || 0,
+          jobsDeleted: actions['job_deleted'] || 0,
+          totalEvents:
+            (actions['job_added'] || 0) +
+            (actions['status_changed'] || 0) +
+            (actions['job_edited'] || 0) +
+            (actions['job_deleted'] || 0),
+          uniqueUsers:
+            (uniqueUsersResult[0] as { total: number } | undefined)?.total || 0,
+        },
+        statusDistribution,
+        statusTransitions,
+        topCompanies,
+        appliedFromSources,
+        dailyTrend,
+        topUsers,
       };
     }),
 });
