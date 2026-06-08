@@ -79,6 +79,7 @@ const COLORS = [
   '#f59e0b',
   '#8b5cf6',
   '#ec4899',
+  '#14b8a6',
 ];
 
 const TOOL_NAMES: Record<string, string> = {
@@ -88,6 +89,7 @@ const TOOL_NAMES: Record<string, string> = {
   linkedin_optimizer: 'LinkedIn Optimizer',
   job_ready_score: 'Job Ready Score',
   mock_test: 'Mock Test',
+  github_optimizer: 'GitHub Optimizer',
 };
 
 export default function AIToolsStats() {

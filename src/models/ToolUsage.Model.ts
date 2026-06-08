@@ -17,6 +17,7 @@ const toolUsageSchema = new mongoose.Schema(
         'mock_test',
         'resume_builder',
         'job_tracker',
+        'github_optimizer',
       ],
       required: true,
     },
