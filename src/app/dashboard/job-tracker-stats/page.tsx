@@ -3,13 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { trpc } from '@/app/_trpc/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { PeriodSelector } from '@/app/dashboard/component/PeriodSelector';
 import {
   BarChart,
   Bar,
@@ -100,9 +94,17 @@ const ACTION_COLORS: Record<string, string> = {
   job_deleted: '#ef4444',
 };
 
-function EmptyState({ message = 'No data yet', small = false }: { message?: string; small?: boolean }) {
+function EmptyState({
+  message = 'No data yet',
+  small = false,
+}: {
+  message?: string;
+  small?: boolean;
+}) {
   return (
-    <p className={`text-center text-gray-400 text-sm ${small ? 'py-8' : 'py-16'}`}>
+    <p
+      className={`text-center text-gray-400 text-sm ${small ? 'py-8' : 'py-16'}`}
+    >
       {message}
     </p>
   );
@@ -137,7 +139,13 @@ function StatCard({
   );
 }
 
-function ChartCard({ title, children }: { title: string; children: React.ReactNode }) {
+function ChartCard({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <Card>
       <CardHeader>
@@ -225,21 +233,7 @@ export default function JobTrackerStats() {
             Tracks job additions, status changes, edits and deletions
           </p>
         </div>
-        <Select
-          value={days.toString()}
-          onValueChange={(val) => setDays(parseInt(val))}
-        >
-          <SelectTrigger className="w-32">
-            <SelectValue placeholder="Select period" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="1">Today</SelectItem>
-            <SelectItem value="7">Last 7 days</SelectItem>
-            <SelectItem value="30">Last 30 days</SelectItem>
-            <SelectItem value="90">Last 90 days</SelectItem>
-            <SelectItem value="365">Last year</SelectItem>
-          </SelectContent>
-        </Select>
+        <PeriodSelector value={days} onChange={setDays} />
       </div>
 
       {/* Stat Cards */}
@@ -319,7 +313,12 @@ export default function JobTrackerStats() {
                 <XAxis type="number" />
                 <YAxis dataKey="_id" type="category" width={100} />
                 <Tooltip />
-                <Bar dataKey="count" fill="#3b82f6" radius={[0, 4, 4, 0]} name="Jobs" />
+                <Bar
+                  dataKey="count"
+                  fill="#3b82f6"
+                  radius={[0, 4, 4, 0]}
+                  name="Jobs"
+                />
               </BarChart>
             </ResponsiveContainer>
           )}
@@ -337,7 +336,12 @@ export default function JobTrackerStats() {
               <XAxis dataKey="_id" angle={-30} textAnchor="end" height={60} />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="count" fill="#8b5cf6" radius={[4, 4, 0, 0]} name="Applications" />
+              <Bar
+                dataKey="count"
+                fill="#8b5cf6"
+                radius={[4, 4, 0, 0]}
+                name="Applications"
+              />
             </BarChart>
           </ResponsiveContainer>
         )}
@@ -355,10 +359,38 @@ export default function JobTrackerStats() {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Line type="monotone" dataKey="job_added" stroke={ACTION_COLORS.job_added} name="Added" strokeWidth={2} dot={false} />
-              <Line type="monotone" dataKey="status_changed" stroke={ACTION_COLORS.status_changed} name="Status Changed" strokeWidth={2} dot={false} />
-              <Line type="monotone" dataKey="job_edited" stroke={ACTION_COLORS.job_edited} name="Edited" strokeWidth={2} dot={false} />
-              <Line type="monotone" dataKey="job_deleted" stroke={ACTION_COLORS.job_deleted} name="Deleted" strokeWidth={2} dot={false} />
+              <Line
+                type="monotone"
+                dataKey="job_added"
+                stroke={ACTION_COLORS.job_added}
+                name="Added"
+                strokeWidth={2}
+                dot={false}
+              />
+              <Line
+                type="monotone"
+                dataKey="status_changed"
+                stroke={ACTION_COLORS.status_changed}
+                name="Status Changed"
+                strokeWidth={2}
+                dot={false}
+              />
+              <Line
+                type="monotone"
+                dataKey="job_edited"
+                stroke={ACTION_COLORS.job_edited}
+                name="Edited"
+                strokeWidth={2}
+                dot={false}
+              />
+              <Line
+                type="monotone"
+                dataKey="job_deleted"
+                stroke={ACTION_COLORS.job_deleted}
+                name="Deleted"
+                strokeWidth={2}
+                dot={false}
+              />
             </LineChart>
           </ResponsiveContainer>
         )}

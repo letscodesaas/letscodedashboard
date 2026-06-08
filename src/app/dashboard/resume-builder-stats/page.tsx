@@ -3,13 +3,7 @@
 import { useEffect, useState } from 'react';
 import { trpc } from '@/app/_trpc/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { PeriodSelector } from '@/app/dashboard/component/PeriodSelector';
 import {
   LineChart,
   Line,
@@ -159,21 +153,7 @@ export default function ResumeBuilderStats() {
             Tracks opens, downloads, saves and updates
           </p>
         </div>
-        <Select
-          value={days.toString()}
-          onValueChange={(val) => setDays(parseInt(val))}
-        >
-          <SelectTrigger className="w-32">
-            <SelectValue placeholder="Select period" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="1">Today</SelectItem>
-            <SelectItem value="7">Last 7 days</SelectItem>
-            <SelectItem value="30">Last 30 days</SelectItem>
-            <SelectItem value="90">Last 90 days</SelectItem>
-            <SelectItem value="365">Last year</SelectItem>
-          </SelectContent>
-        </Select>
+        <PeriodSelector value={days} onChange={setDays} />
       </div>
 
       {/* Stat Cards */}
