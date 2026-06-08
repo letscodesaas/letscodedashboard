@@ -11,6 +11,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { trpc } from '@/app/_trpc/client';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -32,6 +33,7 @@ interface Job {
 
 function Page() {
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [jobsPerPage] = useState(5);
   const Router = useRouter();
@@ -103,16 +105,34 @@ function Page() {
     }
   };
 
+  const filteredJobs = jobs.filter((job) => {
+    const q = search.toLowerCase();
+    return (
+      job.title.toLowerCase().includes(q) ||
+      job.company.toLowerCase().includes(q) ||
+      job.location.toLowerCase().includes(q)
+    );
+  });
+
   const indexOfLastJob = currentPage * jobsPerPage;
   const indexOfFirstJob = indexOfLastJob - jobsPerPage;
-  const currentJobs = jobs.slice(indexOfFirstJob, indexOfLastJob);
-  const totalPages = Math.ceil(jobs.length / jobsPerPage);
+  const currentJobs = filteredJobs.slice(indexOfFirstJob, indexOfLastJob);
+  const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
 
   return (
     <div className="p-6 w-full">
-      <Button onClick={shareLink} className="mb-10">
-        Get Share Link
-      </Button>
+      <div className="flex items-center gap-4 mb-6">
+        <Button onClick={shareLink}>Get Share Link</Button>
+        <Input
+          placeholder="Search by title, company or location..."
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setCurrentPage(1);
+          }}
+          className="max-w-sm"
+        />
+      </div>
       <div className="overflow-x-auto bg-white shadow-md rounded-lg">
         <Table className="w-full border border-gray-200">
           <TableCaption className="text-lg font-semibold py-2">
