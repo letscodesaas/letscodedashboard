@@ -136,20 +136,36 @@ export default function JobTrackerStats() {
     );
   }
 
-  const { summary, statusDistribution, statusTransitions, topCompanies, appliedFromSources, dailyTrend, topUsers } = stats;
+  const {
+    summary,
+    statusDistribution,
+    statusTransitions,
+    topCompanies,
+    appliedFromSources,
+    dailyTrend,
+    topUsers,
+  } = stats;
 
   // Pivot daily trend
   const trendMap: Record<string, DailyTrendItem> = {};
   dailyTrend.forEach((item) => {
     const { date, action } = item._id;
     if (!trendMap[date]) {
-      trendMap[date] = { date, job_added: 0, status_changed: 0, job_edited: 0, job_deleted: 0 };
+      trendMap[date] = {
+        date,
+        job_added: 0,
+        status_changed: 0,
+        job_edited: 0,
+        job_deleted: 0,
+      };
     }
     if (action in trendMap[date]) {
       (trendMap[date] as Record<string, number | string>)[action] = item.count;
     }
   });
-  const trendData = Object.values(trendMap).sort((a, b) => a.date.localeCompare(b.date));
+  const trendData = Object.values(trendMap).sort((a, b) =>
+    a.date.localeCompare(b.date)
+  );
 
   return (
     <div className="w-full mx-auto p-6 space-y-6">
@@ -161,7 +177,10 @@ export default function JobTrackerStats() {
             Tracks job additions, status changes, edits and deletions
           </p>
         </div>
-        <Select value={days.toString()} onValueChange={(val) => setDays(parseInt(val))}>
+        <Select
+          value={days.toString()}
+          onValueChange={(val) => setDays(parseInt(val))}
+        >
           <SelectTrigger className="w-32">
             <SelectValue placeholder="Select period" />
           </SelectTrigger>
@@ -179,44 +198,62 @@ export default function JobTrackerStats() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="pb-2 flex flex-row items-center justify-between">
-            <CardTitle className="text-sm font-medium text-gray-600">Jobs Added</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-600">
+              Jobs Added
+            </CardTitle>
             <Briefcase className="w-4 h-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-green-600">{summary.jobsAdded}</div>
-            <p className="text-xs text-gray-500 mt-1">{summary.uniqueUsers} unique users</p>
+            <div className="text-3xl font-bold text-green-600">
+              {summary.jobsAdded}
+            </div>
+            <p className="text-xs text-gray-500 mt-1">
+              {summary.uniqueUsers} unique users
+            </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2 flex flex-row items-center justify-between">
-            <CardTitle className="text-sm font-medium text-gray-600">Status Changes</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-600">
+              Status Changes
+            </CardTitle>
             <ArrowRightLeft className="w-4 h-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-blue-600">{summary.statusChanges}</div>
+            <div className="text-3xl font-bold text-blue-600">
+              {summary.statusChanges}
+            </div>
             <p className="text-xs text-gray-500 mt-1">Pipeline movements</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2 flex flex-row items-center justify-between">
-            <CardTitle className="text-sm font-medium text-gray-600">Jobs Edited</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-600">
+              Jobs Edited
+            </CardTitle>
             <PenLine className="w-4 h-4 text-yellow-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-yellow-600">{summary.jobsEdited}</div>
+            <div className="text-3xl font-bold text-yellow-600">
+              {summary.jobsEdited}
+            </div>
             <p className="text-xs text-gray-500 mt-1">Details updated</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2 flex flex-row items-center justify-between">
-            <CardTitle className="text-sm font-medium text-gray-600">Jobs Deleted</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-600">
+              Jobs Deleted
+            </CardTitle>
             <Trash2 className="w-4 h-4 text-red-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-red-600">{summary.jobsDeleted}</div>
+            <div className="text-3xl font-bold text-red-600">
+              {summary.jobsDeleted}
+            </div>
             <p className="text-xs text-gray-500 mt-1">
               {summary.jobsAdded > 0
                 ? `${((summary.jobsDeleted / summary.jobsAdded) * 100).toFixed(1)}% deletion rate`
@@ -234,7 +271,9 @@ export default function JobTrackerStats() {
           </CardHeader>
           <CardContent>
             {statusDistribution.length === 0 ? (
-              <p className="text-center text-gray-400 py-16 text-sm">No data yet</p>
+              <p className="text-center text-gray-400 py-16 text-sm">
+                No data yet
+              </p>
             ) : (
               <ResponsiveContainer width="100%" height={280}>
                 <PieChart>
@@ -248,7 +287,10 @@ export default function JobTrackerStats() {
                     label={({ _id, count }) => `${_id}: ${count}`}
                   >
                     {statusDistribution.map((_, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
                     ))}
                   </Pie>
                   <Tooltip />
@@ -265,7 +307,9 @@ export default function JobTrackerStats() {
           </CardHeader>
           <CardContent>
             {appliedFromSources.length === 0 ? (
-              <p className="text-center text-gray-400 py-16 text-sm">No data yet</p>
+              <p className="text-center text-gray-400 py-16 text-sm">
+                No data yet
+              </p>
             ) : (
               <ResponsiveContainer width="100%" height={280}>
                 <BarChart data={appliedFromSources} layout="vertical">
@@ -273,7 +317,12 @@ export default function JobTrackerStats() {
                   <XAxis type="number" />
                   <YAxis dataKey="_id" type="category" width={100} />
                   <Tooltip />
-                  <Bar dataKey="count" fill="#3b82f6" radius={[0, 4, 4, 0]} name="Jobs" />
+                  <Bar
+                    dataKey="count"
+                    fill="#3b82f6"
+                    radius={[0, 4, 4, 0]}
+                    name="Jobs"
+                  />
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -288,7 +337,9 @@ export default function JobTrackerStats() {
         </CardHeader>
         <CardContent>
           {topCompanies.length === 0 ? (
-            <p className="text-center text-gray-400 py-8 text-sm">No data yet</p>
+            <p className="text-center text-gray-400 py-8 text-sm">
+              No data yet
+            </p>
           ) : (
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={topCompanies}>
@@ -296,7 +347,12 @@ export default function JobTrackerStats() {
                 <XAxis dataKey="_id" angle={-30} textAnchor="end" height={60} />
                 <YAxis />
                 <Tooltip />
-                <Bar dataKey="count" fill="#8b5cf6" radius={[4, 4, 0, 0]} name="Applications" />
+                <Bar
+                  dataKey="count"
+                  fill="#8b5cf6"
+                  radius={[4, 4, 0, 0]}
+                  name="Applications"
+                />
               </BarChart>
             </ResponsiveContainer>
           )}
@@ -310,7 +366,9 @@ export default function JobTrackerStats() {
         </CardHeader>
         <CardContent>
           {trendData.length === 0 ? (
-            <p className="text-center text-gray-400 py-16 text-sm">No trend data for this period</p>
+            <p className="text-center text-gray-400 py-16 text-sm">
+              No trend data for this period
+            </p>
           ) : (
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={trendData}>
@@ -319,10 +377,38 @@ export default function JobTrackerStats() {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="job_added" stroke={ACTION_COLORS.job_added} name="Added" strokeWidth={2} dot={false} />
-                <Line type="monotone" dataKey="status_changed" stroke={ACTION_COLORS.status_changed} name="Status Changed" strokeWidth={2} dot={false} />
-                <Line type="monotone" dataKey="job_edited" stroke={ACTION_COLORS.job_edited} name="Edited" strokeWidth={2} dot={false} />
-                <Line type="monotone" dataKey="job_deleted" stroke={ACTION_COLORS.job_deleted} name="Deleted" strokeWidth={2} dot={false} />
+                <Line
+                  type="monotone"
+                  dataKey="job_added"
+                  stroke={ACTION_COLORS.job_added}
+                  name="Added"
+                  strokeWidth={2}
+                  dot={false}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="status_changed"
+                  stroke={ACTION_COLORS.status_changed}
+                  name="Status Changed"
+                  strokeWidth={2}
+                  dot={false}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="job_edited"
+                  stroke={ACTION_COLORS.job_edited}
+                  name="Edited"
+                  strokeWidth={2}
+                  dot={false}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="job_deleted"
+                  stroke={ACTION_COLORS.job_deleted}
+                  name="Deleted"
+                  strokeWidth={2}
+                  dot={false}
+                />
               </LineChart>
             </ResponsiveContainer>
           )}
@@ -338,11 +424,16 @@ export default function JobTrackerStats() {
           </CardHeader>
           <CardContent>
             {statusTransitions.length === 0 ? (
-              <p className="text-center text-gray-400 py-8 text-sm">No transitions yet</p>
+              <p className="text-center text-gray-400 py-8 text-sm">
+                No transitions yet
+              </p>
             ) : (
               <div className="space-y-2">
                 {statusTransitions.map((t, i) => (
-                  <div key={i} className="flex items-center justify-between py-2 border-b last:border-0">
+                  <div
+                    key={i}
+                    className="flex items-center justify-between py-2 border-b last:border-0"
+                  >
                     <div className="flex items-center gap-2 text-sm">
                       <span className="px-2 py-0.5 bg-gray-100 rounded text-gray-700 font-medium">
                         {t._id.from || '—'}
@@ -352,7 +443,9 @@ export default function JobTrackerStats() {
                         {t._id.to || '—'}
                       </span>
                     </div>
-                    <span className="text-sm font-bold text-gray-700">{t.count}×</span>
+                    <span className="text-sm font-bold text-gray-700">
+                      {t.count}×
+                    </span>
                   </div>
                 ))}
               </div>
@@ -368,17 +461,26 @@ export default function JobTrackerStats() {
           </CardHeader>
           <CardContent>
             {topUsers.length === 0 ? (
-              <p className="text-center text-gray-400 py-8 text-sm">No users yet</p>
+              <p className="text-center text-gray-400 py-8 text-sm">
+                No users yet
+              </p>
             ) : (
               <div className="space-y-2">
                 {topUsers.map((user, i) => (
-                  <div key={i} className="flex items-center justify-between py-2 border-b last:border-0">
+                  <div
+                    key={i}
+                    className="flex items-center justify-between py-2 border-b last:border-0"
+                  >
                     <div>
-                      <p className="text-sm font-medium">{user.name || 'Unknown'}</p>
+                      <p className="text-sm font-medium">
+                        {user.name || 'Unknown'}
+                      </p>
                       <p className="text-xs text-gray-500">{user._id}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-bold text-green-600">{user.jobsAdded}</p>
+                      <p className="text-sm font-bold text-green-600">
+                        {user.jobsAdded}
+                      </p>
                       <p className="text-xs text-gray-500">jobs added</p>
                     </div>
                   </div>

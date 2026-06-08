@@ -12,10 +12,21 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { trpc } from '@/app/_trpc/client';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import Link from 'next/link';
+import { Loader2, AlertTriangle, CheckCircle2, XCircle } from 'lucide-react';
 
 interface Job {
   _id: string;
@@ -31,11 +42,23 @@ interface Job {
   createdAt: Date;
 }
 
+interface DeadLinkJob {
+  _id: string;
+  title: string;
+  company: string;
+  applyLink: string;
+  linkStatus: string;
+  httpStatus: number;
+}
+
 function Page() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [jobsPerPage] = useState(5);
+  const [checking, setChecking] = useState(false);
+  const [deadLinkJobs, setDeadLinkJobs] = useState<DeadLinkJob[] | null>(null);
+  const [confirmJob, setConfirmJob] = useState<DeadLinkJob | null>(null);
   const Router = useRouter();
 
   useEffect(() => {
@@ -79,6 +102,26 @@ function Page() {
     toast('No latest Jobs Posted');
   };
 
+  const handleCheckDeadLinks = async () => {
+    setChecking(true);
+    setDeadLinkJobs(null);
+    try {
+      const results = await trpc.job.checkJobLinks.mutate();
+      const dead = results.filter((r) => r.linkStatus !== 'alive');
+      setDeadLinkJobs(dead);
+      if (dead.length === 0) {
+        toast('All job links are active!');
+      } else {
+        toast(`Found ${dead.length} dead or unreachable link(s)`);
+      }
+    } catch (error) {
+      console.error(error);
+      toast('Failed to check links');
+    } finally {
+      setChecking(false);
+    }
+  };
+
   const handleUpdate = (id: string) => {
     Router.push(`/dashboard/jobs/update/${id}`);
   };
@@ -89,6 +132,7 @@ function Page() {
       console.log(result);
       toast('Deactivated');
       setJobs((prevJobs) => prevJobs.filter((job) => job._id !== id));
+      setDeadLinkJobs((prev) => prev?.filter((j) => j._id !== id) ?? null);
     } catch (error) {
       console.log(error);
     }
@@ -121,8 +165,47 @@ function Page() {
 
   return (
     <div className="p-6 w-full">
-      <div className="flex items-center gap-4 mb-6">
+      {/* Stats */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+        <div className="bg-white rounded-lg border p-4 shadow-sm">
+          <p className="text-xs text-gray-500">Total Active Jobs</p>
+          <p className="text-3xl font-bold text-gray-800">{jobs.length}</p>
+        </div>
+        <div className="bg-white rounded-lg border p-4 shadow-sm">
+          <p className="text-xs text-gray-500">Filtered Results</p>
+          <p className="text-3xl font-bold text-blue-600">{filteredJobs.length}</p>
+        </div>
+        <div className="bg-white rounded-lg border p-4 shadow-sm">
+          <p className="text-xs text-gray-500">Posted Today</p>
+          <p className="text-3xl font-bold text-green-600">
+            {jobs.filter((j) => new Date(j.createdAt).getTime() >= new Date().setHours(0, 0, 0, 0)).length}
+          </p>
+        </div>
+        <div className="bg-white rounded-lg border p-4 shadow-sm">
+          <p className="text-xs text-gray-500">Dead Links Found</p>
+          <p className="text-3xl font-bold text-red-500">
+            {deadLinkJobs === null ? '—' : deadLinkJobs.length}
+          </p>
+        </div>
+      </div>
+
+      {/* Top bar */}
+      <div className="flex items-center gap-4 mb-6 flex-wrap">
         <Button onClick={shareLink}>Get Share Link</Button>
+        <Button
+          variant="outline"
+          onClick={handleCheckDeadLinks}
+          disabled={checking}
+        >
+          {checking ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Checking links...
+            </>
+          ) : (
+            'Check Dead Links'
+          )}
+        </Button>
         <Input
           placeholder="Search by title, company or location..."
           value={search}
@@ -133,6 +216,70 @@ function Page() {
           className="max-w-sm"
         />
       </div>
+
+      {/* Dead link results */}
+      {deadLinkJobs !== null && (
+        <div className="mb-6 border rounded-lg p-4 bg-white shadow-sm">
+          <div className="flex items-center gap-2 mb-3">
+            <AlertTriangle className="w-5 h-5 text-yellow-500" />
+            <h2 className="font-semibold text-gray-800">
+              Dead Link Check Results
+            </h2>
+            <span className="text-xs text-gray-500 ml-auto">
+              {jobs.length} jobs checked
+            </span>
+          </div>
+
+          {deadLinkJobs.length === 0 ? (
+            <div className="flex items-center gap-2 text-green-600 text-sm py-2">
+              <CheckCircle2 className="w-4 h-4" />
+              All apply links are active. No action needed.
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {deadLinkJobs.map((job) => (
+                <div
+                  key={job._id}
+                  className="flex items-center justify-between gap-4 p-3 rounded-md bg-red-50 border border-red-100"
+                >
+                  <div className="flex items-start gap-2 min-w-0">
+                    <XCircle className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-gray-800 truncate">
+                        {job.title} — {job.company}
+                      </p>
+                      <p className="text-xs text-gray-500 truncate">
+                        {job.applyLink}
+                      </p>
+                      <p className="text-xs mt-0.5">
+                        {job.linkStatus === 'dead' ? (
+                          <span className="text-red-600 font-medium">
+                            HTTP {job.httpStatus} (Dead link)
+                          </span>
+                        ) : (
+                          <span className="text-orange-600 font-medium">
+                            Unreachable / Timed out
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    className="shrink-0"
+                    onClick={() => setConfirmJob(job)}
+                  >
+                    Deactivate
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Jobs table */}
       <div className="overflow-x-auto bg-white shadow-md rounded-lg">
         <Table className="w-full border border-gray-200">
           <TableCaption className="text-lg font-semibold py-2">
@@ -193,6 +340,8 @@ function Page() {
           </TableBody>
         </Table>
       </div>
+
+      {/* Pagination */}
       <div className="flex justify-center mt-4 gap-2">
         <Button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -212,6 +361,43 @@ function Page() {
           Next
         </Button>
       </div>
+
+      {/* Confirmation dialog */}
+      <AlertDialog open={!!confirmJob} onOpenChange={() => setConfirmJob(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Deactivate this job?</AlertDialogTitle>
+            <AlertDialogDescription>
+              <span className="font-medium text-gray-800">
+                {confirmJob?.title} — {confirmJob?.company}
+              </span>
+              <br />
+              <span className="text-sm mt-1 block">
+                {confirmJob?.linkStatus === 'dead'
+                  ? `The apply link returned HTTP ${confirmJob?.httpStatus}. This job appears to be expired.`
+                  : 'The apply link is unreachable or timed out.'}
+              </span>
+              <br />
+              This will hide the job from the public listing. This action can be
+              reversed by updating the job status.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-600 hover:bg-red-700"
+              onClick={() => {
+                if (confirmJob) {
+                  handleDeactivate(confirmJob._id);
+                  setConfirmJob(null);
+                }
+              }}
+            >
+              Yes, Deactivate
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

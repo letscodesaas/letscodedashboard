@@ -415,6 +415,56 @@ export const jobRouter = router({
       };
     }),
 
+  checkJobLinks: publicProcedure.mutation(async (opts) => {
+    const jobs = await opts.ctx.db.Jobs.find({ status: true })
+      .select('_id title company applyLink')
+      .lean();
+
+    const results = await Promise.all(
+      (
+        jobs as Array<{
+          _id: { toString(): string };
+          title: string;
+          company: string;
+          applyLink: string;
+        }>
+      ).map(async (job) => {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 6000);
+        try {
+          const res = await fetch(job.applyLink, {
+            method: 'HEAD',
+            signal: controller.signal,
+            headers: { 'User-Agent': 'Mozilla/5.0 (compatible; LinkChecker/1.0)' },
+            redirect: 'follow',
+          });
+          clearTimeout(timer);
+          const dead = res.status === 404 || res.status === 410;
+          return {
+            _id: job._id.toString(),
+            title: job.title,
+            company: job.company,
+            applyLink: job.applyLink,
+            linkStatus: dead ? 'dead' : 'alive',
+            httpStatus: res.status,
+          };
+        } catch {
+          clearTimeout(timer);
+          return {
+            _id: job._id.toString(),
+            title: job.title,
+            company: job.company,
+            applyLink: job.applyLink,
+            linkStatus: 'error',
+            httpStatus: 0,
+          };
+        }
+      })
+    );
+
+    return results;
+  }),
+
   parseJobText: publicProcedure
     .input(z.object({ text: z.string() }))
     .mutation(async (opts) => {
