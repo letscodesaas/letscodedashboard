@@ -435,7 +435,9 @@ export const jobRouter = router({
           const res = await fetch(job.applyLink, {
             method: 'HEAD',
             signal: controller.signal,
-            headers: { 'User-Agent': 'Mozilla/5.0 (compatible; LinkChecker/1.0)' },
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (compatible; LinkChecker/1.0)',
+            },
             redirect: 'follow',
           });
           clearTimeout(timer);
@@ -464,6 +466,103 @@ export const jobRouter = router({
 
     return results;
   }),
+
+  extractFromUrl: publicProcedure
+    .input(z.object({ url: z.string() }))
+    .mutation(async (opts) => {
+      const { url } = opts.input;
+      const apiKey = process.env.GEMINI_API_KEY;
+      if (!apiKey) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'AI not configured',
+        });
+      }
+
+      // Fetch the job page
+      let pageText = '';
+      try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 10000);
+        const res = await fetch(url, {
+          signal: controller.signal,
+          headers: {
+            'User-Agent':
+              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36',
+          },
+        });
+        clearTimeout(timer);
+        const html = await res.text();
+        pageText = stripTags(html).replace(/\s+/g, ' ').trim().slice(0, 10000);
+      } catch {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Could not fetch the URL. The site may block requests.',
+        });
+      }
+
+      if (!pageText) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'No content found at that URL.',
+        });
+      }
+
+      // Extract with Gemini
+      const client = new GoogleGenerativeAI(apiKey);
+      const model = client.getGenerativeModel({ model: 'gemini-2.5-flash-lite' });
+      const prompt = `Extract job info from this webpage content. Return ONLY a valid JSON object with exactly these keys:
+{
+  "title": "job role/title only",
+  "company": "company name",
+  "location": "city, country, Remote, or Hybrid",
+  "type": "Full-Time | Part-Time | Contract | Internship",
+  "experience": "0+ years | 1+ years | 2+ years | 3+ years | 5+ years",
+  "salary": "salary info or Not specified",
+  "applyLink": "${url}",
+  "description": "full job description in HTML using only <p><ul><li><strong><br> tags — include responsibilities, requirements, and what is offered"
+}
+Webpage content:
+${pageText}`;
+
+      try {
+        const result = await model.generateContent(prompt);
+        const raw = result.response.text().trim();
+        const jsonStr = (() => {
+          const fenceStart = raw.indexOf('```');
+          if (fenceStart !== -1) {
+            const contentStart = raw.indexOf('\n', fenceStart) + 1;
+            const fenceEnd = raw.indexOf('```', contentStart);
+            if (fenceEnd !== -1) return raw.slice(contentStart, fenceEnd).trim();
+          }
+          const objStart = raw.indexOf('{');
+          const objEnd = raw.lastIndexOf('}');
+          if (objStart !== -1 && objEnd > objStart)
+            return raw.slice(objStart, objEnd + 1);
+          return raw;
+        })();
+        const parsed = JSON.parse(jsonStr);
+        return {
+          success: true,
+          data: {
+            title: (parsed.title ?? '').trim(),
+            company: (parsed.company ?? '').trim(),
+            location: (parsed.location ?? '').trim(),
+            type: (parsed.type ?? 'Full-Time').trim(),
+            experience: (parsed.experience ?? '').trim(),
+            salary: (parsed.salary ?? 'Not specified').trim(),
+            applyLink: url,
+            description: (parsed.description ?? '').trim(),
+            linkedinEmployeesLink: '',
+          },
+        };
+      } catch {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'AI failed to extract job details from the page.',
+        });
+      }
+    }),
 
   parseJobText: publicProcedure
     .input(z.object({ text: z.string() }))

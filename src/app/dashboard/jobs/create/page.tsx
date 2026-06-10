@@ -39,6 +39,8 @@ export default function CreateJob() {
   const [disabled, setDisabled] = useState(false);
   const [rawJobText, setRawJobText] = useState('');
   const [parsing, setParsing] = useState(false);
+  const [jobUrl, setJobUrl] = useState('');
+  const [fetchingUrl, setFetchingUrl] = useState(false);
   const [descCommand, setDescCommand] = useState('');
   const [generatingDesc, setGeneratingDesc] = useState(false);
   const [jobData, setJobData] = useState<JobData>({
@@ -66,6 +68,32 @@ export default function CreateJob() {
       ...prev,
       [name]: name === 'status' ? value === 'true' : value, // Convert status to boolean
     }));
+  };
+
+  const handleFetchFromUrl = async () => {
+    if (!jobUrl.trim()) {
+      toast.error('Please enter a job URL');
+      return;
+    }
+    setFetchingUrl(true);
+    try {
+      const result = await trpc.job.extractFromUrl.mutate({ url: jobUrl.trim() });
+      if (result.success && result.data) {
+        setJobData((prev) => ({
+          ...prev,
+          ...result.data,
+          status: true,
+        }));
+        toast.success('Job details extracted from URL!');
+        setJobUrl('');
+      }
+    } catch (error: unknown) {
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to extract from URL'
+      );
+    } finally {
+      setFetchingUrl(false);
+    }
   };
 
   const parseJobHandler = async () => {
@@ -164,28 +192,59 @@ export default function CreateJob() {
         <CardContent>
           <div className="space-y-6">
             {/* Quick Add Section */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h3 className="font-semibold text-blue-900 mb-3">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-4">
+              <h3 className="font-semibold text-blue-900">
                 Quick Add (Auto-Fill)
               </h3>
-              <p className="text-sm text-blue-700 mb-3">
-                Paste job posting text and we&apos;ll automatically extract the
-                details:
-              </p>
-              <textarea
-                value={rawJobText}
-                onChange={(e) => setRawJobText(e.target.value)}
-                placeholder="Paste job posting text here...&#10;Example: Interview.io is hiring SDE I (Full Stack Developer)&#10;Batch: 2022, 2023, 2024, 2025&#10;Location: Bangalore&#10;Apply: https://..."
-                className="w-full p-3 border rounded-md text-sm mb-3 font-mono"
-                rows={6}
-              />
-              <Button
-                onClick={parseJobHandler}
-                disabled={parsing || !rawJobText.trim()}
-                className="w-full bg-blue-600 hover:bg-blue-700"
-              >
-                {parsing ? 'Parsing...' : 'Parse & Auto-Fill'}
-              </Button>
+
+              {/* From URL */}
+              <div>
+                <p className="text-sm text-blue-700 mb-2">
+                  Paste a job posting URL and we&apos;ll extract all details including the description:
+                </p>
+                <div className="flex gap-2">
+                  <Input
+                    value={jobUrl}
+                    onChange={(e) => setJobUrl(e.target.value)}
+                    placeholder="https://company.com/careers/job-id"
+                    className="flex-1 bg-white"
+                  />
+                  <Button
+                    onClick={handleFetchFromUrl}
+                    disabled={fetchingUrl || !jobUrl.trim()}
+                    className="bg-blue-600 hover:bg-blue-700 whitespace-nowrap"
+                  >
+                    {fetchingUrl ? 'Fetching...' : '🔗 Fetch from URL'}
+                  </Button>
+                </div>
+                <p className="text-xs text-blue-500 mt-1">
+                  Note: LinkedIn and some sites block automated fetches. Use paste text below for those.
+                </p>
+              </div>
+
+              <div className="relative flex items-center gap-2">
+                <div className="flex-1 border-t border-blue-200" />
+                <span className="text-xs text-blue-400">OR paste text</span>
+                <div className="flex-1 border-t border-blue-200" />
+              </div>
+
+              {/* From pasted text */}
+              <div>
+                <textarea
+                  value={rawJobText}
+                  onChange={(e) => setRawJobText(e.target.value)}
+                  placeholder="Paste job posting text here...&#10;Example: Interview.io is hiring SDE I (Full Stack Developer)&#10;Batch: 2022, 2023, 2024, 2025&#10;Location: Bangalore&#10;Apply: https://..."
+                  className="w-full p-3 border rounded-md text-sm mb-3 font-mono"
+                  rows={5}
+                />
+                <Button
+                  onClick={parseJobHandler}
+                  disabled={parsing || !rawJobText.trim()}
+                  className="w-full bg-blue-600 hover:bg-blue-700"
+                >
+                  {parsing ? 'Parsing...' : 'Parse & Auto-Fill'}
+                </Button>
+              </div>
             </div>
 
             {/* Divider */}
