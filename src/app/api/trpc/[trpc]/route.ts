@@ -9,8 +9,18 @@ import { ContestRegister } from '@/models/Contest.Model';
 import { ToolUsage } from '@/models/ToolUsage.Model';
 import mongoose from 'mongoose';
 
-mongoose.connect(process.env.DB!);
-const handler = (req: Request) => {
+let isConnected = false;
+async function connectDB() {
+  if (isConnected || mongoose.connection.readyState === 1) {
+    isConnected = true;
+    return;
+  }
+  await mongoose.connect(process.env.DB!);
+  isConnected = true;
+}
+
+const handler = async (req: Request) => {
+  await connectDB();
   return fetchRequestHandler({
     endpoint: '/api/trpc',
     req,
