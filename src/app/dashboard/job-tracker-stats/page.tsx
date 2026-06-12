@@ -187,16 +187,14 @@ function KanbanBoard({ user }: { user: UserPipeline }) {
   ];
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="flex flex-col gap-4">
       {/* User header */}
-      <div className="flex items-center gap-3 mb-4">
+      <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-full bg-slate-800 text-white flex items-center justify-center text-sm font-bold shrink-0">
           {(user.userName || user.email || '?')[0].toUpperCase()}
         </div>
         <div>
-          <p className="font-bold text-base">
-            {user.userName || 'Unknown User'}
-          </p>
+          <p className="font-bold text-base">{user.userName || 'Unknown User'}</p>
           <p className="text-xs text-gray-500">{user.email}</p>
         </div>
         <span className="ml-auto text-sm text-gray-500 font-medium">
@@ -204,57 +202,43 @@ function KanbanBoard({ user }: { user: UserPipeline }) {
         </span>
       </div>
 
-      {/* Kanban columns */}
-      <div className="flex gap-3 overflow-x-auto pb-2 flex-1">
-        {statusKeys.map((status) => {
-          const s = getStatusStyle(status);
-          return (
-            <div
-              key={status}
-              className={`w-52 shrink-0 rounded-lg border ${s.border} flex flex-col`}
-            >
-              <div className={`px-3 py-2 rounded-t-lg ${s.header}`}>
-                <p
-                  className={`text-xs font-bold uppercase tracking-wide ${s.text}`}
-                >
-                  {status}
-                </p>
-                <p className={`text-xl font-bold ${s.text}`}>
-                  {byStatus[status].length}
-                </p>
-              </div>
-              <div
-                className={`p-2 space-y-2 overflow-y-auto flex-1 ${s.bg}`}
-                style={{ maxHeight: 460 }}
-              >
-                {byStatus[status].map((job, i) => (
-                  <div
-                    key={i}
-                    className="bg-white rounded-md border border-gray-100 px-3 py-2 shadow-sm"
-                  >
-                    <p className="text-xs font-semibold text-gray-800 truncate">
-                      {job.company || '—'}
-                    </p>
-                    {job.role && (
-                      <p className="text-xs text-gray-500 truncate mt-0.5">
-                        {job.role}
-                      </p>
-                    )}
-                    {job.appliedFrom && (
-                      <p className="text-xs text-gray-400 mt-1">
-                        via {job.appliedFrom}
-                      </p>
-                    )}
-                    <p className="text-xs text-gray-400 mt-0.5">
-                      {new Date(job.addedAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                ))}
-              </div>
+      {/* One section per status, jobs in a responsive grid */}
+      {statusKeys.map((status) => {
+        const s = getStatusStyle(status);
+        return (
+          <div key={status} className={`rounded-lg border ${s.border} overflow-hidden`}>
+            <div className={`px-4 py-2 flex items-center gap-3 ${s.header}`}>
+              <p className={`text-xs font-bold uppercase tracking-widest ${s.text}`}>
+                {status}
+              </p>
+              <span className={`text-sm font-bold ${s.text}`}>
+                {byStatus[status].length}
+              </span>
             </div>
-          );
-        })}
-      </div>
+            <div className={`p-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 ${s.bg}`}>
+              {byStatus[status].map((job, i) => (
+                <div
+                  key={i}
+                  className="bg-white rounded-md border border-gray-100 px-3 py-2 shadow-sm"
+                >
+                  <p className="text-xs font-semibold text-gray-800 truncate">
+                    {job.company || '—'}
+                  </p>
+                  {job.role && (
+                    <p className="text-xs text-gray-500 truncate mt-0.5">{job.role}</p>
+                  )}
+                  {job.appliedFrom && (
+                    <p className="text-xs text-gray-400 mt-1">via {job.appliedFrom}</p>
+                  )}
+                  <p className="text-xs text-gray-400 mt-0.5">
+                    {new Date(job.addedAt).toLocaleDateString()}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
