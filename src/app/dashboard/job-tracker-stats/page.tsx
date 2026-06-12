@@ -194,7 +194,9 @@ function KanbanBoard({ user }: { user: UserPipeline }) {
           {(user.userName || user.email || '?')[0].toUpperCase()}
         </div>
         <div>
-          <p className="font-bold text-base">{user.userName || 'Unknown User'}</p>
+          <p className="font-bold text-base">
+            {user.userName || 'Unknown User'}
+          </p>
           <p className="text-xs text-gray-500">{user.email}</p>
         </div>
         <span className="ml-auto text-sm text-gray-500 font-medium">
@@ -206,29 +208,41 @@ function KanbanBoard({ user }: { user: UserPipeline }) {
       {statusKeys.map((status) => {
         const s = getStatusStyle(status);
         return (
-          <div key={status} className={`rounded-lg border ${s.border} overflow-hidden`}>
+          <div
+            key={status}
+            className={`rounded-lg border ${s.border} overflow-hidden`}
+          >
             <div className={`px-4 py-2 flex items-center gap-3 ${s.header}`}>
-              <p className={`text-xs font-bold uppercase tracking-widest ${s.text}`}>
+              <p
+                className={`text-xs font-bold uppercase tracking-widest ${s.text}`}
+              >
                 {status}
               </p>
               <span className={`text-sm font-bold ${s.text}`}>
                 {byStatus[status].length}
               </span>
             </div>
-            <div className={`p-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 ${s.bg}`}>
+            <div
+              className={`p-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 ${s.bg}`}
+            >
               {byStatus[status].map((job, i) => (
                 <div
                   key={i}
                   className="bg-white rounded-md border border-gray-100 px-3 py-2 shadow-sm"
                 >
-                  <p className="text-xs font-semibold text-gray-800 truncate">
+                  <StatusBadge status={status} />
+                  <p className="text-xs font-semibold text-gray-800 truncate mt-1.5">
                     {job.company || '—'}
                   </p>
                   {job.role && (
-                    <p className="text-xs text-gray-500 truncate mt-0.5">{job.role}</p>
+                    <p className="text-xs text-gray-500 truncate mt-0.5">
+                      {job.role}
+                    </p>
                   )}
                   {job.appliedFrom && (
-                    <p className="text-xs text-gray-400 mt-1">via {job.appliedFrom}</p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      via {job.appliedFrom}
+                    </p>
                   )}
                   <p className="text-xs text-gray-400 mt-0.5">
                     {new Date(job.addedAt).toLocaleDateString()}
