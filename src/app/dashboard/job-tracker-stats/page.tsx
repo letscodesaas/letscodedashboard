@@ -90,16 +90,66 @@ const STATUS_STYLES: Record<
   string,
   { dot: string; text: string; border: string; countBg: string }
 > = {
-  Applied:      { dot: 'bg-blue-500',   text: 'text-blue-600',   border: 'border-blue-400',   countBg: 'bg-blue-100 text-blue-700' },
-  Shortlisted:  { dot: 'bg-orange-500', text: 'text-orange-600', border: 'border-orange-400', countBg: 'bg-orange-100 text-orange-700' },
-  Interviewing: { dot: 'bg-purple-500', text: 'text-purple-600', border: 'border-purple-400', countBg: 'bg-purple-100 text-purple-700' },
-  Interview:    { dot: 'bg-purple-500', text: 'text-purple-600', border: 'border-purple-400', countBg: 'bg-purple-100 text-purple-700' },
-  'In Review':  { dot: 'bg-orange-500', text: 'text-orange-600', border: 'border-orange-400', countBg: 'bg-orange-100 text-orange-700' },
-  Offer:        { dot: 'bg-green-500',  text: 'text-green-600',  border: 'border-green-400',  countBg: 'bg-green-100 text-green-700' },
-  Rejected:     { dot: 'bg-red-500',    text: 'text-red-600',    border: 'border-red-400',    countBg: 'bg-red-100 text-red-700' },
-  Withdrawn:    { dot: 'bg-gray-400',   text: 'text-gray-500',   border: 'border-gray-300',   countBg: 'bg-gray-100 text-gray-600' },
-  Saved:        { dot: 'bg-indigo-500', text: 'text-indigo-600', border: 'border-indigo-400', countBg: 'bg-indigo-100 text-indigo-700' },
-  Wishlist:     { dot: 'bg-indigo-500', text: 'text-indigo-600', border: 'border-indigo-400', countBg: 'bg-indigo-100 text-indigo-700' },
+  Applied: {
+    dot: 'bg-blue-500',
+    text: 'text-blue-600',
+    border: 'border-blue-400',
+    countBg: 'bg-blue-100 text-blue-700',
+  },
+  Shortlisted: {
+    dot: 'bg-orange-500',
+    text: 'text-orange-600',
+    border: 'border-orange-400',
+    countBg: 'bg-orange-100 text-orange-700',
+  },
+  Interviewing: {
+    dot: 'bg-purple-500',
+    text: 'text-purple-600',
+    border: 'border-purple-400',
+    countBg: 'bg-purple-100 text-purple-700',
+  },
+  Interview: {
+    dot: 'bg-purple-500',
+    text: 'text-purple-600',
+    border: 'border-purple-400',
+    countBg: 'bg-purple-100 text-purple-700',
+  },
+  'In Review': {
+    dot: 'bg-orange-500',
+    text: 'text-orange-600',
+    border: 'border-orange-400',
+    countBg: 'bg-orange-100 text-orange-700',
+  },
+  Offer: {
+    dot: 'bg-green-500',
+    text: 'text-green-600',
+    border: 'border-green-400',
+    countBg: 'bg-green-100 text-green-700',
+  },
+  Rejected: {
+    dot: 'bg-red-500',
+    text: 'text-red-600',
+    border: 'border-red-400',
+    countBg: 'bg-red-100 text-red-700',
+  },
+  Withdrawn: {
+    dot: 'bg-gray-400',
+    text: 'text-gray-500',
+    border: 'border-gray-300',
+    countBg: 'bg-gray-100 text-gray-600',
+  },
+  Saved: {
+    dot: 'bg-indigo-500',
+    text: 'text-indigo-600',
+    border: 'border-indigo-400',
+    countBg: 'bg-indigo-100 text-indigo-700',
+  },
+  Wishlist: {
+    dot: 'bg-indigo-500',
+    text: 'text-indigo-600',
+    border: 'border-indigo-400',
+    countBg: 'bg-indigo-100 text-indigo-700',
+  },
 };
 
 const STATUS_ORDER = [
@@ -129,7 +179,9 @@ function getStatusStyle(status: string) {
 function StatusBadge({ status }: { status: string }) {
   const s = getStatusStyle(status);
   return (
-    <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${s.border} ${s.text} bg-white`}>
+    <span
+      className={`px-2 py-0.5 rounded-full text-xs font-medium border ${s.border} ${s.text} bg-white`}
+    >
       {status}
     </span>
   );
@@ -160,7 +212,9 @@ function KanbanBoard({ user }: { user: UserPipeline }) {
           <p className="font-bold text-sm">{user.userName || 'Unknown User'}</p>
           <p className="text-xs text-gray-500">{user.email}</p>
         </div>
-        <span className="ml-auto text-sm text-gray-400 font-medium">{user.totalJobs} jobs</span>
+        <span className="ml-auto text-sm text-gray-400 font-medium">
+          {user.totalJobs} jobs
+        </span>
       </div>
 
       {/* Status column headers row */}
@@ -173,8 +227,14 @@ function KanbanBoard({ user }: { user: UserPipeline }) {
               className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${s.border} shrink-0`}
             >
               <span className={`w-2 h-2 rounded-full ${s.dot}`} />
-              <span className={`text-xs font-bold uppercase tracking-wide ${s.text}`}>{status}</span>
-              <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full ${s.countBg}`}>
+              <span
+                className={`text-xs font-bold uppercase tracking-wide ${s.text}`}
+              >
+                {status}
+              </span>
+              <span
+                className={`text-xs font-bold px-1.5 py-0.5 rounded-full ${s.countBg}`}
+              >
                 {byStatus[status].length}
               </span>
             </div>
@@ -185,23 +245,30 @@ function KanbanBoard({ user }: { user: UserPipeline }) {
       {/* Kanban columns side by side */}
       <div className="flex gap-3 overflow-x-auto pb-2">
         {statusKeys.map((status) => {
-          const s = getStatusStyle(status);
           return (
             <div key={status} className="w-52 shrink-0 flex flex-col gap-2">
               {byStatus[status].length === 0 ? (
-                <p className="text-xs text-gray-300 text-center pt-4">No jobs</p>
+                <p className="text-xs text-gray-300 text-center pt-4">
+                  No jobs
+                </p>
               ) : (
                 byStatus[status].map((job, i) => (
                   <div
                     key={i}
                     className="bg-white rounded-lg border border-gray-100 px-3 py-2.5 shadow-sm"
                   >
-                    <p className="text-xs font-bold text-gray-800 truncate">{job.company || '—'}</p>
+                    <p className="text-xs font-bold text-gray-800 truncate">
+                      {job.company || '—'}
+                    </p>
                     {job.role && (
-                      <p className="text-xs text-gray-500 truncate mt-0.5">{job.role}</p>
+                      <p className="text-xs text-gray-500 truncate mt-0.5">
+                        {job.role}
+                      </p>
                     )}
                     {job.appliedFrom && (
-                      <p className="text-xs text-gray-400 mt-1">via {job.appliedFrom}</p>
+                      <p className="text-xs text-gray-400 mt-1">
+                        via {job.appliedFrom}
+                      </p>
                     )}
                     <p className="text-xs text-gray-400 mt-0.5">
                       {new Date(job.addedAt).toLocaleDateString()}
