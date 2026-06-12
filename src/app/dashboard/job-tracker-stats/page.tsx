@@ -187,18 +187,21 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-function KanbanBoard({ user }: { user: UserPipeline }) {
+function JobList({ user }: { user: UserPipeline }) {
   const byStatus: Record<string, UserJob[]> = {};
   user.jobs.forEach((job) => {
-    const s = job.status || 'Applied';
-    if (!byStatus[s]) byStatus[s] = [];
-    byStatus[s].push(job);
+    const st = job.status || 'Applied';
+    if (!byStatus[st]) byStatus[st] = [];
+    byStatus[st].push(job);
   });
 
-  // All statuses that appear in data, ordered
   const statusKeys = [
     ...STATUS_ORDER.filter((s) => byStatus[s]),
     ...Object.keys(byStatus).filter((s) => !STATUS_ORDER.includes(s)),
+  ];
+
+  const sorted = [
+    ...statusKeys.flatMap((st) => byStatus[st].map((job) => ({ ...job, status: st }))),
   ];
 
   return (
@@ -217,8 +220,8 @@ function KanbanBoard({ user }: { user: UserPipeline }) {
         </span>
       </div>
 
-      {/* Status column headers row */}
-      <div className="flex gap-2 overflow-x-auto pb-1">
+      {/* Status summary pills */}
+      <div className="flex gap-2 flex-wrap pb-1">
         {statusKeys.map((status) => {
           const s = getStatusStyle(status);
           return (
@@ -227,14 +230,10 @@ function KanbanBoard({ user }: { user: UserPipeline }) {
               className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${s.border} shrink-0`}
             >
               <span className={`w-2 h-2 rounded-full ${s.dot}`} />
-              <span
-                className={`text-xs font-bold uppercase tracking-wide ${s.text}`}
-              >
+              <span className={`text-xs font-bold uppercase tracking-wide ${s.text}`}>
                 {status}
               </span>
-              <span
-                className={`text-xs font-bold px-1.5 py-0.5 rounded-full ${s.countBg}`}
-              >
+              <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full ${s.countBg}`}>
                 {byStatus[status].length}
               </span>
             </div>
@@ -242,46 +241,42 @@ function KanbanBoard({ user }: { user: UserPipeline }) {
         })}
       </div>
 
-      {/* Kanban columns side by side */}
-      <div className="flex gap-3 overflow-x-auto pb-2">
-        {statusKeys.map((status) => {
-          return (
-            <div key={status} className="w-52 shrink-0 flex flex-col gap-2">
-              {byStatus[status].length === 0 ? (
-                <p className="text-xs text-gray-300 text-center pt-4">
-                  No jobs
-                </p>
-              ) : (
-                byStatus[status].map((job, i) => (
-                  <div
-                    key={i}
-                    className="bg-white rounded-lg border border-gray-100 px-3 py-2.5 shadow-sm"
-                  >
-                    <p className="text-xs font-bold text-gray-800 truncate">
-                      {job.company || '—'}
-                    </p>
-                    {job.role && (
-                      <p className="text-xs text-gray-500 truncate mt-0.5">
-                        {job.role}
-                      </p>
-                    )}
-                    {job.appliedFrom && (
-                      <p className="text-xs text-gray-400 mt-1">
-                        via {job.appliedFrom}
-                      </p>
-                    )}
-                    <p className="text-xs text-gray-400 mt-0.5">
-                      {new Date(job.addedAt).toLocaleDateString()}
-                    </p>
-                    <div className="mt-1.5">
-                      <StatusBadge status={status} />
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          );
-        })}
+      {/* List */}
+      <div className="border rounded-lg overflow-hidden">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="bg-gray-50 border-b text-xs text-gray-500 uppercase tracking-wide">
+              <th className="text-left px-4 py-2 font-medium">#</th>
+              <th className="text-left px-4 py-2 font-medium">Company</th>
+              <th className="text-left px-4 py-2 font-medium">Role</th>
+              <th className="text-left px-4 py-2 font-medium">Status</th>
+              <th className="text-left px-4 py-2 font-medium">Source</th>
+              <th className="text-left px-4 py-2 font-medium">Added</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sorted.map((job, i) => (
+              <tr key={i} className="border-b last:border-0 hover:bg-gray-50 transition-colors">
+                <td className="px-4 py-2.5 text-gray-400 text-xs">{i + 1}</td>
+                <td className="px-4 py-2.5 font-semibold text-gray-800 max-w-[160px] truncate">
+                  {job.company || '—'}
+                </td>
+                <td className="px-4 py-2.5 text-gray-500 max-w-[180px] truncate">
+                  {job.role || '—'}
+                </td>
+                <td className="px-4 py-2.5">
+                  <StatusBadge status={job.status} />
+                </td>
+                <td className="px-4 py-2.5 text-gray-400 text-xs">
+                  {job.appliedFrom || '—'}
+                </td>
+                <td className="px-4 py-2.5 text-gray-400 text-xs whitespace-nowrap">
+                  {new Date(job.addedAt).toLocaleDateString()}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
@@ -507,7 +502,7 @@ export default function JobTrackerStats() {
               {/* Right: kanban board */}
               <div className="flex-1 p-5 overflow-x-auto">
                 {selectedUser ? (
-                  <KanbanBoard user={selectedUser} />
+                  <JobList user={selectedUser} />
                 ) : (
                   <p className="text-center text-gray-400 pt-16 text-sm">
                     Select a user
