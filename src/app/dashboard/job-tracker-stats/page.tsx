@@ -86,27 +86,88 @@ const ACTION_COLORS: Record<string, string> = {
   job_deleted: '#ef4444',
 };
 
-const STATUS_STYLES: Record<string, { bg: string; text: string; border: string; header: string }> = {
-  Applied:    { bg: 'bg-blue-50',   text: 'text-blue-700',   border: 'border-blue-200',   header: 'bg-blue-100' },
-  'In Review':{ bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200', header: 'bg-orange-100' },
-  Interview:  { bg: 'bg-yellow-50', text: 'text-yellow-700', border: 'border-yellow-200', header: 'bg-yellow-100' },
-  Offer:      { bg: 'bg-green-50',  text: 'text-green-700',  border: 'border-green-200',  header: 'bg-green-100' },
-  Rejected:   { bg: 'bg-red-50',    text: 'text-red-700',    border: 'border-red-200',    header: 'bg-red-100' },
-  Withdrawn:  { bg: 'bg-gray-50',   text: 'text-gray-600',   border: 'border-gray-200',   header: 'bg-gray-100' },
-  Saved:      { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200', header: 'bg-purple-100' },
-  Wishlist:   { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200', header: 'bg-purple-100' },
+const STATUS_STYLES: Record<
+  string,
+  { bg: string; text: string; border: string; header: string }
+> = {
+  Applied: {
+    bg: 'bg-blue-50',
+    text: 'text-blue-700',
+    border: 'border-blue-200',
+    header: 'bg-blue-100',
+  },
+  'In Review': {
+    bg: 'bg-orange-50',
+    text: 'text-orange-700',
+    border: 'border-orange-200',
+    header: 'bg-orange-100',
+  },
+  Interview: {
+    bg: 'bg-yellow-50',
+    text: 'text-yellow-700',
+    border: 'border-yellow-200',
+    header: 'bg-yellow-100',
+  },
+  Offer: {
+    bg: 'bg-green-50',
+    text: 'text-green-700',
+    border: 'border-green-200',
+    header: 'bg-green-100',
+  },
+  Rejected: {
+    bg: 'bg-red-50',
+    text: 'text-red-700',
+    border: 'border-red-200',
+    header: 'bg-red-100',
+  },
+  Withdrawn: {
+    bg: 'bg-gray-50',
+    text: 'text-gray-600',
+    border: 'border-gray-200',
+    header: 'bg-gray-100',
+  },
+  Saved: {
+    bg: 'bg-purple-50',
+    text: 'text-purple-700',
+    border: 'border-purple-200',
+    header: 'bg-purple-100',
+  },
+  Wishlist: {
+    bg: 'bg-purple-50',
+    text: 'text-purple-700',
+    border: 'border-purple-200',
+    header: 'bg-purple-100',
+  },
 };
 
-const STATUS_ORDER = ['Applied', 'In Review', 'Interview', 'Offer', 'Rejected', 'Withdrawn', 'Saved', 'Wishlist'];
+const STATUS_ORDER = [
+  'Applied',
+  'In Review',
+  'Interview',
+  'Offer',
+  'Rejected',
+  'Withdrawn',
+  'Saved',
+  'Wishlist',
+];
 
 function getStatusStyle(status: string) {
-  return STATUS_STYLES[status] ?? { bg: 'bg-slate-50', text: 'text-slate-700', border: 'border-slate-200', header: 'bg-slate-100' };
+  return (
+    STATUS_STYLES[status] ?? {
+      bg: 'bg-slate-50',
+      text: 'text-slate-700',
+      border: 'border-slate-200',
+      header: 'bg-slate-100',
+    }
+  );
 }
 
 function StatusBadge({ status }: { status: string }) {
   const s = getStatusStyle(status);
   return (
-    <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${s.bg} ${s.text} ${s.border}`}>
+    <span
+      className={`px-2 py-0.5 rounded-full text-xs font-medium border ${s.bg} ${s.text} ${s.border}`}
+    >
       {status}
     </span>
   );
@@ -133,10 +194,14 @@ function KanbanBoard({ user }: { user: UserPipeline }) {
           {(user.userName || user.email || '?')[0].toUpperCase()}
         </div>
         <div>
-          <p className="font-bold text-base">{user.userName || 'Unknown User'}</p>
+          <p className="font-bold text-base">
+            {user.userName || 'Unknown User'}
+          </p>
           <p className="text-xs text-gray-500">{user.email}</p>
         </div>
-        <span className="ml-auto text-sm text-gray-500 font-medium">{user.totalJobs} jobs</span>
+        <span className="ml-auto text-sm text-gray-500 font-medium">
+          {user.totalJobs} jobs
+        </span>
       </div>
 
       {/* Kanban columns */}
@@ -144,18 +209,41 @@ function KanbanBoard({ user }: { user: UserPipeline }) {
         {statusKeys.map((status) => {
           const s = getStatusStyle(status);
           return (
-            <div key={status} className={`min-w-[180px] w-[180px] rounded-lg border ${s.border} flex flex-col`}>
+            <div
+              key={status}
+              className={`min-w-[160px] flex-1 rounded-lg border ${s.border} flex flex-col`}
+            >
               <div className={`px-3 py-2 rounded-t-lg ${s.header}`}>
-                <p className={`text-xs font-bold uppercase tracking-wide ${s.text}`}>{status}</p>
-                <p className={`text-xl font-bold ${s.text}`}>{byStatus[status].length}</p>
+                <p
+                  className={`text-xs font-bold uppercase tracking-wide ${s.text}`}
+                >
+                  {status}
+                </p>
+                <p className={`text-xl font-bold ${s.text}`}>
+                  {byStatus[status].length}
+                </p>
               </div>
-              <div className={`p-2 space-y-2 overflow-y-auto flex-1 ${s.bg}`} style={{ maxHeight: 340 }}>
+              <div
+                className={`p-2 space-y-2 overflow-y-auto flex-1 ${s.bg}`}
+                style={{ maxHeight: 460 }}
+              >
                 {byStatus[status].map((job, i) => (
-                  <div key={i} className="bg-white rounded-md border border-gray-100 px-3 py-2 shadow-sm">
-                    <p className="text-xs font-semibold text-gray-800 truncate">{job.company || '—'}</p>
-                    {job.role && <p className="text-xs text-gray-500 truncate mt-0.5">{job.role}</p>}
+                  <div
+                    key={i}
+                    className="bg-white rounded-md border border-gray-100 px-3 py-2 shadow-sm"
+                  >
+                    <p className="text-xs font-semibold text-gray-800 truncate">
+                      {job.company || '—'}
+                    </p>
+                    {job.role && (
+                      <p className="text-xs text-gray-500 truncate mt-0.5">
+                        {job.role}
+                      </p>
+                    )}
                     {job.appliedFrom && (
-                      <p className="text-xs text-gray-400 mt-1">via {job.appliedFrom}</p>
+                      <p className="text-xs text-gray-400 mt-1">
+                        via {job.appliedFrom}
+                      </p>
                     )}
                     <p className="text-xs text-gray-400 mt-0.5">
                       {new Date(job.addedAt).toLocaleDateString()}
@@ -172,14 +260,24 @@ function KanbanBoard({ user }: { user: UserPipeline }) {
 }
 
 function StatCard({
-  title, value, subtitle, icon, color,
+  title,
+  value,
+  subtitle,
+  icon,
+  color,
 }: {
-  title: string; value: number; subtitle: string; icon: React.ReactNode; color: string;
+  title: string;
+  value: number;
+  subtitle: string;
+  icon: React.ReactNode;
+  color: string;
 }) {
   return (
     <Card>
       <CardHeader className="pb-2 flex flex-row items-center justify-between">
-        <CardTitle className="text-sm font-medium text-gray-600">{title}</CardTitle>
+        <CardTitle className="text-sm font-medium text-gray-600">
+          {title}
+        </CardTitle>
         {icon}
       </CardHeader>
       <CardContent>
@@ -218,7 +316,9 @@ export default function JobTrackerStats() {
     async function fetchPipeline() {
       try {
         setPipelineLoading(true);
-        const data = await trpc.stats.getUserJobPipeline.query({ days: pipelineDays });
+        const data = await trpc.stats.getUserJobPipeline.query({
+          days: pipelineDays,
+        });
         const users = data as UserPipeline[];
         setPipeline(users);
         setSelectedUser(users[0] ?? null);
@@ -235,13 +335,21 @@ export default function JobTrackerStats() {
   (stats?.dailyTrend ?? []).forEach((item) => {
     const { date, action } = item._id;
     if (!trendMap[date]) {
-      trendMap[date] = { date, job_added: 0, status_changed: 0, job_edited: 0, job_deleted: 0 };
+      trendMap[date] = {
+        date,
+        job_added: 0,
+        status_changed: 0,
+        job_edited: 0,
+        job_deleted: 0,
+      };
     }
     if (action in trendMap[date]) {
       (trendMap[date] as Record<string, number | string>)[action] = item.count;
     }
   });
-  const trendData = Object.values(trendMap).sort((a, b) => a.date.localeCompare(b.date));
+  const trendData = Object.values(trendMap).sort((a, b) =>
+    a.date.localeCompare(b.date)
+  );
 
   return (
     <div className="w-full mx-auto p-6 space-y-6">
@@ -306,7 +414,9 @@ export default function JobTrackerStats() {
               <Users className="w-5 h-5 text-gray-600" />
               <CardTitle>User Job Pipelines</CardTitle>
               {!pipelineLoading && pipeline.length > 0 && (
-                <span className="text-sm text-gray-400 font-normal">({pipeline.length} users)</span>
+                <span className="text-sm text-gray-400 font-normal">
+                  ({pipeline.length} users)
+                </span>
               )}
             </div>
             <PeriodSelector value={pipelineDays} onChange={setPipelineDays} />
@@ -322,9 +432,12 @@ export default function JobTrackerStats() {
               No job tracker data for this period
             </p>
           ) : (
-            <div className="flex border-t" style={{ minHeight: 420 }}>
+            <div className="flex border-t" style={{ minHeight: 560 }}>
               {/* Left: user list */}
-              <div className="w-56 shrink-0 border-r overflow-y-auto" style={{ maxHeight: 480 }}>
+              <div
+                className="w-56 shrink-0 border-r overflow-y-auto"
+                style={{ maxHeight: 600 }}
+              >
                 {pipeline.map((user) => {
                   const isSelected = selectedUser?.email === user.email;
                   return (
@@ -332,21 +445,29 @@ export default function JobTrackerStats() {
                       key={user.email}
                       onClick={() => setSelectedUser(user)}
                       className={`w-full text-left px-4 py-3 border-b flex items-center gap-2.5 transition-colors ${
-                        isSelected ? 'bg-slate-900 text-white' : 'hover:bg-gray-50 text-gray-800'
+                        isSelected
+                          ? 'bg-slate-900 text-white'
+                          : 'hover:bg-gray-50 text-gray-800'
                       }`}
                     >
                       <div
                         className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
-                          isSelected ? 'bg-white text-slate-900' : 'bg-slate-800 text-white'
+                          isSelected
+                            ? 'bg-white text-slate-900'
+                            : 'bg-slate-800 text-white'
                         }`}
                       >
                         {(user.userName || user.email || '?')[0].toUpperCase()}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className={`text-sm font-semibold truncate ${isSelected ? 'text-white' : ''}`}>
+                        <p
+                          className={`text-sm font-semibold truncate ${isSelected ? 'text-white' : ''}`}
+                        >
                           {user.userName || 'Unknown'}
                         </p>
-                        <p className={`text-xs truncate ${isSelected ? 'text-slate-300' : 'text-gray-500'}`}>
+                        <p
+                          className={`text-xs truncate ${isSelected ? 'text-slate-300' : 'text-gray-500'}`}
+                        >
                           {user.totalJobs} jobs
                         </p>
                       </div>
@@ -356,11 +477,13 @@ export default function JobTrackerStats() {
               </div>
 
               {/* Right: kanban board */}
-              <div className="flex-1 p-5 overflow-hidden">
+              <div className="flex-1 p-5 overflow-x-auto">
                 {selectedUser ? (
                   <KanbanBoard user={selectedUser} />
                 ) : (
-                  <p className="text-center text-gray-400 pt-16 text-sm">Select a user</p>
+                  <p className="text-center text-gray-400 pt-16 text-sm">
+                    Select a user
+                  </p>
                 )}
               </div>
             </div>
@@ -376,7 +499,9 @@ export default function JobTrackerStats() {
           </CardHeader>
           <CardContent>
             {trendData.length === 0 ? (
-              <p className="text-center text-gray-400 py-16 text-sm">No trend data for this period</p>
+              <p className="text-center text-gray-400 py-16 text-sm">
+                No trend data for this period
+              </p>
             ) : (
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={trendData}>
@@ -385,10 +510,38 @@ export default function JobTrackerStats() {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Line type="monotone" dataKey="job_added" stroke={ACTION_COLORS.job_added} name="Added" strokeWidth={2} dot={false} />
-                  <Line type="monotone" dataKey="status_changed" stroke={ACTION_COLORS.status_changed} name="Status Changed" strokeWidth={2} dot={false} />
-                  <Line type="monotone" dataKey="job_edited" stroke={ACTION_COLORS.job_edited} name="Edited" strokeWidth={2} dot={false} />
-                  <Line type="monotone" dataKey="job_deleted" stroke={ACTION_COLORS.job_deleted} name="Deleted" strokeWidth={2} dot={false} />
+                  <Line
+                    type="monotone"
+                    dataKey="job_added"
+                    stroke={ACTION_COLORS.job_added}
+                    name="Added"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="status_changed"
+                    stroke={ACTION_COLORS.status_changed}
+                    name="Status Changed"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="job_edited"
+                    stroke={ACTION_COLORS.job_edited}
+                    name="Edited"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="job_deleted"
+                    stroke={ACTION_COLORS.job_deleted}
+                    name="Deleted"
+                    strokeWidth={2}
+                    dot={false}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             )}
@@ -405,17 +558,24 @@ export default function JobTrackerStats() {
             </CardHeader>
             <CardContent>
               {stats.statusTransitions.length === 0 ? (
-                <p className="text-center text-gray-400 py-8 text-sm">No transitions yet</p>
+                <p className="text-center text-gray-400 py-8 text-sm">
+                  No transitions yet
+                </p>
               ) : (
                 <div className="space-y-2">
                   {stats.statusTransitions.map((t, i) => (
-                    <div key={i} className="flex items-center justify-between py-2 border-b last:border-0">
+                    <div
+                      key={i}
+                      className="flex items-center justify-between py-2 border-b last:border-0"
+                    >
                       <div className="flex items-center gap-2 text-sm">
                         <StatusBadge status={t._id.from || '—'} />
                         <ArrowRightLeft className="w-3 h-3 text-gray-400" />
                         <StatusBadge status={t._id.to || '—'} />
                       </div>
-                      <span className="text-sm font-bold text-gray-700">{t.count}×</span>
+                      <span className="text-sm font-bold text-gray-700">
+                        {t.count}×
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -430,17 +590,26 @@ export default function JobTrackerStats() {
             </CardHeader>
             <CardContent>
               {stats.topUsers.length === 0 ? (
-                <p className="text-center text-gray-400 py-8 text-sm">No users yet</p>
+                <p className="text-center text-gray-400 py-8 text-sm">
+                  No users yet
+                </p>
               ) : (
                 <div className="space-y-2">
                   {stats.topUsers.map((user, i) => (
-                    <div key={i} className="flex items-center justify-between py-2 border-b last:border-0">
+                    <div
+                      key={i}
+                      className="flex items-center justify-between py-2 border-b last:border-0"
+                    >
                       <div>
-                        <p className="text-sm font-medium">{user.name || 'Unknown'}</p>
+                        <p className="text-sm font-medium">
+                          {user.name || 'Unknown'}
+                        </p>
                         <p className="text-xs text-gray-500">{user._id}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-bold text-green-600">{user.jobsAdded}</p>
+                        <p className="text-sm font-bold text-green-600">
+                          {user.jobsAdded}
+                        </p>
                         <p className="text-xs text-gray-500">jobs added</p>
                       </div>
                     </div>
