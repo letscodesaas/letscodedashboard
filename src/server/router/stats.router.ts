@@ -394,4 +394,107 @@ export const statsRouter = router({
         topUsers,
       };
     }),
+
+  getUserJobPipeline: publicProcedure
+    .input(z.object({ days: z.number().default(30) }))
+    .query(async (opts) => {
+      const { input } = opts;
+      const db = opts.ctx.db;
+
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - input.days);
+
+      // Get all jobs added per user, then reconstruct latest status
+      // by applying status_changed events on top
+      const jobsAdded = await db.ToolUsage.aggregate([
+        {
+          $match: {
+            tool: 'job_tracker',
+            action: 'job_added',
+            createdAt: { $gte: startDate },
+          },
+        },
+        { $sort: { createdAt: 1 } },
+        {
+          $group: {
+            _id: '$metadata.userEmail',
+            userName: { $first: '$metadata.userName' },
+            jobs: {
+              $push: {
+                jobId: '$metadata.jobId',
+                company: '$metadata.companyName',
+                role: '$metadata.role',
+                status: '$metadata.status',
+                appliedFrom: '$metadata.appliedFrom',
+                addedAt: '$createdAt',
+              },
+            },
+          },
+        },
+        { $addFields: { totalJobs: { $size: '$jobs' } } },
+        { $sort: { totalJobs: -1 } },
+        { $limit: 100 },
+      ]);
+
+      // Fetch status_changed events to update job statuses
+      const statusChanges = await db.ToolUsage.aggregate([
+        {
+          $match: {
+            tool: 'job_tracker',
+            action: 'status_changed',
+            createdAt: { $gte: startDate },
+          },
+        },
+        { $sort: { createdAt: 1 } },
+        {
+          $group: {
+            _id: {
+              userEmail: '$metadata.userEmail',
+              jobId: '$metadata.jobId',
+            },
+            latestStatus: { $last: '$metadata.newStatus' },
+          },
+        },
+      ]);
+
+      // Build a lookup map for latest status by (userEmail, jobId)
+      const statusMap = new Map<string, string>();
+      statusChanges.forEach(
+        (s: { _id: { userEmail: string; jobId: string }; latestStatus: string }) => {
+          if (s._id.jobId) {
+            statusMap.set(`${s._id.userEmail}::${s._id.jobId}`, s.latestStatus);
+          }
+        }
+      );
+
+      // Merge latest status into each user's jobs
+      const pipeline = jobsAdded.map(
+        (user: {
+          _id: string;
+          userName: string;
+          totalJobs: number;
+          jobs: Array<{
+            jobId?: string;
+            company: string;
+            role?: string;
+            status: string;
+            appliedFrom: string;
+            addedAt: string;
+          }>;
+        }) => ({
+          email: user._id,
+          userName: user.userName,
+          totalJobs: user.totalJobs,
+          jobs: user.jobs.map((job) => ({
+            ...job,
+            status:
+              (job.jobId && statusMap.get(`${user._id}::${job.jobId}`)) ||
+              job.status ||
+              'Applied',
+          })),
+        })
+      );
+
+      return pipeline;
+    }),
 });
