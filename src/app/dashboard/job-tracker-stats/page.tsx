@@ -211,7 +211,7 @@ function KanbanBoard({ user }: { user: UserPipeline }) {
           return (
             <div
               key={status}
-              className={`min-w-[160px] flex-1 rounded-lg border ${s.border} flex flex-col`}
+              className={`w-52 shrink-0 rounded-lg border ${s.border} flex flex-col`}
             >
               <div className={`px-3 py-2 rounded-t-lg ${s.header}`}>
                 <p
