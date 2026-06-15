@@ -10,7 +10,10 @@ async function clerkFetch(path: string) {
     },
     cache: 'no-store',
   });
-  if (!res.ok) throw new Error(`Clerk API error: ${res.status}`);
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`Clerk API ${res.status}: ${body}`);
+  }
   return res.json();
 }
 
@@ -28,28 +31,31 @@ function startOf(unit: 'day' | 'week' | 'month'): number {
   return d.getTime();
 }
 
+// /v1/users/count only returns total — use /v1/users with created_after for filtered counts
+async function countSince(ms: number): Promise<number> {
+  const data = await clerkFetch(`/users?limit=500&created_after=${ms}&order_by=-created_at`);
+  return Array.isArray(data) ? data.length : 0;
+}
+
 export const GET = async () => {
   try {
-    const [totalData, todayData, weekData, monthData] = await Promise.all([
-      clerkFetch('/users/count'),
-      clerkFetch(`/users/count?created_after=${startOf('day')}`),
-      clerkFetch(`/users/count?created_after=${startOf('week')}`),
-      clerkFetch(`/users/count?created_after=${startOf('month')}`),
-    ]);
-
-    // Fetch last 5 newest users for a "recent signups" list
-    const recentUsers = await clerkFetch(
-      '/users?limit=5&order_by=-created_at'
-    );
+    const [totalData, today, thisWeek, thisMonth, recentUsers] =
+      await Promise.all([
+        clerkFetch('/users/count'),
+        countSince(startOf('day')),
+        countSince(startOf('week')),
+        countSince(startOf('month')),
+        clerkFetch('/users?limit=5&order_by=-created_at'),
+      ]);
 
     return NextResponse.json({
       success: true,
       data: {
-        total: totalData.total_count,
-        today: todayData.total_count,
-        thisWeek: weekData.total_count,
-        thisMonth: monthData.total_count,
-        recent: recentUsers.map(
+        total: totalData.total_count ?? 0,
+        today,
+        thisWeek,
+        thisMonth,
+        recent: (Array.isArray(recentUsers) ? recentUsers : []).map(
           (u: {
             first_name: string | null;
             last_name: string | null;
@@ -68,13 +74,10 @@ export const GET = async () => {
       },
     });
   } catch (error: unknown) {
-    console.error('Clerk stats error:', error);
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error('Clerk stats error:', msg);
     return NextResponse.json(
-      {
-        success: false,
-        message: 'Failed to fetch Clerk stats',
-        error: error instanceof Error ? error.message : String(error),
-      },
+      { success: false, message: 'Failed to fetch Clerk stats', error: msg },
       { status: 500 }
     );
   }
