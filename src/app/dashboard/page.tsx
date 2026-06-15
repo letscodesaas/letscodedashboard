@@ -2,7 +2,89 @@
 'use client';
 import React from 'react';
 import StatCard from '@/components/ui/stat';
-import { Pencil, Check, X } from 'lucide-react';
+import { Pencil, Check, X, Users, UserCheck, CalendarDays, TrendingUp } from 'lucide-react';
+
+interface ClerkStats {
+  total: number;
+  today: number;
+  thisWeek: number;
+  thisMonth: number;
+  recent: { name: string; email: string; imageUrl: string; createdAt: number }[];
+}
+
+function ClerkStatsSection() {
+  const [data, setData] = React.useState<ClerkStats | null>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    fetch('/api/dashboard/clerk-stats')
+      .then((r) => r.json())
+      .then((res) => { if (res.success) setData(res.data); })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const stats = [
+    { label: 'Total Users', value: data?.total, icon: <Users className="w-5 h-5 text-indigo-500" />, color: 'text-indigo-600' },
+    { label: 'Joined This Month', value: data?.thisMonth, icon: <TrendingUp className="w-5 h-5 text-blue-500" />, color: 'text-blue-600' },
+    { label: 'Joined This Week', value: data?.thisWeek, icon: <CalendarDays className="w-5 h-5 text-emerald-500" />, color: 'text-emerald-600' },
+    { label: 'Joined Today', value: data?.today, icon: <UserCheck className="w-5 h-5 text-orange-500" />, color: 'text-orange-600' },
+  ];
+
+  return (
+    <section>
+      <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+        <Users className="w-5 h-5" /> Clerk Users
+      </h3>
+
+      {/* Stat cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+        {stats.map((s) => (
+          <div key={s.label} className="bg-white rounded-lg border border-gray-100 p-4 flex items-start gap-3">
+            <div className="mt-0.5">{s.icon}</div>
+            <div>
+              <p className="text-xs text-gray-500">{s.label}</p>
+              {loading ? (
+                <div className="h-7 w-16 animate-pulse rounded bg-gray-200 mt-1" />
+              ) : (
+                <p className={`text-2xl font-bold ${s.color}`}>
+                  {s.value?.toLocaleString() ?? '—'}
+                </p>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Recent signups */}
+      {!loading && data?.recent && data.recent.length > 0 && (
+        <div className="bg-white rounded-lg border border-gray-100 p-4">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Recent Signups</p>
+          <div className="divide-y">
+            {data.recent.map((u, i) => (
+              <div key={i} className="flex items-center gap-3 py-2">
+                {u.imageUrl ? (
+                  <img src={u.imageUrl} alt={u.name} className="w-8 h-8 rounded-full object-cover shrink-0" />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-sm font-bold shrink-0">
+                    {u.name[0]}
+                  </div>
+                )}
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-gray-800 truncate">{u.name}</p>
+                  <p className="text-xs text-gray-400 truncate">{u.email}</p>
+                </div>
+                <p className="text-xs text-gray-400 shrink-0">
+                  {new Date(u.createdAt).toLocaleDateString()}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
 
 const SOCIAL_PLATFORMS = [
   {
@@ -245,7 +327,10 @@ function DashboardPage() {
         </div>
       )}
 
-      {/* Social Media — shown first */}
+      {/* Clerk user stats — shown first */}
+      <ClerkStatsSection />
+
+      {/* Social Media */}
       <section>
         <h3 className="text-xl font-semibold mb-4">Social Media</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
