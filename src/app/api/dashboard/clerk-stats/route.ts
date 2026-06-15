@@ -1,10 +1,23 @@
 import { NextResponse } from 'next/server';
-import { DB } from '@/utils/db';
-import { UserProfile } from '@/models/UserProfile.models';
 
-DB();
+const CLERK_API = 'https://api.clerk.com/v1';
 
-function startOf(unit: 'day' | 'week' | 'month'): Date {
+async function clerkFetch(path: string) {
+  const res = await fetch(`${CLERK_API}${path}`, {
+    headers: {
+      Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    cache: 'no-store',
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`Clerk ${res.status}: ${body}`);
+  }
+  return res.json();
+}
+
+function startOf(unit: 'day' | 'week' | 'month'): number {
   const d = new Date();
   if (unit === 'day') {
     d.setHours(0, 0, 0, 0);
@@ -15,43 +28,58 @@ function startOf(unit: 'day' | 'week' | 'month'): Date {
     d.setDate(1);
     d.setHours(0, 0, 0, 0);
   }
-  return d;
+  return d.getTime();
+}
+
+// /v1/users/count has no date filter — use list endpoint and count
+async function countSince(ms: number): Promise<number> {
+  const data = await clerkFetch(
+    `/users?limit=500&created_after=${ms}&order_by=-created_at`
+  );
+  return Array.isArray(data) ? data.length : 0;
 }
 
 export const GET = async () => {
   try {
-    const [total, today, thisWeek, thisMonth, recentDocs] = await Promise.all([
-      UserProfile.countDocuments(),
-      UserProfile.countDocuments({ createdAt: { $gte: startOf('day') } }),
-      UserProfile.countDocuments({ createdAt: { $gte: startOf('week') } }),
-      UserProfile.countDocuments({ createdAt: { $gte: startOf('month') } }),
-      UserProfile.find()
-        .sort({ createdAt: -1 })
-        .limit(5)
-        .select('firstname lastname email profilePic createdAt role'),
-    ]);
+    const [totalData, today, thisWeek, thisMonth, recentUsers] =
+      await Promise.all([
+        clerkFetch('/users/count'),
+        countSince(startOf('day')),
+        countSince(startOf('week')),
+        countSince(startOf('month')),
+        clerkFetch('/users?limit=5&order_by=-created_at'),
+      ]);
 
     return NextResponse.json({
       success: true,
       data: {
-        total,
+        total: totalData.total_count ?? 0,
         today,
         thisWeek,
         thisMonth,
-        recent: recentDocs.map((u) => ({
-          name: [u.firstname, u.lastname].filter(Boolean).join(' ') || 'Unknown',
-          email: u.email ?? '',
-          imageUrl: u.profilePic ?? '',
-          createdAt: u.createdAt,
-          role: u.role ?? 'student',
-        })),
+        recent: (Array.isArray(recentUsers) ? recentUsers : []).map(
+          (u: {
+            first_name: string | null;
+            last_name: string | null;
+            email_addresses: { email_address: string }[];
+            image_url: string;
+            created_at: number;
+          }) => ({
+            name:
+              [u.first_name, u.last_name].filter(Boolean).join(' ') ||
+              'Unknown',
+            email: u.email_addresses?.[0]?.email_address ?? '',
+            imageUrl: u.image_url,
+            createdAt: u.created_at,
+          })
+        ),
       },
     });
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : String(error);
-    console.error('User stats error:', msg);
+    console.error('Clerk stats error:', msg);
     return NextResponse.json(
-      { success: false, message: 'Failed to fetch user stats', error: msg },
+      { success: false, message: 'Failed to fetch Clerk stats', error: msg },
       { status: 500 }
     );
   }
