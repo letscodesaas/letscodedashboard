@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { CardContent } from '@/components/ui/card';
 import {
   Loader2,
   CheckCircle,
@@ -97,8 +96,7 @@ function ReasonModal({
     delete: {
       label: 'Delete Post',
       color: 'bg-red-700',
-      placeholder:
-        'e.g. Severe violation, hate speech, illegal content...',
+      placeholder: 'e.g. Severe violation, hate speech, illegal content...',
     },
     restore: { label: 'Restore', color: 'bg-green-600', placeholder: '' },
   };
@@ -193,8 +191,12 @@ function PostCard({
                 <Trash2 className="w-5 h-5 text-red-600" />
               </div>
               <div>
-                <h2 className="text-base font-bold text-gray-900">Delete this post?</h2>
-                <p className="text-sm text-gray-500">This action cannot be undone.</p>
+                <h2 className="text-base font-bold text-gray-900">
+                  Delete this post?
+                </h2>
+                <p className="text-sm text-gray-500">
+                  This action cannot be undone.
+                </p>
               </div>
             </div>
             <div className="flex gap-2 justify-end pt-1">
@@ -205,7 +207,10 @@ function PostCard({
                 Cancel
               </button>
               <button
-                onClick={() => { setDeleteConfirm(false); setPendingAction('delete'); }}
+                onClick={() => {
+                  setDeleteConfirm(false);
+                  setPendingAction('delete');
+                }}
                 className="px-4 py-2 text-sm rounded-lg bg-red-600 text-white font-medium hover:bg-red-700"
               >
                 Yes, Delete
@@ -251,7 +256,7 @@ function PostCard({
         </div>
 
         {/* Content */}
-        {(post.content || post.text || post.body) ? (
+        {post.content || post.text || post.body ? (
           <p className="text-sm text-gray-700 whitespace-pre-wrap">
             {post.content || post.text || post.body}
           </p>
@@ -292,20 +297,18 @@ function PostCard({
         )}
 
         {/* Report reasons */}
-        {tab === 'reported' &&
-          post.reports &&
-          post.reports.length > 0 && (
-            <div className="bg-red-50 rounded-lg p-3 space-y-1">
-              <p className="text-xs font-semibold text-red-600 uppercase tracking-wide mb-1">
-                Report Reasons
+        {tab === 'reported' && post.reports && post.reports.length > 0 && (
+          <div className="bg-red-50 rounded-lg p-3 space-y-1">
+            <p className="text-xs font-semibold text-red-600 uppercase tracking-wide mb-1">
+              Report Reasons
+            </p>
+            {post.reports.map((r, i) => (
+              <p key={i} className="text-xs text-red-700">
+                • {r.reason || 'No reason given'}
               </p>
-              {post.reports.map((r, i) => (
-                <p key={i} className="text-xs text-red-700">
-                  • {r.reason || 'No reason given'}
-                </p>
-              ))}
-            </div>
-          )}
+            ))}
+          </div>
+        )}
 
         {/* Actions */}
         <div className="flex gap-2 pt-1 flex-wrap">
@@ -460,12 +463,18 @@ function BulkRejectForm({
         className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300 resize-none"
       />
       <div className="flex gap-2 justify-end">
-        <button onClick={onCancel} className="px-4 py-2 text-sm rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">
+        <button
+          onClick={onCancel}
+          className="px-4 py-2 text-sm rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50"
+        >
           Cancel
         </button>
         <button
           onClick={() => {
-            if (!reason.trim()) { toast.error('Please enter a reason'); return; }
+            if (!reason.trim()) {
+              toast.error('Please enter a reason');
+              return;
+            }
             onConfirm(reason.trim());
           }}
           disabled={loading}
@@ -478,23 +487,29 @@ function BulkRejectForm({
   );
 }
 
+function endpointFor(t: Tab) {
+  if (t === 'pending') return '/api/admin/feed/pending';
+  if (t === 'approved') return '/api/admin/feed/approved';
+  if (t === 'unavailable') return '/api/admin/feed/unavailable';
+  return '/api/admin/feed/reported';
+}
+
 export default function FeedModerationPage() {
   const [tab, setTab] = useState<Tab>('pending');
   const [posts, setPosts] = useState<FeedPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [total, setTotal] = useState(0);
-  const [counts, setCounts] = useState({ pending: 0, approved: 0, reported: 0, unavailable: 0 });
+  const [counts, setCounts] = useState({
+    pending: 0,
+    approved: 0,
+    reported: 0,
+    unavailable: 0,
+  });
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [bulkLoading, setBulkLoading] = useState(false);
   const [bulkRejectModal, setBulkRejectModal] = useState(false);
-
-  const endpointFor = (t: Tab) =>
-    t === 'pending' ? '/api/admin/feed/pending'
-    : t === 'approved' ? '/api/admin/feed/approved'
-    : t === 'unavailable' ? '/api/admin/feed/unavailable'
-    : '/api/admin/feed/reported';
 
   const fetchCounts = useCallback(async () => {
     try {
@@ -522,7 +537,10 @@ export default function FeedModerationPage() {
       if (data.success) {
         setPosts(data.posts ?? []);
         setTotal(data.total ?? data.posts?.length ?? 0);
-        setCounts((prev) => ({ ...prev, [tab]: data.total ?? data.posts?.length ?? 0 }));
+        setCounts((prev) => ({
+          ...prev,
+          [tab]: data.total ?? data.posts?.length ?? 0,
+        }));
       } else toast.error(data.message ?? 'Failed to load posts');
     } catch {
       toast.error('Network error');
@@ -544,13 +562,22 @@ export default function FeedModerationPage() {
     }
   };
 
-  useEffect(() => { fetchCounts(); }, [fetchCounts]);
-  useEffect(() => { fetchPosts(); setSearch(''); }, [fetchPosts]);
+  useEffect(() => {
+    fetchCounts();
+  }, [fetchCounts]);
+  useEffect(() => {
+    fetchPosts();
+    setSearch('');
+  }, [fetchPosts]);
 
   const toggleSelect = (id: string) =>
     setSelected((prev) => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
       return next;
     });
 
@@ -559,7 +586,10 @@ export default function FeedModerationPage() {
       prev.size === posts.length ? new Set() : new Set(posts.map((p) => p._id))
     );
 
-  const handleBulkAction = async (action: 'approve' | 'reject', reason?: string) => {
+  const handleBulkAction = async (
+    action: 'approve' | 'reject',
+    reason?: string
+  ) => {
     if (selected.size === 0) return;
     setBulkLoading(true);
     try {
@@ -570,9 +600,14 @@ export default function FeedModerationPage() {
       });
       const data = await res.json();
       if (data.success) {
-        toast.success(`${data.updated} post${data.updated !== 1 ? 's' : ''} ${action === 'approve' ? 'approved' : 'rejected'}`);
+        toast.success(
+          `${data.updated} post${data.updated !== 1 ? 's' : ''} ${action === 'approve' ? 'approved' : 'rejected'}`
+        );
         setPosts((prev) => prev.filter((p) => !selected.has(p._id)));
-        setCounts((prev) => ({ ...prev, [tab]: Math.max(0, prev[tab] - selected.size) }));
+        setCounts((prev) => ({
+          ...prev,
+          [tab]: Math.max(0, prev[tab] - selected.size),
+        }));
         setSelected(new Set());
       } else {
         toast.error(data.message ?? 'Bulk action failed');
@@ -595,7 +630,9 @@ export default function FeedModerationPage() {
       const data = await res.json();
       if (data.success) {
         toast.success(pin ? 'Post pinned to top of feed' : 'Post unpinned');
-        setPosts((prev) => prev.map((p) => (p._id === id ? { ...p, isPinned: pin } : p)));
+        setPosts((prev) =>
+          prev.map((p) => (p._id === id ? { ...p, isPinned: pin } : p))
+        );
       } else {
         toast.error(data.message ?? 'Failed to update pin');
       }
@@ -614,9 +651,11 @@ export default function FeedModerationPage() {
       const data = await res.json();
       if (data.success) {
         const labels: Record<Action, string> = {
-          approve: 'approved', reject: 'rejected',
+          approve: 'approved',
+          reject: 'rejected',
           make_unavailable: 'made unavailable',
-          restore: 'restored and made available', delete: 'deleted',
+          restore: 'restored and made available',
+          delete: 'deleted',
         };
         toast.success(`Post ${labels[action]}`);
         setPosts((prev) => prev.filter((p) => p._id !== id));
@@ -631,15 +670,20 @@ export default function FeedModerationPage() {
   };
 
   const q = search.trim().toLowerCase();
-  const filtered = (tab === 'approved' || tab === 'reported') && q
-    ? posts.filter((p) =>
-        (p.userName ?? '').toLowerCase().includes(q) ||
-        (p.content ?? p.text ?? p.body ?? '').toLowerCase().includes(q)
-      )
-    : posts;
-  const sorted = tab === 'approved'
-    ? [...filtered].sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0))
-    : filtered;
+  const filtered =
+    (tab === 'approved' || tab === 'reported') && q
+      ? posts.filter(
+          (p) =>
+            (p.userName ?? '').toLowerCase().includes(q) ||
+            (p.content ?? p.text ?? p.body ?? '').toLowerCase().includes(q)
+        )
+      : posts;
+  const sorted =
+    tab === 'approved'
+      ? [...filtered].sort(
+          (a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0)
+        )
+      : filtered;
 
   return (
     <div className="w-full p-6 space-y-6">
@@ -647,8 +691,12 @@ export default function FeedModerationPage() {
       {bulkRejectModal && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6 space-y-4">
-            <h2 className="text-lg font-bold text-gray-900">Reject {selected.size} posts</h2>
-            <p className="text-sm text-gray-500">This reason will be visible to all selected users.</p>
+            <h2 className="text-lg font-bold text-gray-900">
+              Reject {selected.size} posts
+            </h2>
+            <p className="text-sm text-gray-500">
+              This reason will be visible to all selected users.
+            </p>
             <BulkRejectForm
               onConfirm={(reason) => handleBulkAction('reject', reason)}
               onCancel={() => setBulkRejectModal(false)}
@@ -661,10 +709,15 @@ export default function FeedModerationPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Feed Moderation</h1>
-          <p className="text-gray-500 text-sm mt-1">Review user posts and manage reported content</p>
+          <p className="text-gray-500 text-sm mt-1">
+            Review user posts and manage reported content
+          </p>
         </div>
         <button
-          onClick={() => { fetchPosts(); fetchCounts(); }}
+          onClick={() => {
+            fetchPosts();
+            fetchCounts();
+          }}
           className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 border border-gray-200 rounded-lg px-3 py-1.5 transition-colors"
         >
           <RefreshCw className="w-4 h-4" />
@@ -674,23 +727,49 @@ export default function FeedModerationPage() {
 
       {/* Tabs */}
       <div className="flex gap-1 border-b">
-        {([
-          { key: 'pending', label: 'Pending Approval', icon: <Clock className="w-4 h-4" />, badgeClass: 'bg-orange-100 text-orange-700' },
-          { key: 'approved', label: 'Approved Posts', icon: <ThumbsUp className="w-4 h-4" />, badgeClass: 'bg-green-100 text-green-700' },
-          { key: 'reported', label: 'Reported Posts', icon: <Flag className="w-4 h-4" />, badgeClass: 'bg-red-100 text-red-700' },
-          { key: 'unavailable', label: 'Unavailable', icon: <EyeOff className="w-4 h-4" />, badgeClass: 'bg-orange-100 text-orange-700' },
-        ] as const).map(({ key, label, icon, badgeClass }) => (
+        {(
+          [
+            {
+              key: 'pending',
+              label: 'Pending Approval',
+              icon: <Clock className="w-4 h-4" />,
+              badgeClass: 'bg-orange-100 text-orange-700',
+            },
+            {
+              key: 'approved',
+              label: 'Approved Posts',
+              icon: <ThumbsUp className="w-4 h-4" />,
+              badgeClass: 'bg-green-100 text-green-700',
+            },
+            {
+              key: 'reported',
+              label: 'Reported Posts',
+              icon: <Flag className="w-4 h-4" />,
+              badgeClass: 'bg-red-100 text-red-700',
+            },
+            {
+              key: 'unavailable',
+              label: 'Unavailable',
+              icon: <EyeOff className="w-4 h-4" />,
+              badgeClass: 'bg-orange-100 text-orange-700',
+            },
+          ] as const
+        ).map(({ key, label, icon, badgeClass }) => (
           <button
             key={key}
             onClick={() => setTab(key)}
             className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
-              tab === key ? 'border-slate-900 text-slate-900' : 'border-transparent text-gray-500 hover:text-gray-800'
+              tab === key
+                ? 'border-slate-900 text-slate-900'
+                : 'border-transparent text-gray-500 hover:text-gray-800'
             }`}
           >
             {icon}
             {label}
             {counts[key] > 0 && (
-              <span className={`ml-1 text-xs font-bold px-1.5 py-0.5 rounded-full ${badgeClass}`}>
+              <span
+                className={`ml-1 text-xs font-bold px-1.5 py-0.5 rounded-full ${badgeClass}`}
+              >
                 {counts[key]}
               </span>
             )}
@@ -699,18 +778,20 @@ export default function FeedModerationPage() {
       </div>
 
       {/* Search bar (approved + reported) */}
-      {(tab === 'approved' || tab === 'reported') && !loading && posts.length > 0 && (
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by username or post content..."
-            className="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-300"
-          />
-        </div>
-      )}
+      {(tab === 'approved' || tab === 'reported') &&
+        !loading &&
+        posts.length > 0 && (
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by username or post content..."
+              className="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-300"
+            />
+          </div>
+        )}
 
       {/* Bulk action bar (pending tab only) */}
       {tab === 'pending' && !loading && posts.length > 0 && (
@@ -732,7 +813,11 @@ export default function FeedModerationPage() {
                 disabled={bulkLoading}
                 className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-green-600 text-white text-xs font-semibold hover:bg-green-700 disabled:opacity-50"
               >
-                {bulkLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle className="w-3.5 h-3.5" />}
+                {bulkLoading ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <CheckCircle className="w-3.5 h-3.5" />
+                )}
                 Approve all
               </button>
               <button
@@ -756,19 +841,43 @@ export default function FeedModerationPage() {
       ) : posts.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
           {tab === 'pending' ? (
-            <><CheckCircle className="w-10 h-10 text-green-400 mb-3" /><p className="font-semibold text-gray-700">All caught up!</p><p className="text-sm text-gray-400 mt-1">No posts pending review</p></>
+            <>
+              <CheckCircle className="w-10 h-10 text-green-400 mb-3" />
+              <p className="font-semibold text-gray-700">All caught up!</p>
+              <p className="text-sm text-gray-400 mt-1">
+                No posts pending review
+              </p>
+            </>
           ) : tab === 'approved' ? (
-            <><ThumbsUp className="w-10 h-10 text-gray-300 mb-3" /><p className="font-semibold text-gray-700">No approved posts yet</p></>
+            <>
+              <ThumbsUp className="w-10 h-10 text-gray-300 mb-3" />
+              <p className="font-semibold text-gray-700">
+                No approved posts yet
+              </p>
+            </>
           ) : tab === 'unavailable' ? (
-            <><Eye className="w-10 h-10 text-gray-300 mb-3" /><p className="font-semibold text-gray-700">No unavailable posts</p></>
+            <>
+              <Eye className="w-10 h-10 text-gray-300 mb-3" />
+              <p className="font-semibold text-gray-700">
+                No unavailable posts
+              </p>
+            </>
           ) : (
-            <><Flag className="w-10 h-10 text-gray-300 mb-3" /><p className="font-semibold text-gray-700">No reported posts</p><p className="text-sm text-gray-400 mt-1">Community is behaving well</p></>
+            <>
+              <Flag className="w-10 h-10 text-gray-300 mb-3" />
+              <p className="font-semibold text-gray-700">No reported posts</p>
+              <p className="text-sm text-gray-400 mt-1">
+                Community is behaving well
+              </p>
+            </>
           )}
         </div>
       ) : sorted.length === 0 && q ? (
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <Search className="w-8 h-8 text-gray-300 mb-3" />
-          <p className="font-semibold text-gray-600">No results for &ldquo;{q}&rdquo;</p>
+          <p className="font-semibold text-gray-600">
+            No results for &ldquo;{q}&rdquo;
+          </p>
         </div>
       ) : (
         <>
@@ -800,8 +909,12 @@ export default function FeedModerationPage() {
                 disabled={loadingMore}
                 className="flex items-center gap-2 px-6 py-2.5 text-sm font-medium border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors"
               >
-                {loadingMore ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                {loadingMore ? 'Loading...' : `Load more (${total - posts.length} remaining)`}
+                {loadingMore ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : null}
+                {loadingMore
+                  ? 'Loading...'
+                  : `Load more (${total - posts.length} remaining)`}
               </button>
             </div>
           )}
