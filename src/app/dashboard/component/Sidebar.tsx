@@ -17,6 +17,7 @@ import {
   Logs,
   List,
   BarChart3,
+  ShieldCheck,
 } from 'lucide-react';
 
 import {
@@ -119,6 +120,11 @@ const navigationItems = [
     title: 'Job Tracker Stats',
     url: '/dashboard/job-tracker-stats',
     icon: BarChart3,
+  },
+  {
+    title: 'Feed Moderation',
+    url: '/dashboard/feed-moderation',
+    icon: ShieldCheck,
   },
 ];
 
