@@ -225,9 +225,17 @@ const Page = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl max-w-md w-full p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                <Trash2 className="w-5 h-5 text-red-600" />
-              </div>
+              {deleteTarget?.profilePic ? (
+                <img
+                  src={deleteTarget.profilePic}
+                  alt="Profile"
+                  className="w-10 h-10 rounded-full object-cover border border-gray-200"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white font-bold">
+                  {(deleteTarget?.firstname?.[0] || deleteTarget?.username?.[0] || '?').toUpperCase()}
+                </div>
+              )}
               <h3 className="text-lg font-semibold text-gray-900">
                 Delete Profile
               </h3>
@@ -295,13 +303,24 @@ const Page = () => {
                 className="bg-white border rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow flex flex-col justify-between"
               >
                 <div className="flex items-start gap-4">
-                  {user.profilePic && (
-                    <img
-                      src={user.profilePic}
-                      alt="Profile"
-                      className="w-16 h-16 rounded-full object-cover"
-                    />
-                  )}
+                  <div className="shrink-0">
+                    {user.profilePic ? (
+                      <img
+                        src={user.profilePic}
+                        alt="Profile"
+                        className="w-14 h-14 rounded-full object-cover border-2 border-gray-200"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                          (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                        }}
+                      />
+                    ) : null}
+                    <div
+                      className={`w-14 h-14 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white font-bold text-xl border-2 border-gray-200 ${user.profilePic ? 'hidden' : ''}`}
+                    >
+                      {(user.firstname?.[0] || user.username?.[0] || '?').toUpperCase()}
+                    </div>
+                  </div>
                   <div className="flex-1">
                     <h3 className="font-semibold text-lg">
                       {user.firstname && user.lastname

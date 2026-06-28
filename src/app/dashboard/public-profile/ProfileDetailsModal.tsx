@@ -26,13 +26,19 @@ export default function ProfileDetailsModal({
           &times;
         </button>
         <div className="flex items-center gap-4 mb-4">
-          {user.profilePic && (
-            <img
-              src={user.profilePic}
-              alt="Profile"
-              className="w-20 h-20 rounded-full object-cover"
-            />
-          )}
+          <div className="shrink-0">
+            {user.profilePic ? (
+              <img
+                src={user.profilePic}
+                alt="Profile"
+                className="w-20 h-20 rounded-full object-cover border-2 border-gray-200"
+              />
+            ) : (
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white font-bold text-3xl border-2 border-gray-200">
+                {(user.firstname?.[0] || user.username?.[0] || '?').toUpperCase()}
+              </div>
+            )}
+          </div>
           <div>
             <h2 className="text-2xl font-bold mb-1">
               {user.firstname && user.lastname
