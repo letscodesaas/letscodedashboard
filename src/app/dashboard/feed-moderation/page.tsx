@@ -15,6 +15,7 @@ import {
   Pin,
   PinOff,
   Search,
+  UserX,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -43,10 +44,11 @@ interface FeedPost {
   hiddenReason?: string;
   hiddenAt?: string;
   isPinned?: boolean;
+  isAnonymous?: boolean;
   createdAt: string;
 }
 
-type Tab = 'pending' | 'approved' | 'reported' | 'unavailable';
+type Tab = 'pending' | 'approved' | 'reported' | 'unavailable' | 'anonymous';
 type Action = 'approve' | 'reject' | 'make_unavailable' | 'restore' | 'delete';
 
 function UserAvatar({ name, image }: { name: string; image?: string }) {
@@ -240,6 +242,12 @@ function PostCard({
               {new Date(post.createdAt).toLocaleString()}
             </p>
           </div>
+          {post.isAnonymous && (
+            <span className="flex items-center gap-1 text-xs font-semibold text-purple-700 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded-full shrink-0">
+              <UserX className="w-3 h-3" />
+              Anonymous
+            </span>
+          )}
           {post.isPinned && (
             <span className="flex items-center gap-1 text-xs font-semibold text-indigo-600 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded-full shrink-0">
               <Pin className="w-3 h-3" />
@@ -491,6 +499,7 @@ function endpointFor(t: Tab) {
   if (t === 'pending') return '/api/admin/feed/pending';
   if (t === 'approved') return '/api/admin/feed/approved';
   if (t === 'unavailable') return '/api/admin/feed/unavailable';
+  if (t === 'anonymous') return '/api/admin/feed/anonymous';
   return '/api/admin/feed/reported';
 }
 
@@ -505,6 +514,7 @@ export default function FeedModerationPage() {
     approved: 0,
     reported: 0,
     unavailable: 0,
+    anonymous: 0,
   });
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -513,17 +523,19 @@ export default function FeedModerationPage() {
 
   const fetchCounts = useCallback(async () => {
     try {
-      const [p, a, r, u] = await Promise.all([
+      const [p, a, r, u, an] = await Promise.all([
         fetch('/api/admin/feed/pending').then((r) => r.json()),
         fetch('/api/admin/feed/approved').then((r) => r.json()),
         fetch('/api/admin/feed/reported').then((r) => r.json()),
         fetch('/api/admin/feed/unavailable').then((r) => r.json()),
+        fetch('/api/admin/feed/anonymous').then((r) => r.json()),
       ]);
       setCounts({
         pending: p.total ?? p.posts?.length ?? 0,
         approved: a.total ?? a.posts?.length ?? 0,
         reported: r.total ?? r.posts?.length ?? 0,
         unavailable: u.total ?? u.posts?.length ?? 0,
+        anonymous: an.total ?? an.posts?.length ?? 0,
       });
     } catch {}
   }, []);
@@ -671,7 +683,7 @@ export default function FeedModerationPage() {
 
   const q = search.trim().toLowerCase();
   const filtered =
-    (tab === 'approved' || tab === 'reported') && q
+    (tab === 'approved' || tab === 'reported' || tab === 'anonymous') && q
       ? posts.filter(
           (p) =>
             (p.userName ?? '').toLowerCase().includes(q) ||
@@ -753,6 +765,12 @@ export default function FeedModerationPage() {
               icon: <EyeOff className="w-4 h-4" />,
               badgeClass: 'bg-orange-100 text-orange-700',
             },
+            {
+              key: 'anonymous',
+              label: 'Anonymous',
+              icon: <UserX className="w-4 h-4" />,
+              badgeClass: 'bg-purple-100 text-purple-700',
+            },
           ] as const
         ).map(({ key, label, icon, badgeClass }) => (
           <button
@@ -777,8 +795,8 @@ export default function FeedModerationPage() {
         ))}
       </div>
 
-      {/* Search bar (approved + reported) */}
-      {(tab === 'approved' || tab === 'reported') &&
+      {/* Search bar (approved + reported + anonymous) */}
+      {(tab === 'approved' || tab === 'reported' || tab === 'anonymous') &&
         !loading &&
         posts.length > 0 && (
           <div className="relative">
@@ -860,6 +878,14 @@ export default function FeedModerationPage() {
               <Eye className="w-10 h-10 text-gray-300 mb-3" />
               <p className="font-semibold text-gray-700">
                 No unavailable posts
+              </p>
+            </>
+          ) : tab === 'anonymous' ? (
+            <>
+              <UserX className="w-10 h-10 text-gray-300 mb-3" />
+              <p className="font-semibold text-gray-700">No anonymous posts</p>
+              <p className="text-sm text-gray-400 mt-1">
+                Posts submitted anonymously will appear here
               </p>
             </>
           ) : (

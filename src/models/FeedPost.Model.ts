@@ -31,6 +31,7 @@ const FeedPostSchema = new mongoose.Schema(
     hiddenReason: { type: String },
     hiddenAt: { type: Date },
     isPinned: { type: Boolean, default: false },
+    isAnonymous: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
