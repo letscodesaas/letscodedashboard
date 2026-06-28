@@ -320,7 +320,7 @@ function PostCard({
 
         {/* Actions */}
         <div className="flex gap-2 pt-1 flex-wrap">
-          {tab === 'pending' && (
+          {(tab === 'pending' || tab === 'anonymous') && (
             <>
               <button
                 onClick={() => trigger('approve')}
@@ -346,6 +346,34 @@ function PostCard({
                 )}
                 Reject
               </button>
+              {tab === 'anonymous' && (
+                <>
+                  <button
+                    onClick={() => trigger('make_unavailable')}
+                    disabled={!!loading}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-50 text-orange-700 border border-orange-200 text-xs font-semibold hover:bg-orange-100 transition-colors disabled:opacity-50"
+                  >
+                    {loading === 'make_unavailable' ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <EyeOff className="w-3.5 h-3.5" />
+                    )}
+                    Make Unavailable
+                  </button>
+                  <button
+                    onClick={() => trigger('delete')}
+                    disabled={!!loading}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 text-red-700 border border-red-200 text-xs font-semibold hover:bg-red-100 transition-colors disabled:opacity-50"
+                  >
+                    {loading === 'delete' ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Trash2 className="w-3.5 h-3.5" />
+                    )}
+                    Delete
+                  </button>
+                </>
+              )}
             </>
           )}
 
